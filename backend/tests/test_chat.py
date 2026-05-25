@@ -1,0 +1,53 @@
+from unittest.mock import AsyncMock, patch
+
+
+async def test_chat_success(client):
+    with patch("routers.ai.ai_service.get_reply", new=AsyncMock(return_value="Hello!")):
+        response = await client.post(
+            "/ai/chat",
+            json={"messages": [{"role": "user", "content": "hi"}]},
+        )
+    assert response.status_code == 200
+    assert response.json() == {"reply": "Hello!"}
+
+
+async def test_chat_missing_auth(unauthed_client):
+    response = await unauthed_client.post(
+        "/ai/chat",
+        json={"messages": [{"role": "user", "content": "hi"}]},
+    )
+    assert response.status_code == 401
+
+
+async def test_chat_invalid_body_empty_messages(client):
+    response = await client.post("/ai/chat", json={"messages": []})
+    assert response.status_code == 422
+
+
+async def test_chat_invalid_body_bad_role(client):
+    response = await client.post(
+        "/ai/chat",
+        json={"messages": [{"role": "system", "content": "hi"}]},
+    )
+    assert response.status_code == 422
+
+
+async def test_chat_invalid_body_content_too_long(client):
+    response = await client.post(
+        "/ai/chat",
+        json={"messages": [{"role": "user", "content": "x" * 4001}]},
+    )
+    assert response.status_code == 422
+
+
+async def test_chat_service_error_returns_500(client):
+    with patch(
+        "routers.ai.ai_service.get_reply",
+        new=AsyncMock(side_effect=RuntimeError("upstream failure")),
+    ):
+        response = await client.post(
+            "/ai/chat",
+            json={"messages": [{"role": "user", "content": "hi"}]},
+        )
+    assert response.status_code == 500
+    assert response.json()["detail"] == "Failed to get reply"

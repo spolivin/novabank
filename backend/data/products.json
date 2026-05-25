@@ -1,0 +1,127 @@
+{
+  "personal_accounts": [
+    {
+      "name": "Everyday",
+      "price_per_month": 0,
+      "features": [
+        "Free debit card",
+        "1% cashback on all purchases",
+        "2 free ATM withdrawals per month",
+        "Mobile app access"
+      ]
+    },
+    {
+      "name": "Savings",
+      "price_per_month": 4,
+      "features": [
+        "Everything in Everyday",
+        "4.5% APY on savings balance",
+        "Auto-roundup transactions",
+        "Budgeting tools"
+      ]
+    },
+    {
+      "name": "Premium",
+      "price_per_month": 12,
+      "features": [
+        "Everything in Savings",
+        "Unlimited free ATM withdrawals",
+        "Priority customer support",
+        "Concierge services"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "name": "Classic",
+      "price_per_month": 8,
+      "cashback": "0.5%",
+      "foreign_transaction_fee": "3%",
+      "credit_limit": "Up to $5,000",
+      "lounge_access": "None"
+    },
+    {
+      "name": "Gold",
+      "price_per_month": 18,
+      "cashback": "1.5%",
+      "foreign_transaction_fee": "1.5%",
+      "credit_limit": "Up to $20,000",
+      "lounge_access": "2 visits/year"
+    },
+    {
+      "name": "Platinum",
+      "price_per_month": 35,
+      "cashback": "3%",
+      "foreign_transaction_fee": "None",
+      "credit_limit": "Up to $100,000",
+      "lounge_access": "Unlimited"
+    }
+  ],
+  "loans": [
+    {
+      "name": "Personal Loan",
+      "rate_range": "7.99% – 21.99% APR",
+      "eligibility": [
+        "Credit score 650 or higher",
+        "Minimum annual income of $24,000",
+        "US resident or citizen",
+        "Active bank account",
+        "Debt-to-income ratio below 45%"
+      ]
+    },
+    {
+      "name": "Mortgage",
+      "rate_range": "5.49% – 7.99% APR",
+      "eligibility": [
+        "Credit score 680 or higher",
+        "Down payment of at least 3%",
+        "Stable employment history (2+ years)",
+        "Debt-to-income ratio below 43%",
+        "Property appraisal required"
+      ]
+    },
+    {
+      "name": "Auto Loan",
+      "rate_range": "4.49% – 12.99% APR",
+      "eligibility": [
+        "Credit score 620 or higher",
+        "Vehicle model year 2015 or newer",
+        "Minimum loan amount of $5,000",
+        "Valid driver's license",
+        "Comprehensive insurance required"
+      ]
+    }
+  ],
+  "business_accounts": [
+    {
+      "name": "Startup",
+      "price_per_month": 0,
+      "features": [
+        "1 business debit card",
+        "Basic invoicing tools",
+        "Up to 2 team members",
+        "Mobile app access"
+      ]
+    },
+    {
+      "name": "Growth",
+      "price_per_month": 19,
+      "features": [
+        "Everything in Startup",
+        "Unlimited invoicing",
+        "Up to 10 team members",
+        "Expense categorization"
+      ]
+    },
+    {
+      "name": "Enterprise",
+      "price_per_month": 49,
+      "features": [
+        "Everything in Growth",
+        "Unlimited team members",
+        "Full API access",
+        "Dedicated account manager"
+      ]
+    }
+  ]
+}
