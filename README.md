@@ -1,0 +1,68 @@
+# NovaBank
+
+A fake bank built as a portfolio project. Features a marketing site, authenticated dashboard, and an AI assistant powered by the Claude API.
+
+## Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React 19, TypeScript, Vite, Tailwind v4, Motion, React Router v7 |
+| Backend | FastAPI (Python), uv |
+| Auth + DB | Supabase |
+| AI | Claude Haiku via Anthropic API |
+| Deploy | Vercel (frontend), Railway (backend) |
+
+## Features
+
+- Marketing pages: Home, Personal, Cards, Loans, Business, About, Careers, Contact, Security
+- Auth: sign up, log in, account deletion
+- Dashboard with AI chat assistant (Nova)
+- Product catalogue: personal accounts and credit cards with tiered pricing
+
+## Architecture
+
+The frontend and backend are fully separated. The frontend talks to Supabase directly for auth and receives a JWT, which it forwards to the FastAPI backend on every request. The backend verifies the JWT signature via Supabase's JWKS endpoint — no shared secret, no trust on the client's word.
+
+The AI assistant sends the full conversation history on each request (no server-side session state) and is constrained by a system prompt to banking topics only.
+
+## Security decisions worth noting
+
+- **JWT verification via JWKS** — signature is verified against Supabase's public key, not just decoded
+- **Rate limiting** — 2 requests/minute per user on the `/ai/chat` endpoint
+- **Payload limits** — chat requests capped at 50 messages, 4000 characters each (Pydantic)
+- **Service role key stays server-side** — only the anon (publishable) key is exposed in the browser bundle
+- **CORS** — allowed origins configured via environment variable, not hardcoded
+
+## Local setup
+
+Prerequisites: Node.js, Python 3.12+, uv, Docker (optional), Supabase CLI.
+
+```bash
+# Install frontend dependencies
+make install
+
+# Start local Supabase instance
+make db-start
+
+# Copy and fill in env files
+cp frontend/.env.example frontend/.env
+cp backend/.env.example backend/.env
+
+# Start frontend dev server
+make dev
+
+# Start backend (separate terminal)
+make api-start
+```
+
+The only value that requires a real secret locally is `ANTHROPIC_API_KEY`. Supabase local dev keys can be retrieved with `make db-status` after starting the instance.
+
+## Other useful commands
+
+```bash
+make lint           # ESLint
+make db-reset       # Reset local database
+make api-test       # Run backend tests
+make api-format     # isort + black
+make api-build      # Build backend Docker image
+```
