@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-accent: #00c9a7;
+  --color-brand-bg: #0a0f1a;
+  --color-brand-border: #1e293b;
+  --color-brand-fg: #f1f5f9;
+  --color-brand-fg-muted: #94a3b8;
+  --color-brand-surface: #111827;
+  --color-brand-error: #f87171;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes dot-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes progress-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@layer utilities {
+  .animate-marquee {
+    animation: marquee 20s linear infinite;
+  }
+  .animate-dot-pulse {
+    animation: dot-pulse 1.2s ease-in-out infinite;
+  }
+  .animate-progress-fill {
+    animation: progress-fill linear forwards;
+  }
+  .bg-hero {
+    background: linear-gradient(135deg, #0d2b45 0%, #1a4a6e 100%);
+  }
+  .bg-accent {
+    background: linear-gradient(135deg, #00c9a7 0%, #00b4d8 100%);
+  }
+}
+
+html,
+body,
+#root {
+  background-color: var(--color-brand-bg);
+}
