@@ -19,6 +19,7 @@ frontend/.env.*
 !frontend/.env.example
 frontend/supabase/.branches
 frontend/supabase/.temp
+frontend/supabase/snippets
 
 # Logs
 logs
