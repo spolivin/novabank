@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { motion } from "motion/react";
-import { Wallet, TrendingDown, PiggyBank, LogOut, Home } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { Wallet, TrendingDown, PiggyBank, LogOut, Home, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useAuth } from "@/context/useAuth";
@@ -27,6 +27,7 @@ export default function Dashboard() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [confirming, setConfirming] = useState(false);
+  const [showBanner, setShowBanner] = useState(true);
 
   async function handleSignOut() {
     await signOut();
@@ -51,6 +52,26 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-brand-bg text-brand-fg">
+      <AnimatePresence>
+        {showBanner && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="text-xs md:text-sm fixed left-6 bottom-6 rounded-xl border border-white/10 bg-black/60 backdrop-blur-md text-brand-fg-muted px-4 py-3 pr-8 z-50"
+          >
+            <p>This is a demo project. All data is simulated.</p>
+            <button
+              className="absolute top-2 right-2 cursor-pointer hover:text-brand-fg transition-colors"
+              onClick={() => setShowBanner(false)}
+              aria-label="Dismiss banner"
+            >
+              <X size={14} />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className="max-w-5xl mx-auto px-6 py-12 space-y-10">
         {/* Welcome */}
         <motion.div
