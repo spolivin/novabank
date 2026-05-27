@@ -7,17 +7,10 @@ interface SectionProps {
 
 const sectionPadding = "px-6 py-24";
 
-export const Section = ({
-  id,
-  children,
-  className,
-  innerClassName = "",
-}: SectionProps) => {
+export const Section = ({ id, children, className, innerClassName = "" }: SectionProps) => {
   return (
     <section id={id} className={className}>
-      <div className={`max-w-7xl mx-auto ${sectionPadding} ${innerClassName}`}>
-        {children}
-      </div>
+      <div className={`max-w-7xl mx-auto ${sectionPadding} ${innerClassName}`}>{children}</div>
     </section>
   );
 };

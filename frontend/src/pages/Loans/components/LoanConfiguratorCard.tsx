@@ -13,12 +13,7 @@ interface Props {
   onTermChange: (term: Term) => void;
 }
 
-export function LoanConfiguratorCard({
-  amount,
-  term,
-  onAmountChange,
-  onTermChange,
-}: Props) {
+export function LoanConfiguratorCard({ amount, term, onAmountChange, onTermChange }: Props) {
   const pct = ((amount - AMOUNT_MIN) / (AMOUNT_MAX - AMOUNT_MIN)) * 100;
 
   return (
@@ -28,9 +23,7 @@ export function LoanConfiguratorCard({
           <label className="text-sm font-medium text-brand-fg-muted uppercase tracking-wider">
             Loan amount
           </label>
-          <span className="text-2xl font-bold text-brand-accent">
-            {fmt.format(amount)}
-          </span>
+          <span className="text-2xl font-bold text-brand-accent">{fmt.format(amount)}</span>
         </div>
         <input
           type="range"

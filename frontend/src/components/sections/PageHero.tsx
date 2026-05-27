@@ -54,9 +54,7 @@ export function PageHero({
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-brand-fg">
               {heading}
             </h1>
-            <p className="mt-6 text-xl leading-relaxed text-brand-fg-muted">
-              {subheading}
-            </p>
+            <p className="mt-6 text-xl leading-relaxed text-brand-fg-muted">{subheading}</p>
             <div className="mt-10 flex flex-wrap gap-4 items-center justify-center">
               {primaryButton && (
                 <Button variant="primary" href={primaryButton.href}>
@@ -99,9 +97,7 @@ export function PageHero({
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-brand-fg">
             {heading}
           </h1>
-          <p className="mt-6 text-xl leading-relaxed text-brand-fg-muted">
-            {subheading}
-          </p>
+          <p className="mt-6 text-xl leading-relaxed text-brand-fg-muted">{subheading}</p>
           <div className="mt-10 flex flex-wrap gap-4 items-center">
             {primaryButton && (
               <Button variant="primary" href={primaryButton.href}>

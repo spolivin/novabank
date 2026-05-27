@@ -11,12 +11,8 @@ export function LoanTypeTabs() {
   return (
     <Section>
       <div className="text-center mb-10">
-        <h2 className="text-3xl font-bold text-brand-fg">
-          Find the right loan for you
-        </h2>
-        <p className="mt-3 text-brand-fg-muted">
-          Flexible options to fit every financial goal.
-        </p>
+        <h2 className="text-3xl font-bold text-brand-fg">Find the right loan for you</h2>
+        <p className="mt-3 text-brand-fg-muted">Flexible options to fit every financial goal.</p>
       </div>
 
       {/* Tab bar */}
@@ -27,9 +23,7 @@ export function LoanTypeTabs() {
               key={type.id}
               onClick={() => setActiveId(type.id)}
               className={`relative px-5 py-2.5 text-sm font-medium rounded-xl transition-colors ${
-                type.id === activeId
-                  ? "text-brand-bg"
-                  : "text-brand-fg-muted hover:text-brand-fg"
+                type.id === activeId ? "text-brand-bg" : "text-brand-fg-muted hover:text-brand-fg"
               }`}
             >
               {type.id === activeId && (
@@ -54,12 +48,8 @@ export function LoanTypeTabs() {
         className="max-w-2xl mx-auto bg-brand-surface border border-brand-border rounded-2xl p-8"
       >
         <div className="mb-6">
-          <p className="text-sm text-brand-fg-muted uppercase tracking-wider mb-1">
-            Rate range
-          </p>
-          <p className="text-2xl font-bold text-brand-accent">
-            {active.rateRange}
-          </p>
+          <p className="text-sm text-brand-fg-muted uppercase tracking-wider mb-1">Rate range</p>
+          <p className="text-2xl font-bold text-brand-accent">{active.rateRange}</p>
         </div>
 
         <div>

@@ -23,13 +23,11 @@ const variantStyles: Record<NonNullable<ButtonProps["variant"]>, string> = {
     "bg-brand-accent text-brand-bg hover:scale-[1.02] hover:shadow-[0_4px_16px_rgba(0,201,167,0.35)] active:scale-[0.98]",
   secondary:
     "bg-transparent text-brand-accent border-2 border-brand-accent/30 hover:scale-[1.02] active:scale-[0.98]",
-  ghost:
-    "bg-transparent text-brand-accent hover:scale-[1.02] active:scale-[0.98]",
+  ghost: "bg-transparent text-brand-accent hover:scale-[1.02] active:scale-[0.98]",
   dark: "bg-brand-bg text-brand-accent hover:scale-[1.02] active:scale-[0.98]",
   darkCard:
     "bg-brand-surface text-brand-accent border-2 border-brand-accent/20 hover:scale-[1.02] active:scale-[0.98]",
-  accentCard:
-    "bg-brand-accent/90 text-brand-surface hover:scale-[1.02] active:scale-[0.98]",
+  accentCard: "bg-brand-accent/90 text-brand-surface hover:scale-[1.02] active:scale-[0.98]",
   danger:
     "bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 hover:scale-[1.02] active:scale-[0.98]",
   dangerSolid:
@@ -62,8 +60,7 @@ export const Button = ({
           e.preventDefault();
           const target = document.querySelector(href);
           if (target) {
-            const top =
-              target.getBoundingClientRect().top + window.scrollY - 72;
+            const top = target.getBoundingClientRect().top + window.scrollY - 72;
             window.scrollTo({ top, behavior: "smooth" });
           }
           onClick?.();

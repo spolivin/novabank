@@ -19,8 +19,7 @@ export default function Loans() {
         badge="Smart lending"
         heading={
           <>
-            Loans built around{" "}
-            <span className="text-brand-accent">your life</span>
+            Loans built around <span className="text-brand-accent">your life</span>
           </>
         }
         subheading="Competitive rates, instant decisions, and zero hidden fees. Configure your loan below and see your payments in real time."

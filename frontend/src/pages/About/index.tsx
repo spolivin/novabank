@@ -14,9 +14,8 @@ export default function About() {
         heading={
           <>
             "We believe banking should be{" "}
-            <span className="text-brand-accent">transparent, instant,</span> and
-            designed around <span className="text-brand-accent">your life</span>{" "}
-            - not ours."
+            <span className="text-brand-accent">transparent, instant,</span> and designed around{" "}
+            <span className="text-brand-accent">your life</span> - not ours."
           </>
         }
         subheading="NovaBank was built from the ground up to replace the frustration of legacy banking with something better: zero hidden fees, real-time everything, and customer support that actually helps."

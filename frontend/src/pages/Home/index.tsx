@@ -24,10 +24,7 @@ export default function Home() {
         features={features}
       />
       <AppMockupSection />
-      <TestimonialSection
-        title="What our customers are saying"
-        testimonials={TESTIMONIALS}
-      />
+      <TestimonialSection title="What our customers are saying" testimonials={TESTIMONIALS} />
       <Banner
         heading="Start banking smarter today"
         subheading="Join over 500,000 people who trust NovaBank with their finances."

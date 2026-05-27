@@ -66,8 +66,7 @@ export const steps = [
   },
   {
     title: "Verify Your Identity",
-    description:
-      "Complete the verification process to ensure the security of your account.",
+    description: "Complete the verification process to ensure the security of your account.",
   },
   {
     title: "Fund Your Account",

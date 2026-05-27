@@ -38,8 +38,7 @@ export const features = [
   {
     icon: "🧾",
     title: "Invoicing",
-    description:
-      "Create, send, and track professional invoices in seconds. Get paid faster.",
+    description: "Create, send, and track professional invoices in seconds. Get paid faster.",
   },
   {
     icon: "👥",
@@ -68,8 +67,7 @@ export const steps = [
   },
   {
     title: "Verify",
-    description:
-      "Provide some basic information to verify your identity and business details.",
+    description: "Provide some basic information to verify your identity and business details.",
   },
   {
     title: "Fund",

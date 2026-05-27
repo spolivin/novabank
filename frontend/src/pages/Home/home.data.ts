@@ -15,38 +15,32 @@ export const features = [
   {
     icon: "🚀",
     title: "Instant Transfers",
-    description:
-      "Send and receive money in seconds - 24/7, no delays, no hidden fees.",
+    description: "Send and receive money in seconds - 24/7, no delays, no hidden fees.",
   },
   {
     icon: "🚀",
     title: "Virtual Cards",
-    description:
-      "Generate one-time or recurring virtual cards for safe online shopping.",
+    description: "Generate one-time or recurring virtual cards for safe online shopping.",
   },
   {
     icon: "🚀",
     title: "Saving Goals",
-    description:
-      "Set targets, track progress, and automate round-ups toward what matters most.",
+    description: "Set targets, track progress, and automate round-ups toward what matters most.",
   },
   {
     icon: "🚀",
     title: "Smart Budgeting",
-    description:
-      "AI-powered spending insights automatically categorize your transactions.",
+    description: "AI-powered spending insights automatically categorize your transactions.",
   },
   {
     icon: "🚀",
     title: "Bank-Grade Security",
-    description:
-      "AES-256 encryption, biometric auth, and real-time fraud detection protect you.",
+    description: "AES-256 encryption, biometric auth, and real-time fraud detection protect you.",
   },
   {
     icon: "🚀",
     title: "Global Access",
-    description:
-      "Spend in 150+ currencies with no foreign transaction fees, anywhere on Earth.",
+    description: "Spend in 150+ currencies with no foreign transaction fees, anywhere on Earth.",
   },
 ];
 

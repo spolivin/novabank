@@ -20,9 +20,7 @@ export const BadgeGrid = ({ title, subtitle, features }: BadgeGridProps) => (
   <Section>
     <motion.div {...scrollAnimation}>
       <div className="text-center">
-        <h2 className="text-3xl font-bold leading-tight text-brand-fg">
-          {title}
-        </h2>
+        <h2 className="text-3xl font-bold leading-tight text-brand-fg">{title}</h2>
         <p className="text-brand-fg-muted mt-3">{subtitle}</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mt-10">

@@ -13,9 +13,7 @@ export const StepSection = ({ title, subtitle, steps }: StepSectionProps) => {
   return (
     <Section className="text-brand-fg">
       <motion.div {...scrollAnimation} className="text-center mb-5">
-        <h2 className="text-3xl font-bold leading-tight text-brand-fg">
-          {title}
-        </h2>
+        <h2 className="text-3xl font-bold leading-tight text-brand-fg">{title}</h2>
         <p className="text-brand-fg-muted mt-3 max-w-xl mx-auto">{subtitle}</p>
       </motion.div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-10">

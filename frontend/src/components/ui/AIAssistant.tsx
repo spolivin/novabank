@@ -35,9 +35,7 @@ export default function AIAssistant() {
     fetchChatHistory()
       .then((history) => {
         if (history.length > 0) {
-          setMessages(
-            history.map((m, i) => ({ id: String(i), role: m.role, text: m.content })),
-          );
+          setMessages(history.map((m, i) => ({ id: String(i), role: m.role, text: m.content })));
         }
       })
       .catch(() => {})
@@ -52,21 +50,15 @@ export default function AIAssistant() {
     const thinkingId = userMsg.id + "t";
     const nextMessages = [...messages, userMsg];
 
-    setMessages([
-      ...nextMessages,
-      { id: thinkingId, role: "assistant", text: "..." },
-    ]);
+    setMessages([...nextMessages, { id: thinkingId, role: "assistant", text: "..." }]);
     setInput("");
     setLoading(true);
 
     try {
       const reply = await sendChatMessage(text);
-      setMessages((prev) =>
-        prev.map((m) => (m.id === thinkingId ? { ...m, text: reply } : m)),
-      );
+      setMessages((prev) => prev.map((m) => (m.id === thinkingId ? { ...m, text: reply } : m)));
     } catch (err) {
-      const isRateLimit =
-        err instanceof Error && err.message === "rate_limit_exceeded";
+      const isRateLimit = err instanceof Error && err.message === "rate_limit_exceeded";
       setMessages((prev) =>
         prev.map((m) =>
           m.id === thinkingId
@@ -76,8 +68,8 @@ export default function AIAssistant() {
                   ? "You've sent too many messages. Please wait a moment and try again."
                   : "Sorry, I couldn't reach the server. Please try again.",
               }
-            : m,
-        ),
+            : m
+        )
       );
     } finally {
       setLoading(false);
@@ -102,9 +94,7 @@ export default function AIAssistant() {
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-brand-accent" />
-                <span className="text-sm font-semibold text-brand-fg">
-                  NovaBank Assistant
-                </span>
+                <span className="text-sm font-semibold text-brand-fg">NovaBank Assistant</span>
               </div>
               <button
                 onClick={() => setOpen(false)}
@@ -128,34 +118,36 @@ export default function AIAssistant() {
                     ))}
                   </span>
                 </div>
-              ) : messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                >
+              ) : (
+                messages.map((msg) => (
                   <div
-                    className={`max-w-[75%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${
-                      msg.role === "user"
-                        ? "bg-brand-accent text-brand-bg font-medium rounded-br-sm"
-                        : "bg-brand-bg text-brand-fg rounded-bl-sm"
-                    }`}
+                    key={msg.id}
+                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                   >
-                    {msg.text === "..." ? (
-                      <span className="flex gap-1 items-center h-4">
-                        {[0, 150, 300].map((delay) => (
-                          <span
-                            key={delay}
-                            className="w-1.5 h-1.5 rounded-full bg-brand-fg-muted animate-dot-pulse"
-                            style={{ animationDelay: `${delay}ms` }}
-                          />
-                        ))}
-                      </span>
-                    ) : (
-                      msg.text
-                    )}
+                    <div
+                      className={`max-w-[75%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${
+                        msg.role === "user"
+                          ? "bg-brand-accent text-brand-bg font-medium rounded-br-sm"
+                          : "bg-brand-bg text-brand-fg rounded-bl-sm"
+                      }`}
+                    >
+                      {msg.text === "..." ? (
+                        <span className="flex gap-1 items-center h-4">
+                          {[0, 150, 300].map((delay) => (
+                            <span
+                              key={delay}
+                              className="w-1.5 h-1.5 rounded-full bg-brand-fg-muted animate-dot-pulse"
+                              style={{ animationDelay: `${delay}ms` }}
+                            />
+                          ))}
+                        </span>
+                      ) : (
+                        msg.text
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
               {!historyLoading && <div ref={bottomRef} />}
             </div>
 

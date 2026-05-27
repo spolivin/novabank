@@ -5,11 +5,41 @@ const allTransactions: {
   category: string;
   amount: number;
 }[] = [
-  { id: "1", date: "2026-05-12", description: "Salary deposit", category: "Income", amount: 5200.0 },
-  { id: "2", date: "2026-05-11", description: "Whole Foods Market", category: "Groceries", amount: -134.72 },
-  { id: "3", date: "2026-05-10", description: "Netflix", category: "Subscriptions", amount: -15.99 },
-  { id: "4", date: "2026-05-09", description: "Freelance payment", category: "Income", amount: 850.0 },
-  { id: "5", date: "2026-05-08", description: "Electric bill", category: "Utilities", amount: -98.4 },
+  {
+    id: "1",
+    date: "2026-05-12",
+    description: "Salary deposit",
+    category: "Income",
+    amount: 5200.0,
+  },
+  {
+    id: "2",
+    date: "2026-05-11",
+    description: "Whole Foods Market",
+    category: "Groceries",
+    amount: -134.72,
+  },
+  {
+    id: "3",
+    date: "2026-05-10",
+    description: "Netflix",
+    category: "Subscriptions",
+    amount: -15.99,
+  },
+  {
+    id: "4",
+    date: "2026-05-09",
+    description: "Freelance payment",
+    category: "Income",
+    amount: 850.0,
+  },
+  {
+    id: "5",
+    date: "2026-05-08",
+    description: "Electric bill",
+    category: "Utilities",
+    amount: -98.4,
+  },
   { id: "6", date: "2026-05-07", description: "Uber", category: "Transport", amount: -22.5 },
   { id: "7", date: "2026-05-06", description: "Amazon", category: "Shopping", amount: -67.3 },
 ];

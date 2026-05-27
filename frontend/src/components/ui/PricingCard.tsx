@@ -7,12 +7,7 @@ interface PricingCardProps {
   rows: { feature: string; value: string }[];
 }
 
-export const PricingCard = ({
-  name,
-  price,
-  highlighted = false,
-  rows,
-}: PricingCardProps) => (
+export const PricingCard = ({ name, price, highlighted = false, rows }: PricingCardProps) => (
   <div
     className={`snap-center shrink-0 w-[80vw] rounded-xl border p-6 flex flex-col gap-4 ${highlighted ? "bg-brand-accent/10 border-brand-accent/40" : "border-brand-fg/20"}`}
   >

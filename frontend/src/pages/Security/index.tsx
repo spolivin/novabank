@@ -16,8 +16,7 @@ export default function Security() {
       <PageHero
         heading={
           <>
-            Your money is{" "}
-            <span className="text-brand-accent">safe with us</span>
+            Your money is <span className="text-brand-accent">safe with us</span>
           </>
         }
         subheading="Security is our top priority. With state-of-the-art encryption, 24/7 monitoring, and a dedicated fraud team, we ensure your finances are protected around the clock."

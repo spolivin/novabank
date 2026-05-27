@@ -74,8 +74,7 @@ export default function Contact() {
         badge="Get in touch"
         heading={
           <>
-            We&apos;re here to{" "}
-            <span className="text-brand-accent">help you</span>
+            We&apos;re here to <span className="text-brand-accent">help you</span>
           </>
         }
         subheading="Have a question, a partnership idea, or just want to say hello? Fill out the form and we'll get back to you within one business day."
@@ -92,9 +91,7 @@ export default function Contact() {
           {/* Contact info */}
           <div className="lg:col-span-2 flex flex-col gap-8">
             <div>
-              <h2 className="text-2xl font-bold text-brand-fg mb-6">
-                Contact information
-              </h2>
+              <h2 className="text-2xl font-bold text-brand-fg mb-6">Contact information</h2>
               <div className="flex flex-col gap-5">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-xl bg-brand-accent/10 flex items-center justify-center shrink-0">
@@ -104,9 +101,7 @@ export default function Contact() {
                     <p className="text-sm text-brand-fg-muted uppercase tracking-wider mb-1">
                       Office
                     </p>
-                    <p className="text-brand-fg">
-                      142 Innovation Drive, Suite 800
-                    </p>
+                    <p className="text-brand-fg">142 Innovation Drive, Suite 800</p>
                     <p className="text-brand-fg">San Francisco, CA 94107</p>
                   </div>
                 </div>
@@ -136,7 +131,6 @@ export default function Contact() {
                 </div>
               </div>
             </div>
-
           </div>
 
           {/* Form */}
@@ -154,12 +148,9 @@ export default function Contact() {
                     <div className="w-16 h-16 rounded-full bg-brand-accent/10 flex items-center justify-center">
                       <CheckCircle className="w-8 h-8 text-brand-accent" />
                     </div>
-                    <h3 className="text-xl font-bold text-brand-fg">
-                      Message sent!
-                    </h3>
+                    <h3 className="text-xl font-bold text-brand-fg">Message sent!</h3>
                     <p className="text-brand-fg-muted max-w-sm">
-                      Thanks for reaching out. We'll get back to you within one
-                      business day.
+                      Thanks for reaching out. We'll get back to you within one business day.
                     </p>
                   </motion.div>
                 ) : (

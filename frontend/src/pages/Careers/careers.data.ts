@@ -138,8 +138,7 @@ export const perks: Perk[] = [
   {
     icon: "📈",
     title: "Equity",
-    description:
-      "Meaningful equity stake so you share in what we build together.",
+    description: "Meaningful equity stake so you share in what we build together.",
   },
   {
     icon: "📚",

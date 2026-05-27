@@ -12,14 +12,7 @@ export interface RoleProps {
   stack: string[];
 }
 
-export const RoleCard = ({
-  title,
-  department,
-  location,
-  type,
-  description,
-  stack,
-}: RoleProps) => {
+export const RoleCard = ({ title, department, location, type, description, stack }: RoleProps) => {
   return (
     <div className="flex flex-col rounded-xl gap-4 text-brand-fg bg-brand-surface p-6">
       <h2 className="text-xl font-bold">{title}</h2>
@@ -32,7 +25,10 @@ export const RoleCard = ({
       <p className="text-brand-fg-muted">{description}</p>
       <div className="flex flex-wrap gap-2">
         {stack.map((tech) => (
-          <span key={tech} className="bg-brand-bg text-brand-fg-muted text-xs font-medium px-3 py-1 rounded-full">
+          <span
+            key={tech}
+            className="bg-brand-bg text-brand-fg-muted text-xs font-medium px-3 py-1 rounded-full"
+          >
             {tech}
           </span>
         ))}

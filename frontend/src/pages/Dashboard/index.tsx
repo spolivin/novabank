@@ -46,9 +46,7 @@ export default function Dashboard() {
 
   const { summary, transactions } = seedFromUserId(user!.id);
   const displayName = user?.user_metadata?.full_name ?? user?.email ?? "there";
-  const savingsPct = Math.round(
-    (summary.savingsProgress / summary.savingsGoal) * 100,
-  );
+  const savingsPct = Math.round((summary.savingsProgress / summary.savingsGoal) * 100);
 
   return (
     <div className="min-h-screen bg-brand-bg text-brand-fg">
@@ -74,14 +72,9 @@ export default function Dashboard() {
       </AnimatePresence>
       <div className="max-w-5xl mx-auto px-6 py-12 space-y-10">
         {/* Welcome */}
-        <motion.div
-          {...scrollAnimation}
-          className="flex items-start justify-between"
-        >
+        <motion.div {...scrollAnimation} className="flex items-start justify-between">
           <div>
-            <p className="text-brand-fg-muted text-sm mb-1">
-              Good to see you back
-            </p>
+            <p className="text-brand-fg-muted text-sm mb-1">Good to see you back</p>
             <h1 className="text-3xl font-bold text-brand-fg">{displayName}</h1>
           </div>
           <div className="flex items-center gap-4">
@@ -140,27 +133,16 @@ export default function Dashboard() {
                 },
               }}
             >
-              <SummaryCard
-                icon={card.icon}
-                label={card.label}
-                value={card.value}
-              />
+              <SummaryCard icon={card.icon} label={card.label} value={card.value} />
             </motion.div>
           ))}
         </motion.div>
 
         {/* Savings progress bar */}
-        <motion.div
-          {...scrollAnimation}
-          className="rounded-2xl bg-brand-surface px-6 py-5"
-        >
+        <motion.div {...scrollAnimation} className="rounded-2xl bg-brand-surface px-6 py-5">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-medium text-brand-fg">
-              Savings progress
-            </p>
-            <p className="text-sm font-semibold text-brand-accent">
-              {savingsPct}%
-            </p>
+            <p className="text-sm font-medium text-brand-fg">Savings progress</p>
+            <p className="text-sm font-semibold text-brand-accent">{savingsPct}%</p>
           </div>
           <div className="h-2 rounded-full bg-brand-bg overflow-hidden">
             <motion.div
@@ -175,10 +157,7 @@ export default function Dashboard() {
 
         {/* Recent transactions */}
         <div className="space-y-4">
-          <motion.h2
-            {...scrollAnimation}
-            className="text-lg font-semibold text-brand-fg"
-          >
+          <motion.h2 {...scrollAnimation} className="text-lg font-semibold text-brand-fg">
             Recent Transactions
           </motion.h2>
           <TransactionTable transactions={transactions} />
@@ -192,8 +171,7 @@ export default function Dashboard() {
             Danger zone
           </p>
           <p className="text-sm text-brand-fg-muted mb-4">
-            Permanently delete your account and all associated data. This cannot
-            be undone.
+            Permanently delete your account and all associated data. This cannot be undone.
           </p>
           {!confirming ? (
             <Button variant="danger" onClick={() => setConfirming(true)}>

@@ -158,20 +158,18 @@ export default function Navbar() {
             <ul className="flex flex-col gap-4 items-center">
               {NAV_LINKS.map(({ to, label }) => (
                 <li key={to}>
-                  <NavLink
-                    to={to}
-                    onClick={() => setOpen(false)}
-                    className={navLinkClass}
-                  >
+                  <NavLink to={to} onClick={() => setOpen(false)} className={navLinkClass}>
                     {label}
                   </NavLink>
                 </li>
               ))}
             </ul>
-            {!loading && (isAuthenticated
-              ? <NavUser onClick={() => setOpen(false)} />
-              : <NavCta onClick={() => setOpen(false)} />
-            )}
+            {!loading &&
+              (isAuthenticated ? (
+                <NavUser onClick={() => setOpen(false)} />
+              ) : (
+                <NavCta onClick={() => setOpen(false)} />
+              ))}
           </motion.div>
         )}
       </AnimatePresence>

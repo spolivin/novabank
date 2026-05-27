@@ -15,9 +15,7 @@ export const PricingSection = () => {
       <motion.div {...scrollAnimation}>
         <div className="text-center mb-10">
           <h2 className="text-brand-fg font-bold text-3xl">Choose your card</h2>
-          <p className="text-brand-fg-muted mt-3">
-            Pick the card that matches how you spend.
-          </p>
+          <p className="text-brand-fg-muted mt-3">Pick the card that matches how you spend.</p>
           <div className="inline-flex items-center rounded-full mt-6 gap-5">
             <span
               className={`text-xs font-medium ${!isAnnual ? "text-brand-fg" : "text-brand-fg-muted"}`}

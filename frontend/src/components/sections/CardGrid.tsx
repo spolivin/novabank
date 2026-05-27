@@ -18,18 +18,11 @@ interface CardGridProps {
   horizontal?: boolean;
 }
 
-export const CardGrid = ({
-  title,
-  subtitle,
-  features,
-  horizontal = false,
-}: CardGridProps) => (
+export const CardGrid = ({ title, subtitle, features, horizontal = false }: CardGridProps) => (
   <Section>
     <motion.div {...scrollAnimation}>
       <div className={`text-center ${horizontal ? "mb-5" : ""}`}>
-        <h2 className="text-3xl font-bold leading-tight text-brand-fg">
-          {title}
-        </h2>
+        <h2 className="text-3xl font-bold leading-tight text-brand-fg">{title}</h2>
         <p className="text-brand-fg-muted mt-3">{subtitle}</p>
       </div>
       <div

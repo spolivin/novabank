@@ -3,12 +3,7 @@ import { ProductGrid } from "@/components/sections/ProductGrid";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { PAGE_TITLES } from "@/constants";
 import { CardGrid } from "@/components/sections/CardGrid";
-import {
-  features,
-  products,
-  steps,
-  faqs,
-} from "@/pages/Business/business.data";
+import { features, products, steps, faqs } from "@/pages/Business/business.data";
 import { StepSection } from "@/components/sections/StepSection";
 import { AccordionSection } from "@/components/sections/AccordionSection";
 import { Banner } from "@/components/sections/Banner";
@@ -21,8 +16,7 @@ export default function Business() {
       <PageHero
         heading={
           <>
-            Banking built{" "}
-            <span className="text-brand-accent">for your business</span>
+            Banking built <span className="text-brand-accent">for your business</span>
           </>
         }
         subheading="Powerful tools for invoicing, team spending, and integrations - all in one account. Grow with confidence and zero hidden fees."

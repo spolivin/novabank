@@ -8,10 +8,7 @@ interface TestimonialSectionProps {
   testimonials: TestimonialItem[];
 }
 
-export const TestimonialSection = ({
-  title,
-  testimonials,
-}: TestimonialSectionProps) => {
+export const TestimonialSection = ({ title, testimonials }: TestimonialSectionProps) => {
   return (
     <Section>
       <motion.div {...scrollAnimation}>

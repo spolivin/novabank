@@ -10,11 +10,18 @@ interface Transaction {
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 function formatAmount(amount: number) {
-  const abs = Math.abs(amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const abs = Math.abs(amount).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
   return `${amount >= 0 ? "+" : "-"}$${abs}`;
 }
 
@@ -47,7 +54,9 @@ export default function TransactionTable({ transactions }: { transactions: Trans
                     {tx.category}
                   </span>
                 </td>
-                <td className={`px-6 py-4 text-right font-semibold tabular-nums ${tx.amount >= 0 ? "text-green-400" : "text-red-400"}`}>
+                <td
+                  className={`px-6 py-4 text-right font-semibold tabular-nums ${tx.amount >= 0 ? "text-green-400" : "text-red-400"}`}
+                >
                   {formatAmount(tx.amount)}
                 </td>
               </motion.tr>

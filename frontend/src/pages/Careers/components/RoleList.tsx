@@ -16,15 +16,13 @@ export const RoleList = ({ title, subtitle, roles }: RoleListProps) => {
 
   const departments = useMemo(
     () => ["All" as const, ...new Set(roles.map((r) => r.department))],
-    [roles],
+    [roles]
   );
 
   const effectiveFilter = departments.includes(activeFilter) ? activeFilter : "All";
 
   const filteredRoles =
-    effectiveFilter === "All"
-      ? roles
-      : roles.filter((role) => role.department === effectiveFilter);
+    effectiveFilter === "All" ? roles : roles.filter((role) => role.department === effectiveFilter);
 
   return (
     <Section id="roles">

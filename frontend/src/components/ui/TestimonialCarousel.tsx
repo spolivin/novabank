@@ -56,10 +56,7 @@ export const TestimonialCarousel = ({
     <motion.div {...scrollAnimation}>
       <div className="max-w-3xl mx-auto text-center">
         {/* Quote area */}
-        <div
-          style={{ minHeight: "180px" }}
-          className="flex items-center justify-center"
-        >
+        <div style={{ minHeight: "180px" }} className="flex items-center justify-center">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeIndex}
@@ -91,9 +88,7 @@ export const TestimonialCarousel = ({
                   </div>
                 )}
                 <div className="text-left">
-                  <p className="text-sm text-brand-fg font-semibold">
-                    {active.name}
-                  </p>
+                  <p className="text-sm text-brand-fg font-semibold">{active.name}</p>
                   <p className="text-xs text-brand-fg-muted">{active.role}</p>
                 </div>
               </div>

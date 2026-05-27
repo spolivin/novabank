@@ -11,10 +11,7 @@ const bullets = [
 
 export const AppMockupSection = () => (
   <Section className="bg-brand-surface">
-    <motion.div
-      {...scrollAnimation}
-      className="flex flex-col md:flex-row items-center gap-10"
-    >
+    <motion.div {...scrollAnimation} className="flex flex-col md:flex-row items-center gap-10">
       <div className="w-50 h-80 shrink-0 bg-brand-bg border-2 border-brand-accent rounded-lg flex items-center justify-center">
         <div className="w-30 h-60 bg-brand-surface/50" />
       </div>
@@ -24,16 +21,13 @@ export const AppMockupSection = () => (
             Your bank in your pocket
           </h2>
           <p className="text-brand-fg-muted mt-3">
-            The NovaBank app puts your entire financial life at your fingertips
-            - elegant, fast, and always available.
+            The NovaBank app puts your entire financial life at your fingertips - elegant, fast, and
+            always available.
           </p>
         </div>
         <ul className="space-y-3 mt-8 max-w-sm">
           {bullets.map((item) => (
-            <li
-              key={item}
-              className="flex items-center gap-3 text-brand-fg-muted"
-            >
+            <li key={item} className="flex items-center gap-3 text-brand-fg-muted">
               <Check className="text-brand-accent flex-shrink-0" />
               {item}
             </li>

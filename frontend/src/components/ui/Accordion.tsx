@@ -19,10 +19,7 @@ export interface AccordionGroupProps {
 const Accordion = ({ title, children, isOpen, onToggle }: AccordionProps) => {
   return (
     <div className="bg-brand-surface text-brand-fg px-5 py-4 rounded-lg">
-      <button
-        className="flex justify-between items-center w-full"
-        onClick={onToggle}
-      >
+      <button className="flex justify-between items-center w-full" onClick={onToggle}>
         {title}{" "}
         <span
           className={`inline-block text-xs text-brand-accent transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
@@ -35,11 +32,7 @@ const Accordion = ({ title, children, isOpen, onToggle }: AccordionProps) => {
             stroke="currentColor"
             className="w-4 h-4"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
           </svg>
         </span>
       </button>

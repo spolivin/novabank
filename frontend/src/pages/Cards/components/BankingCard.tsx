@@ -48,9 +48,7 @@ export const BankingCard = ({
         </div>
         <div className="w-14 h-10 sm:w-18 sm:h-13 bg-brand-fg/40 rounded-lg" />
         <div>
-          <p className="text-lg sm:text-2xl font-bold tracking-widest">
-            **** **** **** {lastFour}
-          </p>
+          <p className="text-lg sm:text-2xl font-bold tracking-widest">**** **** **** {lastFour}</p>
           <div className="flex justify-between">
             <p className="uppercase text-sm sm:text-base">{cardholderName}</p>
             <p className="text-sm sm:text-base">12/28</p>

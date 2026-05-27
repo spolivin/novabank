@@ -44,9 +44,9 @@ export default function Login() {
     const result = loginSchema.safeParse(form);
     if (!result.success) {
       const fieldErrors = result.error.flatten().fieldErrors;
-      setErrors(Object.fromEntries(
-        Object.entries(fieldErrors).map(([k, v]) => [k, v?.[0]])
-      ) as FormErrors);
+      setErrors(
+        Object.fromEntries(Object.entries(fieldErrors).map(([k, v]) => [k, v?.[0]])) as FormErrors
+      );
       return;
     }
 
@@ -83,10 +83,7 @@ export default function Login() {
         <h1 className="text-2xl font-bold text-brand-fg mb-1">Welcome back</h1>
         <p className="text-brand-fg-muted text-sm mb-8">
           Don't have an account?{" "}
-          <Link
-            to={ROUTES.SIGNUP}
-            className="text-brand-accent hover:underline font-medium"
-          >
+          <Link to={ROUTES.SIGNUP} className="text-brand-accent hover:underline font-medium">
             Sign up
           </Link>
         </p>
@@ -126,9 +123,7 @@ export default function Login() {
             </div>
           </Field>
 
-          {submitError && (
-            <p className="text-red-400 text-sm">{submitError}</p>
-          )}
+          {submitError && <p className="text-red-400 text-sm">{submitError}</p>}
 
           <button
             type="submit"
@@ -171,8 +166,6 @@ function Field({
 function inputClass(hasError: boolean) {
   return [
     "w-full h-12 rounded-xl bg-brand-bg border px-4 text-sm text-brand-fg placeholder:text-brand-fg-muted outline-none transition-colors",
-    hasError
-      ? "border-red-400 focus:border-red-400"
-      : "border-white/10 focus:border-brand-accent",
+    hasError ? "border-red-400 focus:border-red-400" : "border-white/10 focus:border-brand-accent",
   ].join(" ");
 }

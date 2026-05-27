@@ -15,8 +15,7 @@ export default function Cards() {
       <PageHero
         heading={
           <>
-            The card that{" "}
-            <span className="text-brand-accent">works harder</span> for you
+            The card that <span className="text-brand-accent">works harder</span> for you
           </>
         }
         subheading="Each cashback on every purchase, pay nothing abroad, and control your spending - all from one beautifully simple card."

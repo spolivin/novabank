@@ -7,9 +7,7 @@ import { timelineSteps } from "../about.data";
 export const AboutTimeline = () => (
   <Section>
     <motion.div {...scrollAnimation} className="text-center mb-5">
-      <h2 className="text-3xl font-bold leading-tight text-brand-fg">
-        How we got here
-      </h2>
+      <h2 className="text-3xl font-bold leading-tight text-brand-fg">How we got here</h2>
       <p className="text-brand-fg-muted mt-3 max-w-xl mx-auto">
         From a seed-stage idea to millions of users - the Novabank story
       </p>

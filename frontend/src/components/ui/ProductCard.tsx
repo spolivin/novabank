@@ -8,12 +8,7 @@ export interface ProductCardProps {
   featured?: boolean;
 }
 
-export const ProductCard = ({
-  title,
-  price,
-  features,
-  featured,
-}: ProductCardProps) => (
+export const ProductCard = ({ title, price, features, featured }: ProductCardProps) => (
   <div
     className={`relative rounded-lg px-6 py-8 flex flex-col gap-6 ${featured ? "bg-accent" : "bg-brand-surface"}`}
   >

@@ -27,9 +27,7 @@ export const PricingTable = ({ tiers }: PricingTableProps) => (
               >
                 {name}
               </span>
-              <span className="block font-bold text-brand-fg-muted text-sm mt-1">
-                {price}
-              </span>
+              <span className="block font-bold text-brand-fg-muted text-sm mt-1">{price}</span>
             </th>
           ))}
         </tr>
@@ -60,10 +58,7 @@ export const PricingTable = ({ tiers }: PricingTableProps) => (
               key={name}
               className={`text-center px-4 py-4${i < tiers.length - 1 ? " border-r border-brand-fg/20" : ""}${highlighted ? " bg-brand-accent/7" : ""}`}
             >
-              <Button
-                variant={highlighted ? "accentCard" : "secondary"}
-                fullWidth
-              >
+              <Button variant={highlighted ? "accentCard" : "secondary"} fullWidth>
                 Apply
               </Button>
             </td>

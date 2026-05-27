@@ -5,12 +5,7 @@ import { ProductGrid } from "@/components/sections/ProductGrid";
 import { CardGrid } from "@/components/sections/CardGrid";
 import { AccordionSection } from "@/components/sections/AccordionSection";
 import { StepSection } from "@/components/sections/StepSection";
-import {
-  products,
-  features,
-  steps,
-  faqs,
-} from "@/pages/Personal/personal.data";
+import { products, features, steps, faqs } from "@/pages/Personal/personal.data";
 
 export default function Personal() {
   usePageTitle(PAGE_TITLES.PERSONAL);
@@ -20,8 +15,7 @@ export default function Personal() {
       <PageHero
         heading={
           <>
-            Banking that{" "}
-            <span className="text-brand-accent">fits your life</span>
+            Banking that <span className="text-brand-accent">fits your life</span>
           </>
         }
         subheading="Simple, transparent accounts with no hidden fees. Built for the way you live - whether you're saving for a goal or spending every day."

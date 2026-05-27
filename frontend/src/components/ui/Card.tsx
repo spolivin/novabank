@@ -14,13 +14,7 @@ const motionProps = {
   transition: { duration: 0.25, ease: "easeOut" },
 } as const;
 
-export const Card = ({
-  horizontal = false,
-  icon,
-  title,
-  description,
-  tag,
-}: CardProps) => (
+export const Card = ({ horizontal = false, icon, title, description, tag }: CardProps) => (
   <motion.div
     {...motionProps}
     className={`flex gap-4 rounded-2xl p-8 bg-brand-surface ${
@@ -32,9 +26,7 @@ export const Card = ({
     </div>
     <div className="flex flex-col gap-2">
       {title && <p className="text-xl font-semibold text-brand-fg">{title}</p>}
-      {tag && (
-        <span className="font-medium text-xs text-brand-accent">{tag}</span>
-      )}
+      {tag && <span className="font-medium text-xs text-brand-accent">{tag}</span>}
       <p className="text-sm text-brand-fg-muted">{description}</p>
     </div>
   </motion.div>

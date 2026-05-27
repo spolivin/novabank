@@ -1,8 +1,5 @@
 import { motion } from "motion/react";
-import {
-  ProductCard,
-  type ProductCardProps,
-} from "@/components/ui/ProductCard";
+import { ProductCard, type ProductCardProps } from "@/components/ui/ProductCard";
 import { Section } from "@/components/layout/Section";
 import { scrollAnimation } from "@/animations";
 

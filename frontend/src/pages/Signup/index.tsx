@@ -40,8 +40,7 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  if (!authLoading && isAuthenticated)
-    return <Navigate to={ROUTES.DASHBOARD} replace />;
+  if (!authLoading && isAuthenticated) return <Navigate to={ROUTES.DASHBOARD} replace />;
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
@@ -59,9 +58,7 @@ export default function Signup() {
     if (!result.success) {
       const fieldErrors = result.error.flatten().fieldErrors;
       setErrors(
-        Object.fromEntries(
-          Object.entries(fieldErrors).map(([k, v]) => [k, v?.[0]]),
-        ) as FormErrors,
+        Object.fromEntries(Object.entries(fieldErrors).map(([k, v]) => [k, v?.[0]])) as FormErrors
       );
       return;
     }
@@ -100,15 +97,10 @@ export default function Signup() {
           Home
         </Link>
 
-        <h1 className="text-2xl font-bold text-brand-fg mb-1">
-          Create your account
-        </h1>
+        <h1 className="text-2xl font-bold text-brand-fg mb-1">Create your account</h1>
         <p className="text-brand-fg-muted text-sm mb-8">
           Already have an account?{" "}
-          <Link
-            to={ROUTES.LOGIN}
-            className="text-brand-accent hover:underline font-medium"
-          >
+          <Link to={ROUTES.LOGIN} className="text-brand-accent hover:underline font-medium">
             Log in
           </Link>
         </p>
@@ -183,9 +175,7 @@ export default function Signup() {
           </Field>
 
           {submitError === "__confirm__" ? (
-            <p className="text-brand-accent text-sm">
-              Check your email to confirm your account.
-            </p>
+            <p className="text-brand-accent text-sm">Check your email to confirm your account.</p>
           ) : submitError ? (
             <p className="text-red-400 text-sm">{submitError}</p>
           ) : null}
@@ -235,8 +225,6 @@ function Field({
 function inputClass(hasError: boolean) {
   return [
     "w-full h-12 rounded-xl bg-brand-bg border px-4 text-sm text-brand-fg placeholder:text-brand-fg-muted outline-none transition-colors",
-    hasError
-      ? "border-red-400 focus:border-red-400"
-      : "border-white/10 focus:border-brand-accent",
+    hasError ? "border-red-400 focus:border-red-400" : "border-white/10 focus:border-brand-accent",
   ].join(" ");
 }
