@@ -40,7 +40,8 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  if (!authLoading && isAuthenticated) return <Navigate to={ROUTES.DASHBOARD} replace />;
+  if (!authLoading && isAuthenticated)
+    return <Navigate to={ROUTES.DASHBOARD} replace />;
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
@@ -57,9 +58,11 @@ export default function Signup() {
     const result = signupSchema.safeParse(form);
     if (!result.success) {
       const fieldErrors = result.error.flatten().fieldErrors;
-      setErrors(Object.fromEntries(
-        Object.entries(fieldErrors).map(([k, v]) => [k, v?.[0]])
-      ) as FormErrors);
+      setErrors(
+        Object.fromEntries(
+          Object.entries(fieldErrors).map(([k, v]) => [k, v?.[0]]),
+        ) as FormErrors,
+      );
       return;
     }
 
@@ -111,10 +114,7 @@ export default function Signup() {
         </p>
 
         <form onSubmit={handleSubmit} noValidate className="space-y-5">
-          <Field
-            label="Full name"
-            error={errors.fullName}
-          >
+          <Field label="Full name" error={errors.fullName}>
             <input
               name="fullName"
               type="text"
@@ -189,6 +189,10 @@ export default function Signup() {
           ) : submitError ? (
             <p className="text-red-400 text-sm">{submitError}</p>
           ) : null}
+
+          <div className="text-sm text-brand-fg-muted text-center">
+            This is a demo project. Do not use real personal information.
+          </div>
 
           <button
             type="submit"
