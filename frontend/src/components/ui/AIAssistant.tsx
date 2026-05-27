@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { sendChatMessage } from "@/lib/api";
+import { sendChatMessage, fetchChatHistory } from "@/lib/api";
 import { MessageCircle, X, Send } from "lucide-react";
 
 interface Message {
@@ -20,11 +20,29 @@ export default function AIAssistant() {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const hasFetchedRef = useRef(false);
 
   useEffect(() => {
     if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, open]);
+
+  useEffect(() => {
+    if (!open || hasFetchedRef.current) return;
+    hasFetchedRef.current = true;
+    setHistoryLoading(true);
+    fetchChatHistory()
+      .then((history) => {
+        if (history.length > 0) {
+          setMessages(
+            history.map((m, i) => ({ id: String(i), role: m.role, text: m.content })),
+          );
+        }
+      })
+      .catch(() => {})
+      .finally(() => setHistoryLoading(false));
+  }, [open]);
 
   async function handleSend() {
     const text = input.trim();
@@ -42,9 +60,7 @@ export default function AIAssistant() {
     setLoading(true);
 
     try {
-      const reply = await sendChatMessage(
-        nextMessages.map((m) => ({ role: m.role, content: m.text })),
-      );
+      const reply = await sendChatMessage(text);
       setMessages((prev) =>
         prev.map((m) => (m.id === thinkingId ? { ...m, text: reply } : m)),
       );
@@ -100,7 +116,19 @@ export default function AIAssistant() {
             </div>
 
             <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-              {messages.map((msg) => (
+              {historyLoading ? (
+                <div className="flex justify-center items-center h-full">
+                  <span className="flex gap-1 items-center">
+                    {[0, 150, 300].map((delay) => (
+                      <span
+                        key={delay}
+                        className="w-1.5 h-1.5 rounded-full bg-brand-fg-muted animate-dot-pulse"
+                        style={{ animationDelay: `${delay}ms` }}
+                      />
+                    ))}
+                  </span>
+                </div>
+              ) : messages.map((msg) => (
                 <div
                   key={msg.id}
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
@@ -128,7 +156,7 @@ export default function AIAssistant() {
                   </div>
                 </div>
               ))}
-              <div ref={bottomRef} />
+              {!historyLoading && <div ref={bottomRef} />}
             </div>
 
             <div className="px-4 py-3 border-t border-white/10 flex gap-2">
