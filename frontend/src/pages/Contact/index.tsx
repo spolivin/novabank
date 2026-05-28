@@ -1,14 +1,16 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CheckCircle, Mail, MapPin, Phone } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { motion, AnimatePresence } from "motion/react";
-import { MapPin, Phone, Mail, CheckCircle } from "lucide-react";
-import { usePageTitle } from "@/hooks/usePageTitle";
-import { PAGE_TITLES } from "@/constants";
-import { PageHero } from "@/components/sections/PageHero";
+
 import { Section } from "@/components/layout/Section";
+import { PageHero } from "@/components/sections/PageHero";
 import { Button } from "@/components/ui/Button";
+import { PAGE_TITLES } from "@/constants";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),

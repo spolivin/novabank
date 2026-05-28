@@ -1,22 +1,22 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+
 import MainLayout from "@/components/layout/Layout";
-import Home from "@/pages/Home";
-import Personal from "@/pages/Personal";
+import ProtectedRoute from "@/components/ui/ProtectedRoute";
+import { ROUTES } from "@/constants";
+import { AuthProvider } from "@/context/AuthContext";
+import About from "@/pages/About";
 import Business from "@/pages/Business";
 import Cards from "@/pages/Cards";
-import Loans from "@/pages/Loans";
-import Security from "@/pages/Security";
-import About from "@/pages/About";
-import Contact from "@/pages/Contact";
 import Careers from "@/pages/Careers";
-import Signup from "@/pages/Signup";
+import Contact from "@/pages/Contact";
+import Dashboard from "@/pages/Dashboard";
+import Home from "@/pages/Home";
+import Loans from "@/pages/Loans";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
-import Dashboard from "@/pages/Dashboard";
-import ProtectedRoute from "@/components/ui/ProtectedRoute";
-import { AuthProvider } from "@/context/AuthContext";
-
-import { ROUTES } from "@/constants";
+import Personal from "@/pages/Personal";
+import Security from "@/pages/Security";
+import Signup from "@/pages/Signup";
 
 const router = createBrowserRouter([
   {

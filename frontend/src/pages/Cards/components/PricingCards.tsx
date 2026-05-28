@@ -1,4 +1,5 @@
 import { PricingCard } from "@/components/ui/PricingCard";
+
 import { pricingRows } from "../cards.data";
 import type { PricingTier } from "../cards.data";
 

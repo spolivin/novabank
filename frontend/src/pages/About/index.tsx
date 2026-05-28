@@ -1,9 +1,10 @@
-import { usePageTitle } from "@/hooks/usePageTitle";
-import { PAGE_TITLES } from "@/constants";
-import { PageHero } from "@/components/sections/PageHero";
 import { Banner } from "@/components/sections/Banner";
-import { AboutTimeline } from "./components/AboutTimeline";
+import { PageHero } from "@/components/sections/PageHero";
+import { PAGE_TITLES } from "@/constants";
+import { usePageTitle } from "@/hooks/usePageTitle";
+
 import { AboutTeam } from "./components/AboutTeam";
+import { AboutTimeline } from "./components/AboutTimeline";
 
 export default function About() {
   usePageTitle(PAGE_TITLES.ABOUT);

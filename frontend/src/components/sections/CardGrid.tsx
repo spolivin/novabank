@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
+
 import { motion } from "motion/react";
-import { Card } from "@/components/ui/Card";
-import { Section } from "@/components/layout/Section";
+
 import { scrollAnimation } from "@/animations";
+import { Section } from "@/components/layout/Section";
+import { Card } from "@/components/ui/Card";
 
 interface Feature {
   icon: ReactNode;

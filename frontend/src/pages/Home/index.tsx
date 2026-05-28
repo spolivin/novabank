@@ -1,10 +1,11 @@
-import { PageHero } from "@/components/sections/PageHero";
-import { CardGrid } from "@/components/sections/CardGrid";
-import { TestimonialSection } from "@/pages/Home/components/TestimonialSection";
-import { PartnerMarquee } from "@/pages/Home/components/PartnerMarquee";
 import { Banner } from "@/components/sections/Banner";
-import { PARTNERS, features, TESTIMONIALS } from "./home.data";
+import { CardGrid } from "@/components/sections/CardGrid";
+import { PageHero } from "@/components/sections/PageHero";
+import { PartnerMarquee } from "@/pages/Home/components/PartnerMarquee";
+import { TestimonialSection } from "@/pages/Home/components/TestimonialSection";
+
 import { AppMockupSection } from "./components/AppMockupSection";
+import { PARTNERS, TESTIMONIALS, features } from "./home.data";
 
 export default function Home() {
   return (

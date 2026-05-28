@@ -1,7 +1,9 @@
 import { motion } from "motion/react";
+
+import { scrollAnimation } from "@/animations";
 import { Section } from "@/components/layout/Section";
 import { TeamCard } from "@/components/ui/TeamCard";
-import { scrollAnimation } from "@/animations";
+
 import { teamMembers } from "../about.data";
 
 export const AboutTeam = () => (

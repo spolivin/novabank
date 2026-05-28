@@ -1,12 +1,14 @@
-import { usePageTitle } from "@/hooks/usePageTitle";
-import { PAGE_TITLES } from "@/constants";
-import { Banner } from "@/components/sections/Banner";
-import { PageHero } from "@/components/sections/PageHero";
-import { CardGrid } from "@/components/sections/CardGrid";
-import { BadgeGrid } from "./components/BadgeGrid";
-import { features, securityFeatures } from "./security.data";
 import { ShieldCheck } from "lucide-react";
+
+import { Banner } from "@/components/sections/Banner";
+import { CardGrid } from "@/components/sections/CardGrid";
+import { PageHero } from "@/components/sections/PageHero";
+import { PAGE_TITLES } from "@/constants";
+import { usePageTitle } from "@/hooks/usePageTitle";
+
+import { BadgeGrid } from "./components/BadgeGrid";
 import { FraudProtectionSection } from "./components/FraudProtectionSection";
+import { features, securityFeatures } from "./security.data";
 
 export default function Security() {
   usePageTitle(PAGE_TITLES.SECURITY);

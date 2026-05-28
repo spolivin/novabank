@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
+
 import { motion } from "motion/react";
+
+import { PAGE_TITLES, ROUTES } from "@/constants";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import { ROUTES, PAGE_TITLES } from "@/constants";
 
 export default function NotFound() {
   usePageTitle(PAGE_TITLES.NOT_FOUND);

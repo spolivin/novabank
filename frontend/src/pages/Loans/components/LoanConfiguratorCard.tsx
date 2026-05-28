@@ -1,4 +1,4 @@
-import { AMOUNT_MIN, AMOUNT_MAX, TERMS, type Term } from "../loans.data";
+import { AMOUNT_MAX, AMOUNT_MIN, TERMS, type Term } from "../loans.data";
 
 const fmt = new Intl.NumberFormat("en-US", {
   style: "currency",

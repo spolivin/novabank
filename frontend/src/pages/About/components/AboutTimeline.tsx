@@ -1,7 +1,9 @@
 import { motion } from "motion/react";
-import { Section } from "@/components/layout/Section";
+
 import { scrollAnimation } from "@/animations";
+import { Section } from "@/components/layout/Section";
 import { TimelineStep } from "@/components/ui/TimelineStep";
+
 import { timelineSteps } from "../about.data";
 
 export const AboutTimeline = () => (

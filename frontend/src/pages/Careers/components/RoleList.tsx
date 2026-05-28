@@ -1,8 +1,11 @@
-import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { useMemo, useState } from "react";
+
+import { AnimatePresence, motion } from "motion/react";
+
 import { scrollAnimation } from "@/animations";
-import { RoleCard, type Department } from "@/components/ui/RoleCard";
 import { Section } from "@/components/layout/Section";
+import { type Department, RoleCard } from "@/components/ui/RoleCard";
+
 import { type Role } from "../careers.data";
 
 interface RoleListProps {

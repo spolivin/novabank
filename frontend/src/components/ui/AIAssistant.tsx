@@ -1,7 +1,9 @@
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { sendChatMessage, fetchChatHistory } from "@/lib/api";
-import { MessageCircle, X, Send } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+
+import { MessageCircle, Send, X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+
+import { fetchChatHistory, sendChatMessage } from "@/lib/api";
 
 interface Message {
   id: string;

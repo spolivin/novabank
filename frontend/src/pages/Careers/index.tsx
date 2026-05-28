@@ -1,10 +1,11 @@
-import { usePageTitle } from "@/hooks/usePageTitle";
-import { PAGE_TITLES } from "@/constants";
-import { PageHero } from "@/components/sections/PageHero";
-import { CardGrid } from "@/components/sections/CardGrid";
-import { RoleList } from "./components/RoleList";
 import { Banner } from "@/components/sections/Banner";
-import { values, roles, perks } from "./careers.data";
+import { CardGrid } from "@/components/sections/CardGrid";
+import { PageHero } from "@/components/sections/PageHero";
+import { PAGE_TITLES } from "@/constants";
+import { usePageTitle } from "@/hooks/usePageTitle";
+
+import { perks, roles, values } from "./careers.data";
+import { RoleList } from "./components/RoleList";
 
 export default function Careers() {
   usePageTitle(PAGE_TITLES.CAREERS);

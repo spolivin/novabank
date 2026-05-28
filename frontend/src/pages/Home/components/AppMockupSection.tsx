@@ -1,7 +1,8 @@
-import { motion } from "motion/react";
 import { Check } from "lucide-react";
-import { Section } from "@/components/layout/Section";
+import { motion } from "motion/react";
+
 import { scrollAnimation } from "@/animations";
+import { Section } from "@/components/layout/Section";
 
 const bullets = [
   "Instant account setup in under 2 minutes",

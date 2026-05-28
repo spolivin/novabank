@@ -1,12 +1,12 @@
-import { PageHero } from "@/components/sections/PageHero";
-import { ProductGrid } from "@/components/sections/ProductGrid";
-import { usePageTitle } from "@/hooks/usePageTitle";
-import { PAGE_TITLES } from "@/constants";
-import { CardGrid } from "@/components/sections/CardGrid";
-import { features, products, steps, faqs } from "@/pages/Business/business.data";
-import { StepSection } from "@/components/sections/StepSection";
 import { AccordionSection } from "@/components/sections/AccordionSection";
 import { Banner } from "@/components/sections/Banner";
+import { CardGrid } from "@/components/sections/CardGrid";
+import { PageHero } from "@/components/sections/PageHero";
+import { ProductGrid } from "@/components/sections/ProductGrid";
+import { StepSection } from "@/components/sections/StepSection";
+import { PAGE_TITLES } from "@/constants";
+import { usePageTitle } from "@/hooks/usePageTitle";
+import { faqs, features, products, steps } from "@/pages/Business/business.data";
 
 export default function Business() {
   usePageTitle(PAGE_TITLES.BUSINESS);

@@ -1,11 +1,12 @@
-import { usePageTitle } from "@/hooks/usePageTitle";
-import { PAGE_TITLES } from "@/constants";
-import { PageHero } from "@/components/sections/PageHero";
 import { Banner } from "@/components/sections/Banner";
 import { CardGrid } from "@/components/sections/CardGrid";
-import { PricingSection } from "./components/PricingSection";
+import { PageHero } from "@/components/sections/PageHero";
+import { PAGE_TITLES } from "@/constants";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { features } from "@/pages/Cards/cards.data";
+
 import { BankingCard } from "./components/BankingCard";
+import { PricingSection } from "./components/PricingSection";
 
 export default function Cards() {
   usePageTitle(PAGE_TITLES.CARDS);

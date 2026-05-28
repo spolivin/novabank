@@ -1,7 +1,8 @@
 import { motion } from "motion/react";
-import { Step, type StepProps } from "@/components/ui/Step";
-import { Section } from "@/components/layout/Section";
+
 import { scrollAnimation } from "@/animations";
+import { Section } from "@/components/layout/Section";
+import { Step, type StepProps } from "@/components/ui/Step";
 
 interface StepSectionProps {
   title: string;

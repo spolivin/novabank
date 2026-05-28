@@ -1,16 +1,18 @@
+import { motion } from "motion/react";
 import {
-  LineChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from "recharts";
-import { motion } from "motion/react";
-import { APR } from "../loans.data";
-import { Section } from "@/components/layout/Section";
+
 import { scrollAnimation } from "@/animations";
+import { Section } from "@/components/layout/Section";
+
+import { APR } from "../loans.data";
 
 interface Props {
   amount: number;

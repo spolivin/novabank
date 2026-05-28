@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+
 import { scrollAnimation } from "@/animations";
 
 interface Transaction {

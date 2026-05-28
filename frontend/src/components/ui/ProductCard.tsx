@@ -1,5 +1,6 @@
-import { Button } from "./Button";
 import { Check } from "lucide-react";
+
+import { Button } from "./Button";
 
 export interface ProductCardProps {
   title: string;

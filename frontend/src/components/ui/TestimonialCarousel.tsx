@@ -1,7 +1,9 @@
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { scrollAnimation } from "@/animations";
+import { useEffect, useRef, useState } from "react";
+
 import { Quote } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+
+import { scrollAnimation } from "@/animations";
 
 export interface TestimonialItem {
   quote: string;

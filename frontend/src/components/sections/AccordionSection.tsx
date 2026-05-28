@@ -1,7 +1,8 @@
 import { motion } from "motion/react";
-import { AccordionGroup, type AccordionItem } from "@/components/ui/Accordion";
-import { Section } from "@/components/layout/Section";
+
 import { scrollAnimation } from "@/animations";
+import { Section } from "@/components/layout/Section";
+import { AccordionGroup, type AccordionItem } from "@/components/ui/Accordion";
 
 interface AccordionSectionProps {
   title: string;

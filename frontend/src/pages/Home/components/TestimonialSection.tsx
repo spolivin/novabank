@@ -1,7 +1,8 @@
 import { motion } from "motion/react";
-import { TestimonialCarousel, type TestimonialItem } from "@/components/ui/TestimonialCarousel";
-import { Section } from "@/components/layout/Section";
+
 import { scrollAnimation } from "@/animations";
+import { Section } from "@/components/layout/Section";
+import { TestimonialCarousel, type TestimonialItem } from "@/components/ui/TestimonialCarousel";
 
 interface TestimonialSectionProps {
   title: string;

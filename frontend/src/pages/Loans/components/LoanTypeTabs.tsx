@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { motion } from "motion/react";
+
 import { Check } from "lucide-react";
-import { LOAN_TYPES } from "../loans.data";
+import { motion } from "motion/react";
+
 import { Section } from "@/components/layout/Section";
+
+import { LOAN_TYPES } from "../loans.data";
 
 export function LoanTypeTabs() {
   const [activeId, setActiveId] = useState(LOAN_TYPES[0].id);

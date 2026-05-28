@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
-import { motion } from "motion/react";
-import { Button } from "@/components/ui/Button";
+
 import { Check } from "lucide-react";
+import { motion } from "motion/react";
+
+import { Button } from "@/components/ui/Button";
+
 import { Section } from "../layout/Section";
 
 interface BaseHeroProps {

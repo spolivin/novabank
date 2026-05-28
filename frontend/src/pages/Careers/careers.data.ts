@@ -1,5 +1,4 @@
 // careers.data.ts
-
 import { type RoleProps } from "@/components/ui/RoleCard";
 
 export interface Perk {

@@ -1,7 +1,9 @@
 import { motion } from "motion/react";
-import { Button } from "@/components/ui/Button";
-import { Section } from "../layout/Section";
+
 import { scrollAnimation } from "@/animations";
+import { Button } from "@/components/ui/Button";
+
+import { Section } from "../layout/Section";
 
 interface BannerProps {
   heading: string;

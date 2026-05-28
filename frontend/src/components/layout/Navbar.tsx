@@ -1,6 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+
 import { Link, NavLink } from "react-router-dom";
+
 import { AnimatePresence, motion } from "motion/react";
+
 import { NAV_LINKS, ROUTES } from "@/constants";
 import { useAuth } from "@/context/useAuth";
 

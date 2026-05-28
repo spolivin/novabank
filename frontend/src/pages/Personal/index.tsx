@@ -1,11 +1,11 @@
-import { usePageTitle } from "@/hooks/usePageTitle";
-import { PAGE_TITLES } from "@/constants";
+import { AccordionSection } from "@/components/sections/AccordionSection";
+import { CardGrid } from "@/components/sections/CardGrid";
 import { PageHero } from "@/components/sections/PageHero";
 import { ProductGrid } from "@/components/sections/ProductGrid";
-import { CardGrid } from "@/components/sections/CardGrid";
-import { AccordionSection } from "@/components/sections/AccordionSection";
 import { StepSection } from "@/components/sections/StepSection";
-import { products, features, steps, faqs } from "@/pages/Personal/personal.data";
+import { PAGE_TITLES } from "@/constants";
+import { usePageTitle } from "@/hooks/usePageTitle";
+import { faqs, features, products, steps } from "@/pages/Personal/personal.data";
 
 export default function Personal() {
   usePageTitle(PAGE_TITLES.PERSONAL);

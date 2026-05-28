@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+
 import type { TeamMember } from "@/pages/About/about.data";
 
 export const TeamCard = ({ name, role, bio, avatar }: TeamMember) => {

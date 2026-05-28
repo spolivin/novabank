@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { usePageTitle } from "@/hooks/usePageTitle";
-import { PAGE_TITLES } from "@/constants";
-import { PageHero } from "@/components/sections/PageHero";
+
 import { Banner } from "@/components/sections/Banner";
+import { PageHero } from "@/components/sections/PageHero";
+import { PAGE_TITLES } from "@/constants";
+import { usePageTitle } from "@/hooks/usePageTitle";
+
 import { LoanCalculator } from "./components/LoanCalculator";
 import { LoanConfiguratorCard } from "./components/LoanConfiguratorCard";
 import { LoanTypeTabs } from "./components/LoanTypeTabs";

@@ -1,8 +1,9 @@
-import { motion } from "motion/react";
 import { Check } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { Section } from "@/components/layout/Section";
+import { motion } from "motion/react";
+
 import { scrollAnimation } from "@/animations";
+import { Section } from "@/components/layout/Section";
+import { Button } from "@/components/ui/Button";
 
 const bullets = [
   "Instant push notifications on every transaction",
