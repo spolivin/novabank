@@ -8,6 +8,12 @@ build:
 lint:
 	cd frontend && npm run lint
 
+format:
+	cd frontend && npm run format
+
+format-check:
+	cd frontend && npm run format:check
+
 install:
 	cd frontend && npm install
 
