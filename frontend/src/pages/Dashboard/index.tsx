@@ -1,17 +1,21 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { Wallet, TrendingDown, PiggyBank, LogOut, Home, X } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { usePageTitle } from "@/hooks/usePageTitle";
-import { useAuth } from "@/context/useAuth";
-import { PAGE_TITLES, ROUTES } from "@/constants";
+
+import { Link, Navigate, useNavigate } from "react-router-dom";
+
+import { Home, LogOut, PiggyBank, TrendingDown, Wallet, X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+
 import { scrollAnimation } from "@/animations";
 import AIAssistant from "@/components/ui/AIAssistant";
 import { Button } from "@/components/ui/Button";
+import { PAGE_TITLES, ROUTES } from "@/constants";
+import { useAuth } from "@/context/useAuth";
+import { usePageTitle } from "@/hooks/usePageTitle";
+import { deleteAccount } from "@/lib/api";
+
+import { seedFromUserId } from "./Dashboard.data";
 import SummaryCard from "./components/SummaryCard";
 import TransactionTable from "./components/TransactionTable";
-import { seedFromUserId } from "./Dashboard.data";
-import { deleteAccount } from "@/lib/api";
 
 function formatCurrency(value: number) {
   return value.toLocaleString("en-US", {
@@ -44,7 +48,9 @@ export default function Dashboard() {
     }
   }
 
-  const { summary, transactions } = seedFromUserId(user!.id);
+  if (!user) return <Navigate to={ROUTES.LOGIN} replace />;
+
+  const { summary, transactions } = seedFromUserId(user.id);
   const displayName = user?.user_metadata?.full_name ?? user?.email ?? "there";
   const savingsPct = Math.round((summary.savingsProgress / summary.savingsGoal) * 100);
 
