@@ -1,12 +1,15 @@
 import { useState } from "react";
+
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { motion } from "motion/react";
+
 import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
+import { motion } from "motion/react";
 import { z } from "zod";
-import { usePageTitle } from "@/hooks/usePageTitle";
-import { useAuth } from "@/context/useAuth";
-import { supabase } from "@/lib/supabase";
+
 import { PAGE_TITLES, ROUTES } from "@/constants";
+import { useAuth } from "@/context/useAuth";
+import { usePageTitle } from "@/hooks/usePageTitle";
+import { supabase } from "@/lib/supabase";
 
 const loginSchema = z.object({
   email: z.string().email("Enter a valid email address."),
@@ -57,7 +60,7 @@ export default function Login() {
     });
 
     if (error) {
-      setSubmitError(error.message);
+      setSubmitError("Invalid email or password. Please try again.");
       setLoading(false);
     } else {
       navigate(ROUTES.DASHBOARD);
