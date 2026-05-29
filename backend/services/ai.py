@@ -79,6 +79,7 @@ async def get_reply(user_id: str, message: str) -> str:
         logger.error("Claude API error: %s", e)
         raise
 
+    logger.debug("Claude response received (%d chars)", len(reply))
     reply_ts = datetime.now(timezone.utc)
     await asyncio.to_thread(
         supabase_admin.table("conversations")
@@ -100,5 +101,4 @@ async def get_reply(user_id: str, message: str) -> str:
         )
         .execute
     )
-    logger.debug("Claude response received (%d chars)", len(reply))
     return reply
