@@ -19,8 +19,8 @@ async def history(user: dict = Security(verify_jwt)):
     try:
         turns = await ai_service.get_history(user_id)
         return turns
-    except Exception as e:
-        logger.error("History fetch failed for user %s: %s", user_id, e)
+    except Exception:
+        logger.exception("History fetch failed for user %s", user_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to fetch history",
@@ -36,8 +36,8 @@ async def chat(request: Request, body: ChatRequest, user: dict = Security(verify
         reply = await ai_service.get_reply(user_id, body.message)
         logger.info("Chat reply sent to user %s (%d chars)", user_id, len(reply))
         return ChatResponse(reply=reply)
-    except Exception as e:
-        logger.error("Chat failed for user %s: %s", user_id, e)
+    except Exception:
+        logger.exception("Chat failed for user %s", user_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get reply",
