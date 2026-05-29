@@ -2,10 +2,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+import json as _json
 import logging
 import os
+import time
+import uuid
+from contextvars import ContextVar
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -13,15 +17,63 @@ from slowapi.errors import RateLimitExceeded
 from dependencies.limiter import limiter
 from routers import ai, user
 
-logging.basicConfig(
-    level=getattr(logging, os.environ.get("LOG_LEVEL", "INFO").upper(), logging.INFO),
-    format="%(asctime)s %(levelname)-8s %(name)s: %(message)s",
-    datefmt="%d-%m-%Y %H:%M:%S",
-)
+_request_id: ContextVar[str] = ContextVar("request_id", default="-")
+
+
+class _RequestIdFilter(logging.Filter):
+    def filter(self, record):
+        record.request_id = _request_id.get()
+        return True
+
+
+class _JSONFormatter(logging.Formatter):
+    def format(self, record):
+        payload = {
+            "ts": self.formatTime(record, "%Y-%m-%dT%H:%M:%SZ"),
+            "level": record.levelname,
+            "logger": record.name,
+            "request_id": getattr(record, "request_id", "-"),
+            "msg": record.getMessage(),
+        }
+        if record.exc_info:
+            payload["exc"] = self.formatException(record.exc_info)
+        return _json.dumps(payload)
+
+
+_log_level = getattr(logging, os.environ.get("LOG_LEVEL", "INFO").upper(), logging.INFO)
+
+if os.environ.get("LOG_FORMAT") == "json":
+    _formatter: logging.Formatter = _JSONFormatter()
+else:
+    _formatter = logging.Formatter(
+        fmt="%(asctime)s %(levelname)-8s [%(request_id)s] %(name)s: %(message)s",
+        datefmt="%d-%m-%Y %H:%M:%S",
+    )
+
+_handler = logging.StreamHandler()
+_handler.setFormatter(_formatter)
+_handler.addFilter(_RequestIdFilter())
+
+logging.basicConfig(level=_log_level, handlers=[_handler], force=True)
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+
+@app.middleware("http")
+async def request_middleware(request: Request, call_next):
+    _request_id.set(str(uuid.uuid4())[:8])
+    start = time.perf_counter()
+    response = await call_next(request)
+    ms = (time.perf_counter() - start) * 1000
+    logger.info(
+        "%s %s %d %.0fms", request.method, request.url.path, response.status_code, ms
+    )
+    return response
+
 
 _origins = [
     o.strip()
