@@ -16,7 +16,14 @@ router = APIRouter()
 async def delete_account(user: dict = Depends(verify_jwt)):
     user_id = user["sub"]
     try:
+        await asyncio.to_thread(
+            supabase_admin.table("conversations")
+            .delete()
+            .eq("user_id", user_id)
+            .execute
+        )
         await asyncio.to_thread(supabase_admin.auth.admin.delete_user, user_id)
+        logger.info("Account deleted: user %s", user_id)
         return {"message": "Account deleted successfully"}
     except AuthApiError as e:
         if "not found" in str(e).lower():
@@ -28,8 +35,8 @@ async def delete_account(user: dict = Depends(verify_jwt)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to delete account",
         )
-    except Exception as e:
-        logger.error("Unexpected error deleting user %s: %s", user_id, e)
+    except Exception:
+        logger.exception("Unexpected error deleting user %s", user_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to delete account",

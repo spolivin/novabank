@@ -5,10 +5,32 @@ from supabase_auth.errors import AuthApiError
 
 async def test_delete_user_success(client):
     with patch("routers.user.supabase_admin") as mock_supa:
+        delete_chain = MagicMock()
+        delete_chain.delete.return_value.eq.return_value.execute = MagicMock(
+            return_value=None
+        )
+        mock_supa.table.return_value = delete_chain
         mock_supa.auth.admin.delete_user = MagicMock(return_value=None)
         response = await client.delete("/user")
     assert response.status_code == 200
     assert response.json() == {"message": "Account deleted successfully"}
+    mock_supa.table.assert_called_once_with("conversations")
+    delete_chain.delete.assert_called_once()
+
+
+async def test_delete_user_clears_conversations_before_auth(client):
+    call_order = []
+    with patch("routers.user.supabase_admin") as mock_supa:
+        delete_chain = MagicMock()
+        delete_chain.delete.return_value.eq.return_value.execute = MagicMock(
+            side_effect=lambda: call_order.append("conversations")
+        )
+        mock_supa.table.return_value = delete_chain
+        mock_supa.auth.admin.delete_user = MagicMock(
+            side_effect=lambda uid: call_order.append("auth")
+        )
+        await client.delete("/user")
+    assert call_order == ["conversations", "auth"]
 
 
 async def test_delete_user_not_found(client):
