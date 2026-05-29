@@ -14,7 +14,7 @@ import { supabase } from "@/lib/supabase";
 const signupSchema = z
   .object({
     fullName: z.string().min(2, "Full name must be at least 2 characters."),
-    email: z.string().email("Enter a valid email address."),
+    email: z.email("Enter a valid email address."),
     password: z.string().min(8, "Password must be at least 8 characters."),
     confirmPassword: z.string(),
   })
@@ -53,7 +53,7 @@ export default function Signup() {
     }
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setSubmitError("");
 
@@ -77,6 +77,7 @@ export default function Signup() {
       setSubmitError("Unable to create account. Please try again.");
       setLoading(false);
     } else if (data.session) {
+      setLoading(false);
       navigate(ROUTES.DASHBOARD);
     } else {
       setSubmitError("__confirm__");

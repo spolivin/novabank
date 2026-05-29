@@ -12,7 +12,7 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { supabase } from "@/lib/supabase";
 
 const loginSchema = z.object({
-  email: z.string().email("Enter a valid email address."),
+  email: z.email("Enter a valid email address."),
   password: z.string().min(1, "Password is required."),
 });
 
@@ -40,7 +40,7 @@ export default function Login() {
     }
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setSubmitError("");
 
@@ -63,6 +63,7 @@ export default function Login() {
       setSubmitError("Invalid email or password. Please try again.");
       setLoading(false);
     } else {
+      setLoading(false);
       navigate(ROUTES.DASHBOARD);
     }
   }
