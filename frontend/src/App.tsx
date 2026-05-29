@@ -1,22 +1,26 @@
+import { Suspense, lazy } from "react";
+
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import MainLayout from "@/components/layout/Layout";
+import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import ProtectedRoute from "@/components/ui/ProtectedRoute";
 import { ROUTES } from "@/constants";
 import { AuthProvider } from "@/context/AuthContext";
-import About from "@/pages/About";
-import Business from "@/pages/Business";
-import Cards from "@/pages/Cards";
-import Careers from "@/pages/Careers";
-import Contact from "@/pages/Contact";
-import Dashboard from "@/pages/Dashboard";
-import Home from "@/pages/Home";
-import Loans from "@/pages/Loans";
-import Login from "@/pages/Login";
-import NotFound from "@/pages/NotFound";
-import Personal from "@/pages/Personal";
-import Security from "@/pages/Security";
-import Signup from "@/pages/Signup";
+
+const About = lazy(() => import("@/pages/About"));
+const Business = lazy(() => import("@/pages/Business"));
+const Cards = lazy(() => import("@/pages/Cards"));
+const Careers = lazy(() => import("@/pages/Careers"));
+const Contact = lazy(() => import("@/pages/Contact"));
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const Home = lazy(() => import("@/pages/Home"));
+const Loans = lazy(() => import("@/pages/Loans"));
+const Login = lazy(() => import("@/pages/Login"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
+const Personal = lazy(() => import("@/pages/Personal"));
+const Security = lazy(() => import("@/pages/Security"));
+const Signup = lazy(() => import("@/pages/Signup"));
 
 const router = createBrowserRouter([
   {
@@ -49,7 +53,11 @@ const router = createBrowserRouter([
 export default function App() {
   return (
     <AuthProvider>
-      <RouterProvider router={router} />
+      <ErrorBoundary>
+        <Suspense fallback={null}>
+          <RouterProvider router={router} />
+        </Suspense>
+      </ErrorBoundary>
     </AuthProvider>
   );
 }
