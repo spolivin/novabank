@@ -40,3 +40,5 @@ backend/*.pyc
 backend/**/*.pyc
 backend/.venv
 backend/.pytest_cache
+backend/.coverage
+backend/htmlcov
