@@ -1,16 +1,26 @@
 # NovaBank
 
+![CI](https://github.com/spolivin/novabank/actions/workflows/ci.yml/badge.svg?branch=master)
+
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-latest-009688?logo=fastapi&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-auth%20%2B%20db-3FCF8E?logo=supabase&logoColor=white)
+
 A fake bank built as a portfolio project. Features a marketing site, authenticated dashboard, and an AI assistant powered by the Claude API.
 
 ## Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 19, TypeScript, Vite, Tailwind v4, Motion, React Router v7 |
-| Backend | FastAPI (Python), uv |
-| Auth + DB | Supabase |
-| AI | Claude Haiku via Anthropic API |
-| Deploy | Vercel (frontend), Railway (backend) |
+| Layer     | Technology                                                       |
+| --------- | ---------------------------------------------------------------- |
+| Frontend  | React 19, TypeScript, Vite, Tailwind v4, Motion, React Router v7 |
+| Backend   | FastAPI (Python), uv                                             |
+| Auth + DB | Supabase                                                         |
+| AI        | Claude Haiku via Anthropic API                                   |
+| Deploy    | Vercel (frontend), Railway (backend)                             |
 
 ## Features
 
