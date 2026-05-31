@@ -2,8 +2,10 @@ import { useState } from "react";
 
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { PAGE_TITLES, ROUTES } from "@/constants";
@@ -24,64 +26,37 @@ const signupSchema = z
   });
 
 type FormState = z.input<typeof signupSchema>;
-type FormErrors = Partial<Record<keyof FormState, string>>;
 
 export default function Signup() {
   usePageTitle(PAGE_TITLES.SIGNUP);
 
   const { isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState<FormState>({
-    fullName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [submitError, setSubmitError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<FormState>({ resolver: zodResolver(signupSchema) });
+
   if (!authLoading && isAuthenticated) return <Navigate to={ROUTES.DASHBOARD} replace />;
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-    if (errors[name as keyof FormErrors]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }));
-    }
-  }
-
-  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setSubmitError("");
-
-    const result = signupSchema.safeParse(form);
-    if (!result.success) {
-      const fieldErrors = result.error.flatten().fieldErrors;
-      setErrors(
-        Object.fromEntries(Object.entries(fieldErrors).map(([k, v]) => [k, v?.[0]])) as FormErrors
-      );
-      return;
-    }
-
-    setLoading(true);
-    const { data, error } = await supabase.auth.signUp({
-      email: form.email,
-      password: form.password,
-      options: { data: { full_name: form.fullName } },
+  async function onSubmit(data: FormState) {
+    const { data: result, error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: { data: { full_name: data.fullName } },
     });
-
     if (error) {
-      setSubmitError("Unable to create account. Please try again.");
-      setLoading(false);
-    } else if (data.session) {
-      setLoading(false);
+      setError("root", { message: "Unable to create account. Please try again." });
+    } else if (result.session) {
       navigate(ROUTES.DASHBOARD);
     } else {
-      setSubmitError("__confirm__");
-      setLoading(false);
+      setConfirmed(true);
     }
   }
 
@@ -109,40 +84,34 @@ export default function Signup() {
           </Link>
         </p>
 
-        <form onSubmit={handleSubmit} noValidate className="space-y-5">
-          <Field label="Full name" error={errors.fullName}>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+          <Field label="Full name" error={errors.fullName?.message}>
             <input
-              name="fullName"
               type="text"
               autoComplete="name"
-              value={form.fullName}
-              onChange={handleChange}
               placeholder="Jane Doe"
+              {...register("fullName")}
               className={inputClass(!!errors.fullName)}
             />
           </Field>
 
-          <Field label="Email" error={errors.email}>
+          <Field label="Email" error={errors.email?.message}>
             <input
-              name="email"
               type="email"
               autoComplete="email"
-              value={form.email}
-              onChange={handleChange}
               placeholder="jane@example.com"
+              {...register("email")}
               className={inputClass(!!errors.email)}
             />
           </Field>
 
-          <Field label="Password" error={errors.password}>
+          <Field label="Password" error={errors.password?.message}>
             <div className="relative">
               <input
-                name="password"
                 type={showPassword ? "text" : "password"}
                 autoComplete="new-password"
-                value={form.password}
-                onChange={handleChange}
                 placeholder="Min. 8 characters"
+                {...register("password")}
                 className={inputClass(!!errors.password) + " pr-11"}
               />
               <button
@@ -156,15 +125,13 @@ export default function Signup() {
             </div>
           </Field>
 
-          <Field label="Confirm password" error={errors.confirmPassword}>
+          <Field label="Confirm password" error={errors.confirmPassword?.message}>
             <div className="relative">
               <input
-                name="confirmPassword"
                 type={showConfirm ? "text" : "password"}
                 autoComplete="new-password"
-                value={form.confirmPassword}
-                onChange={handleChange}
                 placeholder="Repeat your password"
+                {...register("confirmPassword")}
                 className={inputClass(!!errors.confirmPassword) + " pr-11"}
               />
               <button
@@ -178,11 +145,10 @@ export default function Signup() {
             </div>
           </Field>
 
-          {submitError === "__confirm__" ? (
+          {confirmed && (
             <p className="text-brand-accent text-sm">Check your email to confirm your account.</p>
-          ) : submitError ? (
-            <p className="text-red-400 text-sm">{submitError}</p>
-          ) : null}
+          )}
+          {errors.root?.message && <p className="text-red-400 text-sm">{errors.root.message}</p>}
 
           <div className="text-sm text-brand-fg-muted text-center">
             This is a demo project. Do not use real personal information.
@@ -190,10 +156,10 @@ export default function Signup() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={isSubmitting}
             className="w-full h-12 rounded-xl bg-brand-accent text-brand-bg font-semibold text-sm flex items-center justify-center gap-2 hover:scale-[1.02] hover:shadow-[0_4px_16px_rgba(0,201,167,0.35)] active:scale-[0.98] transition-[transform,box-shadow] duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
           >
-            {loading ? (
+            {isSubmitting ? (
               <>
                 <Loader2 size={18} className="animate-spin" />
                 Creating account…

@@ -2,8 +2,10 @@ import { useState } from "react";
 
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { PAGE_TITLES, ROUTES } from "@/constants";
@@ -17,53 +19,31 @@ const loginSchema = z.object({
 });
 
 type FormState = z.input<typeof loginSchema>;
-type FormErrors = Partial<Record<keyof FormState, string>>;
 
 export default function Login() {
   usePageTitle(PAGE_TITLES.LOGIN);
 
   const { isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState<FormState>({ email: "", password: "" });
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [submitError, setSubmitError] = useState("");
-  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<FormState>({ resolver: zodResolver(loginSchema) });
 
   if (!authLoading && isAuthenticated) return <Navigate to={ROUTES.DASHBOARD} replace />;
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-    if (errors[name as keyof FormErrors]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }));
-    }
-  }
-
-  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setSubmitError("");
-
-    const result = loginSchema.safeParse(form);
-    if (!result.success) {
-      const fieldErrors = result.error.flatten().fieldErrors;
-      setErrors(
-        Object.fromEntries(Object.entries(fieldErrors).map(([k, v]) => [k, v?.[0]])) as FormErrors
-      );
-      return;
-    }
-
-    setLoading(true);
+  async function onSubmit(data: FormState) {
     const { error } = await supabase.auth.signInWithPassword({
-      email: form.email,
-      password: form.password,
+      email: data.email,
+      password: data.password,
     });
-
     if (error) {
-      setSubmitError("Invalid email or password. Please try again.");
-      setLoading(false);
+      setError("root", { message: "Invalid email or password. Please try again." });
     } else {
-      setLoading(false);
       navigate(ROUTES.DASHBOARD);
     }
   }
@@ -92,28 +72,24 @@ export default function Login() {
           </Link>
         </p>
 
-        <form onSubmit={handleSubmit} noValidate className="space-y-5">
-          <Field label="Email" error={errors.email}>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+          <Field label="Email" error={errors.email?.message}>
             <input
-              name="email"
               type="email"
               autoComplete="email"
-              value={form.email}
-              onChange={handleChange}
               placeholder="jane@example.com"
+              {...register("email")}
               className={inputClass(!!errors.email)}
             />
           </Field>
 
-          <Field label="Password" error={errors.password}>
+          <Field label="Password" error={errors.password?.message}>
             <div className="relative">
               <input
-                name="password"
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
-                value={form.password}
-                onChange={handleChange}
                 placeholder="Your password"
+                {...register("password")}
                 className={inputClass(!!errors.password) + " pr-11"}
               />
               <button
@@ -127,14 +103,14 @@ export default function Login() {
             </div>
           </Field>
 
-          {submitError && <p className="text-red-400 text-sm">{submitError}</p>}
+          {errors.root?.message && <p className="text-red-400 text-sm">{errors.root.message}</p>}
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={isSubmitting}
             className="w-full h-12 rounded-xl bg-brand-accent text-brand-bg font-semibold text-sm flex items-center justify-center gap-2 hover:scale-[1.02] hover:shadow-[0_4px_16px_rgba(0,201,167,0.35)] active:scale-[0.98] transition-[transform,box-shadow] duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
           >
-            {loading ? (
+            {isSubmitting ? (
               <>
                 <Loader2 size={18} className="animate-spin" />
                 Logging in…
