@@ -31,7 +31,11 @@ export default function AIAssistant() {
   }, [messages, open]);
 
   useEffect(() => {
-    if (!open || hasFetchedRef.current) return;
+    if (!open) {
+      hasFetchedRef.current = false;
+      return;
+    }
+    if (hasFetchedRef.current) return;
     hasFetchedRef.current = true;
     setHistoryLoading(true);
     fetchChatHistory()
@@ -50,9 +54,8 @@ export default function AIAssistant() {
 
     const userMsg: Message = { id: Date.now().toString(), role: "user", text };
     const thinkingId = userMsg.id + "t";
-    const nextMessages = [...messages, userMsg];
 
-    setMessages([...nextMessages, { id: thinkingId, role: "assistant", text: "..." }]);
+    setMessages((prev) => [...prev, userMsg, { id: thinkingId, role: "assistant", text: "..." }]);
     setInput("");
     setLoading(true);
 

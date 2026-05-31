@@ -31,6 +31,7 @@ export default function Dashboard() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [confirming, setConfirming] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
   const [showBanner, setShowBanner] = useState(true);
 
   async function handleSignOut() {
@@ -44,7 +45,8 @@ export default function Dashboard() {
       await signOut();
       navigate(ROUTES.HOME);
     } catch {
-      console.error("Failed to delete account");
+      setDeleteError("Failed to delete account. Please try again.");
+      setConfirming(false);
     }
   }
 
@@ -179,8 +181,15 @@ export default function Dashboard() {
           <p className="text-sm text-brand-fg-muted mb-4">
             Permanently delete your account and all associated data. This cannot be undone.
           </p>
+          {deleteError && <p className="text-red-400 text-sm mb-4">{deleteError}</p>}
           {!confirming ? (
-            <Button variant="danger" onClick={() => setConfirming(true)}>
+            <Button
+              variant="danger"
+              onClick={() => {
+                setConfirming(true);
+                setDeleteError("");
+              }}
+            >
               Delete account
             </Button>
           ) : (

@@ -5,15 +5,19 @@ export interface HistoryMessage {
   content: string;
 }
 
-export const fetchChatHistory = async (): Promise<HistoryMessage[]> => {
+async function getAccessToken(): Promise<string> {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-
   if (!session) throw new Error("No active session");
+  return session.access_token;
+}
+
+export const fetchChatHistory = async (): Promise<HistoryMessage[]> => {
+  const token = await getAccessToken();
 
   const response = await fetch(`${import.meta.env.VITE_API_URL}/ai/history`, {
-    headers: { Authorization: `Bearer ${session.access_token}` },
+    headers: { Authorization: `Bearer ${token}` },
   });
 
   if (!response.ok) throw new Error("Failed to fetch history");
@@ -21,17 +25,13 @@ export const fetchChatHistory = async (): Promise<HistoryMessage[]> => {
 };
 
 export const sendChatMessage = async (message: string): Promise<string> => {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (!session) throw new Error("No active session");
+  const token = await getAccessToken();
 
   const response = await fetch(`${import.meta.env.VITE_API_URL}/ai/chat`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${session.access_token}`,
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ message }),
   });
@@ -44,16 +44,12 @@ export const sendChatMessage = async (message: string): Promise<string> => {
 };
 
 export const deleteAccount = async () => {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (!session) throw new Error("No active session");
+  const token = await getAccessToken();
 
   const response = await fetch(`${import.meta.env.VITE_API_URL}/user`, {
     method: "DELETE",
     headers: {
-      Authorization: `Bearer ${session.access_token}`,
+      Authorization: `Bearer ${token}`,
     },
   });
 
