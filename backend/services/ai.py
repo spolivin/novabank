@@ -2,7 +2,6 @@ import asyncio
 import json
 import logging
 import os
-from datetime import datetime, timezone
 from pathlib import Path
 
 import anthropic
@@ -39,6 +38,8 @@ NovaBank product catalogue:\n{json.dumps(_products, indent=2)}
 
 _client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
+_HISTORY_LIMIT = 40
+
 
 def _call_claude(messages: list[dict]) -> str:
     response = _client.messages.create(
@@ -55,50 +56,43 @@ async def get_history(user_id: str) -> list[dict]:
         supabase_admin.table("conversations")
         .select("role, content")
         .eq("user_id", user_id)
-        .order("created_at")
+        .order("created_at", desc=True)
+        .limit(_HISTORY_LIMIT)
         .execute
     )
-    return result.data
+    return list(reversed(result.data))
 
 
 async def get_reply(user_id: str, message: str) -> str:
-    result = await asyncio.to_thread(
+    insert_result = await asyncio.to_thread(
         supabase_admin.table("conversations")
-        .select("role, content")
-        .eq("user_id", user_id)
-        .order("created_at")
+        .insert({"user_id": user_id, "role": "user", "content": message})
         .execute
     )
-    user_ts = datetime.now(timezone.utc)
-    history = [*result.data, {"role": "user", "content": message}]
+    user_row_id: str = insert_result.data[0]["id"]
+
+    history = await get_history(user_id)
 
     logger.debug("Sending request to Claude (turns=%d)", len(history))
     try:
         reply = await asyncio.to_thread(_call_claude, history)
     except Exception as e:
         logger.error("Claude API error: %s", e)
+        try:
+            await asyncio.to_thread(
+                supabase_admin.table("conversations")
+                .delete()
+                .eq("id", user_row_id)
+                .execute
+            )
+        except Exception as cleanup_err:
+            logger.error("Failed to clean up orphaned user message: %s", cleanup_err)
         raise
 
     logger.debug("Claude response received (%d chars)", len(reply))
-    reply_ts = datetime.now(timezone.utc)
     await asyncio.to_thread(
         supabase_admin.table("conversations")
-        .insert(
-            [
-                {
-                    "user_id": user_id,
-                    "role": "user",
-                    "content": message,
-                    "created_at": user_ts.isoformat(),
-                },
-                {
-                    "user_id": user_id,
-                    "role": "assistant",
-                    "content": reply,
-                    "created_at": reply_ts.isoformat(),
-                },
-            ]
-        )
+        .insert({"user_id": user_id, "role": "assistant", "content": reply})
         .execute
     )
     return reply
