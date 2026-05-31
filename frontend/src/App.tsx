@@ -54,7 +54,7 @@ export default function App() {
   return (
     <AuthProvider>
       <ErrorBoundary>
-        <Suspense fallback={null}>
+        <Suspense fallback={<div className="min-h-screen bg-brand-bg" />}>
           <RouterProvider router={router} />
         </Suspense>
       </ErrorBoundary>
