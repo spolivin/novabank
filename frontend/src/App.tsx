@@ -6,7 +6,7 @@ import MainLayout from "@/components/layout/Layout";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import ProtectedRoute from "@/components/ui/ProtectedRoute";
 import { ROUTES } from "@/constants";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider } from "@/context/AuthProvider";
 
 const About = lazy(() => import("@/pages/About"));
 const Business = lazy(() => import("@/pages/Business"));
