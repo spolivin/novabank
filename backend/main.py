@@ -63,6 +63,17 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
+_SECURITY_HEADERS = {
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+}
+
+_DOC_PATHS = {
+    u for u in (app.docs_url, app.redoc_url, app.openapi_url) if u is not None
+}
+
+
 @app.middleware("http")
 async def request_middleware(request: Request, call_next):
     _request_id.set(str(uuid.uuid4())[:8])
@@ -72,6 +83,9 @@ async def request_middleware(request: Request, call_next):
     logger.info(
         "%s %s %d %.0fms", request.method, request.url.path, response.status_code, ms
     )
+    response.headers.update(_SECURITY_HEADERS)
+    if request.url.path not in _DOC_PATHS:
+        response.headers["Content-Security-Policy"] = "default-src 'none'"
     return response
 
 
