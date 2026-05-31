@@ -14,6 +14,9 @@ format:
 format-check:
 	cd frontend && npm run format:check
 
+test:
+	cd frontend && npm run test
+
 install:
 	cd frontend && npm install
 
