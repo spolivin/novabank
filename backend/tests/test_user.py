@@ -5,32 +5,18 @@ from supabase_auth.errors import AuthApiError
 
 async def test_delete_user_success(client):
     with patch("routers.user.supabase_admin") as mock_supa:
-        delete_chain = MagicMock()
-        delete_chain.delete.return_value.eq.return_value.execute = MagicMock(
-            return_value=None
-        )
-        mock_supa.table.return_value = delete_chain
         mock_supa.auth.admin.delete_user = MagicMock(return_value=None)
         response = await client.delete("/user")
     assert response.status_code == 200
     assert response.json() == {"message": "Account deleted successfully"}
-    mock_supa.table.assert_called_once_with("conversations")
-    delete_chain.delete.assert_called_once()
+    mock_supa.auth.admin.delete_user.assert_called_once_with("user-123")
 
 
-async def test_delete_user_clears_conversations_before_auth(client):
-    call_order = []
+async def test_delete_user_does_not_touch_conversations_table(client):
     with patch("routers.user.supabase_admin") as mock_supa:
-        delete_chain = MagicMock()
-        delete_chain.delete.return_value.eq.return_value.execute = MagicMock(
-            side_effect=lambda: call_order.append("conversations")
-        )
-        mock_supa.table.return_value = delete_chain
-        mock_supa.auth.admin.delete_user = MagicMock(
-            side_effect=lambda uid: call_order.append("auth")
-        )
+        mock_supa.auth.admin.delete_user = MagicMock(return_value=None)
         await client.delete("/user")
-    assert call_order == ["conversations", "auth"]
+    mock_supa.table.assert_not_called()
 
 
 async def test_delete_user_not_found(client):
