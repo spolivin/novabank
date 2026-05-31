@@ -15,6 +15,11 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
     globals: true,
+    env: {
+      VITE_SUPABASE_URL: "https://placeholder.supabase.co",
+      VITE_SUPABASE_PUBLISHABLE_KEY: "placeholder-anon-key",
+      VITE_API_URL: "http://localhost:8000",
+    },
   },
   build: {
     rollupOptions: {

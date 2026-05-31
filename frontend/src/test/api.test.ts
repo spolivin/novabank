@@ -1,11 +1,10 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { deleteAccount, fetchChatHistory, sendChatMessage } from "@/lib/api";
 
 vi.mock("@/lib/supabase", () => ({
   supabase: {
     auth: {
-      getUser: vi.fn().mockResolvedValue({ data: { user: { id: "u1" } }, error: null }),
       getSession: vi.fn().mockResolvedValue({
         data: { session: { access_token: "test-token" } },
       }),
@@ -13,15 +12,11 @@ vi.mock("@/lib/supabase", () => ({
   },
 }));
 
-const API = "http://localhost:8000";
-
-beforeEach(() => {
-  vi.stubEnv("VITE_API_URL", API);
-});
+const API = import.meta.env.VITE_API_URL;
 
 afterEach(() => {
-  vi.unstubAllEnvs();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 describe("fetchChatHistory", () => {
