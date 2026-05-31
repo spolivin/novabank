@@ -16,12 +16,6 @@ router = APIRouter()
 async def delete_account(user: dict = Depends(verify_jwt)):
     user_id = user["sub"]
     try:
-        await asyncio.to_thread(
-            supabase_admin.table("conversations")
-            .delete()
-            .eq("user_id", user_id)
-            .execute
-        )
         await asyncio.to_thread(supabase_admin.auth.admin.delete_user, user_id)
         logger.info("Account deleted: user %s", user_id)
         return {"message": "Account deleted successfully"}
