@@ -4,15 +4,15 @@ on:
   push:
     branches: [master]
     paths:
-      - 'backend/**'
-      - 'frontend/**'
-      - '.github/workflows/ci.yml'
+      - "backend/**"
+      - "frontend/**"
+      - ".github/workflows/ci.yml"
   pull_request:
     branches: [master]
     paths:
-      - 'backend/**'
-      - 'frontend/**'
-      - '.github/workflows/ci.yml'
+      - "backend/**"
+      - "frontend/**"
+      - ".github/workflows/ci.yml"
 
 jobs:
   backend:
@@ -41,7 +41,7 @@ jobs:
         run: uv run pytest tests/ -v
 
   frontend:
-    name: Frontend (lint + build)
+    name: Frontend (lint + test + build)
     runs-on: ubuntu-latest
     defaults:
       run:
