@@ -13,7 +13,8 @@ router = APIRouter(prefix="/ai")
 
 
 @router.get("/history", response_model=list[HistoryMessage])
-async def history(user: dict = Security(verify_jwt)):
+@limiter.limit("10/minute")
+async def history(request: Request, user: dict = Security(verify_jwt)):
     user_id = user["sub"]
     logger.info("History request from user %s", user_id)
     try:
