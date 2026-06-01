@@ -48,7 +48,7 @@ def _call_claude(messages: list[dict]) -> str:
         system=SYSTEM_PROMPT,
         messages=messages,
     )
-    return next((block.text for block in response.content if block.type == "text"), "")
+    return response.content[0].text
 
 
 async def get_history(user_id: str) -> list[dict]:
