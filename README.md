@@ -8,7 +8,9 @@
 ![TailwindCSS](https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-latest-009688?logo=fastapi&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-auth%20%2B%20db-3FCF8E?logo=supabase&logoColor=white)
+![Claude](https://img.shields.io/badge/Claude-Haiku-D97757?logo=anthropic&logoColor=white)
 
 A fake bank built as a portfolio project. Features a marketing site, authenticated dashboard, and an AI assistant powered by the Claude API.
 
@@ -38,8 +40,11 @@ The AI assistant sends the full conversation history on each request (no server-
 ## Security decisions worth noting
 
 - **JWT verification via JWKS** — signature is verified against Supabase's public key, not just decoded
-- **Rate limiting** — 2 requests/minute per user on the `/ai/chat` endpoint
+- **Rate limiting** — 2 req/min per user on `/ai/chat`; 10 req/min on `/ai/history`
+- **HTTP body limit** — requests over 32 KB are rejected with 413 before reaching any route handler
 - **Payload limits** — chat requests capped at 50 messages, 4000 characters each (Pydantic)
+- **API docs disabled** — `/docs`, `/redoc`, and `/openapi.json` return 404 in all environments
+- **Security headers** — `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, and `Content-Security-Policy: default-src 'none'` applied to every response
 - **Service role key stays server-side** — only the anon (publishable) key is exposed in the browser bundle
 - **CORS** — allowed origins configured via environment variable, not hardcoded
 
@@ -71,8 +76,12 @@ The only value that requires a real secret locally is `ANTHROPIC_API_KEY`. Supab
 
 ```bash
 make lint           # ESLint
+make test           # Frontend unit tests (vitest)
 make db-reset       # Reset local database
 make api-test       # Run backend tests
 make api-format     # isort + black
 make api-build      # Build backend Docker image
+make api-docker     # Run containerised backend (uses backend/.env)
+make api-logs       # Tail Docker container logs
+make api-stop       # Stop the Docker container
 ```
