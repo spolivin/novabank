@@ -9,7 +9,7 @@ import time
 import uuid
 from contextvars import ContextVar
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -58,7 +58,7 @@ logging.basicConfig(level=_log_level, handlers=[_handler], force=True)
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -67,15 +67,19 @@ _SECURITY_HEADERS = {
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "DENY",
     "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Content-Security-Policy": "default-src 'none'",
 }
 
-_DOC_PATHS = {
-    u for u in (app.docs_url, app.redoc_url, app.openapi_url) if u is not None
-}
+_MAX_BODY = 32 * 1024  # 32 KB
 
 
 @app.middleware("http")
 async def request_middleware(request: Request, call_next):
+    if (
+        request.headers.get("content-length")
+        and int(request.headers["content-length"]) > _MAX_BODY
+    ):
+        return Response(status_code=413)
     _request_id.set(str(uuid.uuid4())[:8])
     start = time.perf_counter()
     response = await call_next(request)
@@ -84,8 +88,6 @@ async def request_middleware(request: Request, call_next):
         "%s %s %d %.0fms", request.method, request.url.path, response.status_code, ms
     )
     response.headers.update(_SECURITY_HEADERS)
-    if request.url.path not in _DOC_PATHS:
-        response.headers["Content-Security-Policy"] = "default-src 'none'"
     return response
 
 
