@@ -4,3 +4,9 @@ __pycache__
 *.pyc
 .venv
 .git
+.pytest_cache
+.coverage
+tests/
+conftest.py
+pyproject.toml
+uv.lock
