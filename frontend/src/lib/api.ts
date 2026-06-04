@@ -46,7 +46,7 @@ export const sendChatMessage = async (message: string): Promise<string> => {
 export const deleteAccount = async () => {
   const token = await getAccessToken();
 
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/user`, {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/users/me`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
