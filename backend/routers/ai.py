@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, Request, Security, status
 
 from dependencies.auth import verify_jwt
 from dependencies.limiter import limiter
-from models.chat import ChatRequest, ChatResponse, HistoryMessage
+from schemas.chat import ChatRequest, ChatResponse, HistoryMessage
 from services import ai as ai_service
 
 logger = logging.getLogger(__name__)

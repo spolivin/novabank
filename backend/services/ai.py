@@ -6,7 +6,7 @@ from pathlib import Path
 
 import anthropic
 
-from services.supabase import supabase_admin
+from dependencies.supabase import supabase_admin
 
 logger = logging.getLogger(__name__)
 
