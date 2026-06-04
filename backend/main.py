@@ -9,7 +9,7 @@ import time
 import uuid
 from contextvars import ContextVar
 
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -79,7 +79,7 @@ async def request_middleware(request: Request, call_next):
         request.headers.get("content-length")
         and int(request.headers["content-length"]) > _MAX_BODY
     ):
-        return Response(status_code=413)
+        return Response(status_code=status.HTTP_413_CONTENT_TOO_LARGE)
     _request_id.set(str(uuid.uuid4())[:8])
     start = time.perf_counter()
     response = await call_next(request)
