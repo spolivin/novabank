@@ -65,7 +65,7 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="text-xs md:text-sm fixed left-6 bottom-6 rounded-xl border border-white/10 bg-black/60 backdrop-blur-md text-brand-fg-muted px-4 py-3 pr-8 z-50"
+            className="text-xs md:text-sm fixed left-6 bottom-6 right-24 sm:right-auto rounded-xl border border-white/10 bg-black/60 backdrop-blur-md text-brand-fg-muted px-4 py-3 pr-8 z-50"
           >
             <p>This is a demo project. All data is simulated.</p>
             <button
