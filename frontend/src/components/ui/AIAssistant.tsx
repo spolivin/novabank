@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
-import { MessageCircle, Send, X } from "lucide-react";
+import { Bot, MessageCircle, Send, User, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
+import ReactMarkdown from "react-markdown";
 
 import { fetchChatHistory, sendChatMessage } from "@/lib/api";
 
@@ -25,6 +26,7 @@ export default function AIAssistant() {
   const [historyLoading, setHistoryLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const hasFetchedRef = useRef(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -57,6 +59,10 @@ export default function AIAssistant() {
 
     setMessages((prev) => [...prev, userMsg, { id: thinkingId, role: "assistant", text: "..." }]);
     setInput("");
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.overflowY = "hidden";
+    }
     setLoading(true);
 
     try {
@@ -81,113 +87,179 @@ export default function AIAssistant() {
     }
   }
 
-  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter") handleSend();
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  }
+
+  const MAX_TEXTAREA_HEIGHT = 144; // max-h-36
+
+  function handleInputChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    setInput(e.target.value);
+    const el = e.target;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+    el.style.overflowY = el.scrollHeight >= MAX_TEXTAREA_HEIGHT ? "auto" : "hidden";
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+    <>
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: 16, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.95 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="w-80 h-96 bg-brand-surface rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-white/10"
-          >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-brand-accent" />
-                <span className="text-sm font-semibold text-brand-fg">NovaBank Assistant</span>
-              </div>
-              <button
-                onClick={() => setOpen(false)}
-                className="text-brand-fg-muted hover:text-brand-fg transition-colors cursor-pointer"
-                aria-label="Close chat"
-              >
-                <X size={16} />
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-              {historyLoading ? (
-                <div className="flex justify-center items-center h-full">
-                  <span className="flex gap-1 items-center">
-                    {[0, 150, 300].map((delay) => (
-                      <span
-                        key={delay}
-                        className="w-1.5 h-1.5 rounded-full bg-brand-fg-muted animate-dot-pulse"
-                        style={{ animationDelay: `${delay}ms` }}
-                      />
-                    ))}
-                  </span>
-                </div>
-              ) : (
-                messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    <div
-                      className={`max-w-[75%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${
-                        msg.role === "user"
-                          ? "bg-brand-accent text-brand-bg font-medium rounded-br-sm"
-                          : "bg-brand-bg text-brand-fg rounded-bl-sm"
-                      }`}
-                    >
-                      {msg.text === "..." ? (
-                        <span className="flex gap-1 items-center h-4">
-                          {[0, 150, 300].map((delay) => (
-                            <span
-                              key={delay}
-                              className="w-1.5 h-1.5 rounded-full bg-brand-fg-muted animate-dot-pulse"
-                              style={{ animationDelay: `${delay}ms` }}
-                            />
-                          ))}
-                        </span>
-                      ) : (
-                        msg.text
-                      )}
-                    </div>
-                  </div>
-                ))
-              )}
-              {!historyLoading && <div ref={bottomRef} />}
-            </div>
-
-            <div className="px-4 py-3 border-t border-white/10 flex gap-2">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Ask something…"
-                disabled={loading}
-                className="flex-1 h-9 rounded-xl bg-brand-bg border border-white/10 focus:border-brand-accent px-3 text-sm text-brand-fg placeholder:text-brand-fg-muted outline-none transition-colors disabled:opacity-50"
-              />
-              <button
-                onClick={handleSend}
-                disabled={!input.trim() || loading}
-                className="w-9 h-9 rounded-xl bg-brand-accent text-brand-bg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform disabled:opacity-40 disabled:pointer-events-none"
-                aria-label="Send message"
-              >
-                <Send size={15} />
-              </button>
-            </div>
-          </motion.div>
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setOpen(false)}
+            className="hidden sm:block fixed inset-0 bg-black/50 z-40"
+          />
         )}
       </AnimatePresence>
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0, y: 16, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="fixed inset-0 sm:static w-full sm:w-96 h-full sm:h-[32rem] bg-brand-surface rounded-none sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden border-0 sm:border border-white/10"
+            >
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-brand-accent flex items-center justify-center shrink-0">
+                    <Bot size={14} className="text-brand-bg" />
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-sm font-semibold text-brand-fg leading-tight">
+                      NovaBank Assistant
+                    </span>
+                    <span className="flex items-center gap-1 text-xs text-brand-fg-muted">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                      Online
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setOpen(false)}
+                  className="p-1 text-brand-fg-muted hover:text-brand-fg transition-colors cursor-pointer"
+                  aria-label="Close chat"
+                >
+                  <X size={16} />
+                </button>
+              </div>
 
-      <motion.button
-        onClick={() => setOpen((v) => !v)}
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.95 }}
-        className="w-14 h-14 rounded-full bg-brand-accent text-brand-bg shadow-lg shadow-brand-accent/30 flex items-center justify-center"
-        aria-label="Open AI assistant"
-      >
-        <MessageCircle size={24} />
-      </motion.button>
-    </div>
+              <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+                {historyLoading ? (
+                  <div className="flex justify-center items-center h-full">
+                    <span className="flex gap-1 items-center">
+                      {[0, 150, 300].map((delay) => (
+                        <span
+                          key={delay}
+                          className="w-1.5 h-1.5 rounded-full bg-brand-fg-muted animate-dot-pulse"
+                          style={{ animationDelay: `${delay}ms` }}
+                        />
+                      ))}
+                    </span>
+                  </div>
+                ) : (
+                  messages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className={`flex items-end gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                    >
+                      {msg.role === "assistant" && (
+                        <div className="w-6 h-6 rounded-full bg-brand-accent flex items-center justify-center shrink-0">
+                          <Bot size={12} className="text-brand-bg" />
+                        </div>
+                      )}
+                      <div
+                        className={`max-w-[75%] px-4 py-2.5 rounded-3xl text-sm leading-relaxed ${
+                          msg.role === "user"
+                            ? "bg-brand-accent text-brand-bg font-medium rounded-br-sm whitespace-pre-wrap"
+                            : "bg-brand-bg text-brand-fg rounded-bl-sm"
+                        }`}
+                      >
+                        {msg.text === "..." ? (
+                          <span className="flex gap-1 items-center h-4">
+                            {[0, 150, 300].map((delay) => (
+                              <span
+                                key={delay}
+                                className="w-1.5 h-1.5 rounded-full bg-brand-fg-muted animate-dot-pulse"
+                                style={{ animationDelay: `${delay}ms` }}
+                              />
+                            ))}
+                          </span>
+                        ) : msg.role === "assistant" ? (
+                          <ReactMarkdown
+                            components={{
+                              p: ({ children }) => <p className="mb-1 last:mb-0">{children}</p>,
+                              strong: ({ children }) => (
+                                <strong className="font-semibold">{children}</strong>
+                              ),
+                              ul: ({ children }) => (
+                                <ul className="list-disc list-inside mb-1">{children}</ul>
+                              ),
+                              ol: ({ children }) => (
+                                <ol className="list-decimal list-inside mb-1">{children}</ol>
+                              ),
+                              li: ({ children }) => <li className="mb-0.5">{children}</li>,
+                            }}
+                          >
+                            {msg.text}
+                          </ReactMarkdown>
+                        ) : (
+                          msg.text
+                        )}
+                      </div>
+                      {msg.role === "user" && (
+                        <div className="w-6 h-6 rounded-full bg-brand-fg-muted/30 flex items-center justify-center shrink-0">
+                          <User size={12} className="text-brand-fg" />
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+                {!historyLoading && <div ref={bottomRef} />}
+              </div>
+
+              <div className="px-4 py-3 border-t border-white/10 flex gap-2">
+                <textarea
+                  ref={textareaRef}
+                  rows={1}
+                  value={input}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Ask something…"
+                  disabled={loading}
+                  className="flex-1 min-h-9 max-h-36 rounded-xl bg-brand-bg border border-white/10 focus:border-brand-accent px-3 py-2 text-sm text-brand-fg placeholder:text-brand-fg-muted outline-none transition-colors disabled:opacity-50 resize-none overflow-y-hidden leading-5"
+                />
+                <button
+                  onClick={handleSend}
+                  disabled={!input.trim() || loading}
+                  className="w-9 h-9 rounded-xl bg-brand-accent text-brand-bg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform disabled:opacity-40 disabled:pointer-events-none"
+                  aria-label="Send message"
+                >
+                  <Send size={15} />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <motion.button
+          onClick={() => setOpen((v) => !v)}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
+          className={`w-14 h-14 rounded-full bg-brand-accent text-brand-bg shadow-lg shadow-brand-accent/30 items-center justify-center ${open ? "hidden sm:flex" : "flex"}`}
+          aria-label="Open AI assistant"
+        >
+          <MessageCircle size={24} />
+        </motion.button>
+      </div>
+    </>
   );
 }
