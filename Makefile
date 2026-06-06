@@ -49,6 +49,9 @@ api-docker:
 api-logs:
 	docker logs -f novabank-backend
 
+api-grep:
+	docker logs novabank-backend 2>&1 | grep $(q)
+
 api-stop:
 	docker stop novabank-backend
 
