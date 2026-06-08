@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase";
 export interface HistoryMessage {
   role: "user" | "assistant";
   content: string;
+  created_at: string;
 }
 
 async function getAccessToken(): Promise<string> {

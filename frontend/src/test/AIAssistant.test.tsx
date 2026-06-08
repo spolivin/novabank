@@ -62,13 +62,35 @@ describe("AIAssistant", () => {
 
   it("loads and displays history on open", async () => {
     vi.mocked(fetchChatHistory).mockResolvedValue([
-      { role: "user", content: "hello" },
-      { role: "assistant", content: "hi there" },
+      { role: "user", content: "hello", created_at: "2026-06-06T10:00:00Z" },
+      { role: "assistant", content: "hi there", created_at: "2026-06-06T10:00:01Z" },
     ]);
     render(<AIAssistant />);
     await openAssistant();
     expect(await screen.findByText("hello")).toBeInTheDocument();
     expect(screen.getByText("hi there")).toBeInTheDocument();
+  });
+
+  it("shows timestamps under history messages with valid created_at", async () => {
+    vi.mocked(fetchChatHistory).mockResolvedValue([
+      { role: "user", content: "hello", created_at: "2026-06-06T10:00:00Z" },
+      { role: "assistant", content: "hi there", created_at: "2026-06-06T10:00:01Z" },
+    ]);
+    render(<AIAssistant />);
+    await openAssistant();
+    await screen.findByText("hello");
+    const timestamps = screen.getAllByText(/\d{1,2}:\d{2}:\d{2}/);
+    expect(timestamps.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("does not show timestamp when created_at is invalid", async () => {
+    vi.mocked(fetchChatHistory).mockResolvedValue([
+      { role: "user", content: "hello", created_at: "not-a-date" },
+    ]);
+    render(<AIAssistant />);
+    await openAssistant();
+    await screen.findByText("hello");
+    expect(screen.queryByText(/\d{1,2}:\d{2}:\d{2}/)).not.toBeInTheDocument();
   });
 
   it("sends a message and shows reply", async () => {

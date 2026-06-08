@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 
 import { Bot, MessageCircle, Send, User, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -10,13 +10,29 @@ interface Message {
   id: string;
   role: "user" | "assistant";
   text: string;
+  timestamp?: Date;
 }
 
 const INITIAL_MESSAGE: Message = {
   id: "0",
   role: "assistant",
   text: "Hi! I'm your NovaBank AI assistant. How can I help you today?",
+  timestamp: new Date(),
 };
+
+function validDate(value: unknown): Date | undefined {
+  const d = new Date(value as string);
+  return isNaN(d.getTime()) ? undefined : d;
+}
+
+function formatDayLabel(date: Date): string {
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  if (date.toDateString() === today.toDateString()) return "Today";
+  if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
+  return date.toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
+}
 
 export default function AIAssistant() {
   const [open, setOpen] = useState(false);
@@ -43,7 +59,14 @@ export default function AIAssistant() {
     fetchChatHistory()
       .then((history) => {
         if (history.length > 0) {
-          setMessages(history.map((m, i) => ({ id: String(i), role: m.role, text: m.content })));
+          setMessages(
+            history.map((m, i) => ({
+              id: String(i),
+              role: m.role,
+              text: m.content,
+              timestamp: validDate(m.created_at),
+            }))
+          );
         }
       })
       .catch(() => {})
@@ -54,7 +77,12 @@ export default function AIAssistant() {
     const text = input.trim();
     if (!text || loading) return;
 
-    const userMsg: Message = { id: Date.now().toString(), role: "user", text };
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      text,
+      timestamp: new Date(),
+    };
     const thinkingId = userMsg.id + "t";
 
     setMessages((prev) => [...prev, userMsg, { id: thinkingId, role: "assistant", text: "..." }]);
@@ -67,7 +95,12 @@ export default function AIAssistant() {
 
     try {
       const reply = await sendChatMessage(text);
-      setMessages((prev) => prev.map((m) => (m.id === thinkingId ? { ...m, text: reply } : m)));
+      const replyTimestamp = new Date();
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === thinkingId ? { ...m, text: reply, timestamp: replyTimestamp } : m
+        )
+      );
     } catch (err) {
       const isRateLimit = err instanceof Error && err.message === "rate_limit_exceeded";
       setMessages((prev) =>
@@ -166,62 +199,94 @@ export default function AIAssistant() {
                     </span>
                   </div>
                 ) : (
-                  messages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={`flex items-end gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                    >
-                      {msg.role === "assistant" && (
-                        <div className="w-6 h-6 rounded-full bg-brand-accent flex items-center justify-center shrink-0">
-                          <Bot size={12} className="text-brand-bg" />
-                        </div>
-                      )}
-                      <div
-                        className={`max-w-[75%] px-4 py-2.5 rounded-3xl text-sm leading-relaxed ${
-                          msg.role === "user"
-                            ? "bg-brand-accent text-brand-bg font-medium rounded-br-sm whitespace-pre-wrap"
-                            : "bg-brand-bg text-brand-fg rounded-bl-sm"
-                        }`}
-                      >
-                        {msg.text === "..." ? (
-                          <span className="flex gap-1 items-center h-4">
-                            {[0, 150, 300].map((delay) => (
-                              <span
-                                key={delay}
-                                className="w-1.5 h-1.5 rounded-full bg-brand-fg-muted animate-dot-pulse"
-                                style={{ animationDelay: `${delay}ms` }}
-                              />
-                            ))}
-                          </span>
-                        ) : msg.role === "assistant" ? (
-                          <ReactMarkdown
-                            components={{
-                              p: ({ children }) => <p className="mb-1 last:mb-0">{children}</p>,
-                              strong: ({ children }) => (
-                                <strong className="font-semibold">{children}</strong>
-                              ),
-                              ul: ({ children }) => (
-                                <ul className="list-disc list-inside mb-1">{children}</ul>
-                              ),
-                              ol: ({ children }) => (
-                                <ol className="list-decimal list-inside mb-1">{children}</ol>
-                              ),
-                              li: ({ children }) => <li className="mb-0.5">{children}</li>,
-                            }}
-                          >
-                            {msg.text}
-                          </ReactMarkdown>
-                        ) : (
-                          msg.text
+                  messages.map((msg, i) => {
+                    const prevMsg = messages[i - 1];
+                    const showSeparator =
+                      msg.timestamp &&
+                      (!prevMsg?.timestamp ||
+                        msg.timestamp.toDateString() !== prevMsg.timestamp.toDateString());
+                    return (
+                      <Fragment key={msg.id}>
+                        {showSeparator && (
+                          <div className="flex items-center gap-2 my-1">
+                            <hr className="flex-1 border-white/10" />
+                            <span className="text-[10px] text-brand-fg-muted/60 select-none">
+                              {formatDayLabel(msg.timestamp!)}
+                            </span>
+                            <hr className="flex-1 border-white/10" />
+                          </div>
                         )}
-                      </div>
-                      {msg.role === "user" && (
-                        <div className="w-6 h-6 rounded-full bg-brand-fg-muted/30 flex items-center justify-center shrink-0">
-                          <User size={12} className="text-brand-fg" />
+                        <div
+                          className={`flex items-end gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                        >
+                          {msg.role === "assistant" && (
+                            <div className="w-6 h-6 rounded-full bg-brand-accent flex items-center justify-center shrink-0">
+                              <Bot size={12} className="text-brand-bg" />
+                            </div>
+                          )}
+                          <div
+                            className={`flex flex-col max-w-[75%] ${msg.role === "user" ? "items-end" : "items-start"}`}
+                          >
+                            <div
+                              className={`px-4 py-2.5 rounded-3xl text-sm leading-relaxed ${
+                                msg.role === "user"
+                                  ? "bg-brand-accent text-brand-bg font-medium rounded-br-sm whitespace-pre-wrap"
+                                  : "bg-brand-bg text-brand-fg rounded-bl-sm"
+                              }`}
+                            >
+                              {msg.text === "..." ? (
+                                <span className="flex gap-1 items-center h-4">
+                                  {[0, 150, 300].map((delay) => (
+                                    <span
+                                      key={delay}
+                                      className="w-1.5 h-1.5 rounded-full bg-brand-fg-muted animate-dot-pulse"
+                                      style={{ animationDelay: `${delay}ms` }}
+                                    />
+                                  ))}
+                                </span>
+                              ) : msg.role === "assistant" ? (
+                                <ReactMarkdown
+                                  components={{
+                                    p: ({ children }) => (
+                                      <p className="mb-1 last:mb-0">{children}</p>
+                                    ),
+                                    strong: ({ children }) => (
+                                      <strong className="font-semibold">{children}</strong>
+                                    ),
+                                    ul: ({ children }) => (
+                                      <ul className="list-disc list-inside mb-1">{children}</ul>
+                                    ),
+                                    ol: ({ children }) => (
+                                      <ol className="list-decimal list-inside mb-1">{children}</ol>
+                                    ),
+                                    li: ({ children }) => <li className="mb-0.5">{children}</li>,
+                                  }}
+                                >
+                                  {msg.text}
+                                </ReactMarkdown>
+                              ) : (
+                                msg.text
+                              )}
+                            </div>
+                            {msg.timestamp && msg.text !== "..." && (
+                              <p className="text-[10px] text-brand-fg-muted/60 mt-0.5 px-1 select-none">
+                                {msg.timestamp.toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  second: "2-digit",
+                                })}
+                              </p>
+                            )}
+                          </div>
+                          {msg.role === "user" && (
+                            <div className="w-6 h-6 rounded-full bg-brand-fg-muted/30 flex items-center justify-center shrink-0">
+                              <User size={12} className="text-brand-fg" />
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  ))
+                      </Fragment>
+                    );
+                  })
                 )}
                 {!historyLoading && <div ref={bottomRef} />}
               </div>
