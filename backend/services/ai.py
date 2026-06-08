@@ -10,9 +10,9 @@ from dependencies.supabase import supabase_admin
 
 logger = logging.getLogger(__name__)
 
-_products = json.loads(
-    (Path(__file__).parent.parent / "data" / "products.json").read_text()
-)
+_data_dir = Path(__file__).parent.parent / "data"
+_products = json.loads((_data_dir / "products.json").read_text())
+_company = json.loads((_data_dir / "company.json").read_text())
 
 SYSTEM_PROMPT = f"""
 You are Nova, NovaBank's AI banking assistant.
@@ -25,6 +25,8 @@ and concise.
 
 ## What you know
 NovaBank product catalogue:\n{json.dumps(_products, indent=2)}
+
+NovaBank company information, security, platform features, fees, and FAQs:\n{json.dumps(_company, indent=2)}
 
 ## Rules
 - Only answer questions about NovaBank products and services
@@ -43,9 +45,15 @@ _HISTORY_LIMIT = 40
 
 def _call_claude(messages: list[dict]) -> str:
     response = _client.messages.create(
-        model="claude-haiku-4-5-20251001",
+        model="claude-sonnet-4-6",
         max_tokens=1024,
-        system=SYSTEM_PROMPT,
+        system=[
+            {
+                "type": "text",
+                "text": SYSTEM_PROMPT,
+                "cache_control": {"type": "ephemeral"},
+            }
+        ],
         messages=messages,
     )
     return response.content[0].text

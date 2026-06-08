@@ -1,0 +1,119 @@
+{
+  "company": {
+    "name": "NovaBank",
+    "founded": "2019",
+    "headquarters": "San Francisco, CA",
+    "description": "A digital-first bank built by fintech veterans to make banking work for people, not the other way around.",
+    "milestones": [
+      "2019 — Founded in San Francisco",
+      "2020 — Reached 1 million active customers, driven entirely by word of mouth",
+      "2022 — Launched business banking; 50,000+ small businesses onboarded within a year",
+      "2024 — Expanded to 40+ countries, processing $2B+ in cross-border payments per month"
+    ],
+    "global_reach": {
+      "countries": "40+",
+      "currencies_supported": "150+",
+      "atm_network": "55,000+ fee-free ATMs nationwide"
+    },
+    "partners": ["Visa", "Mastercard", "PayPal", "Stripe", "Goldman Sachs", "JPMorgan", "BlackRock", "Fidelity"]
+  },
+  "security_and_compliance": {
+    "deposit_insurance": "FDIC insured up to $250,000 per depositor",
+    "encryption": "AES-256 encryption for all data at rest and in transit",
+    "authentication": "Biometric authentication (Face ID, Touch ID, fingerprint) with multi-factor authentication",
+    "fraud_protection": "Real-time transaction monitoring and fraud detection",
+    "certifications": [
+      "PCI-DSS Level 1 — Payment card industry security standard",
+      "SOC 2 Type II — Independently audited security controls",
+      "GDPR Compliant — Full compliance with data privacy regulations",
+      "ISO 27001 — International information security standard"
+    ]
+  },
+  "platform_features": [
+    {
+      "name": "Instant Transfers",
+      "description": "Send and receive money in seconds, 24/7, with no delays or hidden fees."
+    },
+    {
+      "name": "Virtual Cards",
+      "description": "Generate one-time or recurring virtual cards for safe online shopping."
+    },
+    {
+      "name": "Saving Goals",
+      "description": "Set savings targets, track progress, and automate round-ups toward what matters most."
+    },
+    {
+      "name": "Smart Budgeting",
+      "description": "AI-powered spending insights that automatically categorize transactions."
+    },
+    {
+      "name": "Global Access",
+      "description": "Spend in 150+ currencies with no foreign transaction fees anywhere on Earth."
+    },
+    {
+      "name": "Instant Card Freeze",
+      "description": "Instantly freeze or unfreeze your card from the app to prevent unauthorized transactions."
+    },
+    {
+      "name": "Spending Limits",
+      "description": "Set daily, weekly, or monthly spending limits on your card."
+    },
+    {
+      "name": "Apple Pay & Google Pay",
+      "description": "Pay with your phone using Apple Pay or Google Pay wherever mobile payments are accepted."
+    }
+  ],
+  "account_opening": {
+    "time_to_open": "Under 2 minutes",
+    "requirements": ["Email address", "Personal information (name, address, date of birth)", "Social Security number for identity verification"],
+    "debit_card_delivery": "5–7 business days after approval",
+    "upgrade_downgrade": "Available at any time with no lock-in periods, via dashboard or customer support"
+  },
+  "fees": {
+    "monthly_maintenance": "None",
+    "overdraft": "None",
+    "atm_in_network": "Free at 55,000+ locations",
+    "atm_out_of_network": "$2 fee (reimbursed up to 4 times/month for Premium account holders)"
+  },
+  "cards_additional": {
+    "annual_pricing": {
+      "Classic": "$80/year",
+      "Gold": "$180/year",
+      "Platinum": "$350/year"
+    }
+  },
+  "loans_additional": {
+    "available_terms_months": [12, 24, 36, 48, 60],
+    "amount_range": "$1,000 – $500,000"
+  },
+  "support": {
+    "email": "support@novabank.com",
+    "availability": "24/7"
+  },
+  "faqs": [
+    {
+      "question": "Are there any fees I should know about?",
+      "answer": "No hidden fees. NovaBank offers transparent pricing with no monthly maintenance fees, no overdraft fees, and free ATM access at 55,000+ locations. Out-of-network ATM withdrawals cost $2, but Premium account holders are reimbursed up to 4 times per month."
+    },
+    {
+      "question": "How do I open an account?",
+      "answer": "Click 'Open Account' on the website, fill in your personal information (name, address, date of birth, Social Security number), and submit. Once approved, your debit card arrives in 5–7 business days."
+    },
+    {
+      "question": "Can I upgrade or downgrade my account?",
+      "answer": "Yes, at any time through your dashboard or by contacting support. There are no lock-in periods."
+    },
+    {
+      "question": "Is my money safe?",
+      "answer": "Yes. Deposits are FDIC insured up to $250,000. All data is protected with AES-256 encryption and accounts support biometric and multi-factor authentication."
+    },
+    {
+      "question": "Does NovaBank operate internationally?",
+      "answer": "Yes. NovaBank is available in 40+ countries and supports spending in 150+ currencies with no foreign transaction fees."
+    },
+    {
+      "question": "How do I contact customer support?",
+      "answer": "Email support@novabank.com — the team is available 24/7."
+    }
+  ]
+}
