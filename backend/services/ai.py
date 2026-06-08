@@ -62,7 +62,7 @@ def _call_claude(messages: list[dict]) -> str:
 async def get_history(user_id: str) -> list[dict]:
     result = await asyncio.to_thread(
         supabase_admin.table("conversations")
-        .select("role, content")
+        .select("role, content, created_at")
         .eq("user_id", user_id)
         .order("created_at", desc=True)
         .limit(_HISTORY_LIMIT)

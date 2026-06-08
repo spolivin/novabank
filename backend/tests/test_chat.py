@@ -19,7 +19,7 @@ async def test_chat_invalid_body_empty_message(client):
 
 
 async def test_chat_invalid_body_message_too_long(client):
-    response = await client.post("/ai/chat", json={"message": "x" * 4001})
+    response = await client.post("/ai/chat", json={"message": "x" * 501})
     assert response.status_code == 422
 
 
