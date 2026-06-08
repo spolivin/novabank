@@ -81,9 +81,10 @@ async def get_reply(user_id: str, message: str) -> str:
 
     history = await get_history(user_id)
 
-    logger.debug("Sending request to Claude (turns=%d)", len(history))
+    claude_messages = [{"role": m["role"], "content": m["content"]} for m in history]
+    logger.debug("Sending request to Claude (turns=%d)", len(claude_messages))
     try:
-        reply = await asyncio.to_thread(_call_claude, history)
+        reply = await asyncio.to_thread(_call_claude, claude_messages)
     except Exception as e:
         logger.error("Claude API error: %s", e)
         try:
