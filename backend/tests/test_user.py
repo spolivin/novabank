@@ -1,6 +1,16 @@
 from unittest.mock import MagicMock, patch
 
+import pytest
 from supabase_auth.errors import AuthApiError
+
+from dependencies.limiter import limiter
+
+
+@pytest.fixture(autouse=True)
+def reset_limiter():
+    limiter.reset()
+    yield
+    limiter.reset()
 
 
 async def test_delete_user_success(client):
@@ -52,3 +62,12 @@ async def test_delete_user_unexpected_error(client):
 async def test_delete_user_missing_auth(unauthed_client):
     response = await unauthed_client.delete("/users/me")
     assert response.status_code == 401
+
+
+async def test_delete_user_rate_limit_blocks_after_limit(client):
+    with patch("routers.user.supabase_admin") as mock_supa:
+        mock_supa.auth.admin.delete_user = MagicMock(return_value=None)
+        for _ in range(3):
+            await client.delete("/users/me")
+        response = await client.delete("/users/me")
+    assert response.status_code == 429

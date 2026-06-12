@@ -1,10 +1,11 @@
 import asyncio
 import logging
 
-from fastapi import APIRouter, HTTPException, Security, status
+from fastapi import APIRouter, HTTPException, Request, Security, status
 from supabase_auth.errors import AuthApiError
 
 from dependencies.auth import verify_jwt
+from dependencies.limiter import limiter
 from dependencies.supabase import supabase_admin
 
 logger = logging.getLogger(__name__)
@@ -13,7 +14,8 @@ router = APIRouter(prefix="/users")
 
 
 @router.delete("/me")
-async def delete_account(user: dict = Security(verify_jwt)):
+@limiter.limit("3/hour")
+async def delete_account(request: Request, user: dict = Security(verify_jwt)):
     user_id = user["sub"]
     try:
         await asyncio.to_thread(supabase_admin.auth.admin.delete_user, user_id)
