@@ -33,3 +33,48 @@ async def test_verify_jwt_invalid_token_returns_401(unauthed_client):
         )
     assert response.status_code == 401
     assert response.json()["detail"] == "Invalid token"
+
+
+async def test_verify_jwt_expired_token_returns_401(unauthed_client):
+    with patch(
+        "dependencies.auth.verify_token",
+        side_effect=jwt.ExpiredSignatureError("token expired"),
+    ):
+        response = await unauthed_client.post(
+            "/ai/chat",
+            json={"message": "hi"},
+            headers={"Authorization": "Bearer some.fake.token"},
+        )
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid token"
+
+
+async def test_verify_jwt_wrong_audience_returns_401(unauthed_client):
+    with patch(
+        "dependencies.auth.verify_token",
+        side_effect=jwt.InvalidAudienceError("wrong audience"),
+    ):
+        response = await unauthed_client.post(
+            "/ai/chat",
+            json={"message": "hi"},
+            headers={"Authorization": "Bearer some.fake.token"},
+        )
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid token"
+
+
+async def test_verify_jwt_jwks_unavailable_returns_401(unauthed_client):
+    """PyJWT wraps JWKS fetch failures in PyJWKClientConnectionError (a PyJWTError subclass)."""
+    from jwt import PyJWKClientConnectionError
+
+    with patch(
+        "dependencies.auth.verify_token",
+        side_effect=PyJWKClientConnectionError("JWKS endpoint unreachable"),
+    ):
+        response = await unauthed_client.post(
+            "/ai/chat",
+            json={"message": "hi"},
+            headers={"Authorization": "Bearer some.fake.token"},
+        )
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid token"

@@ -43,3 +43,8 @@ def test_invalid_jwt_falls_back_to_host():
 def test_no_auth_header_returns_host():
     request = _make_request(client_host="9.9.9.9")
     assert _user_id_from_request(request) == "9.9.9.9"
+
+
+def test_non_bearer_scheme_falls_back_to_host():
+    request = _make_request(auth_header="Token sometoken", client_host="2.2.2.2")
+    assert _user_id_from_request(request) == "2.2.2.2"
