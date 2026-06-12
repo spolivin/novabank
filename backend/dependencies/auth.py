@@ -1,16 +1,17 @@
 import asyncio
 import logging
-import os
 
 import jwt
 from fastapi import HTTPException, Security, status
-
-logger = logging.getLogger(__name__)
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt import PyJWKClient
 
+from config import settings
+
+logger = logging.getLogger(__name__)
+
 _jwks_client = PyJWKClient(
-    os.environ["SUPABASE_URL"] + "/auth/v1/.well-known/jwks.json",
+    str(settings.supabase_url).rstrip("/") + "/auth/v1/.well-known/jwks.json",
     cache_keys=True,
     lifespan=3600,
 )

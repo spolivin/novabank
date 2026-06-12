@@ -1,10 +1,5 @@
-from dotenv import load_dotenv
-
-load_dotenv()
-
 import json as _json
 import logging
-import os
 import time
 import uuid
 from contextvars import ContextVar
@@ -14,8 +9,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
+from config import settings
 from dependencies.limiter import limiter
-from routers import ai, user
+from routers import ai, health, user
 
 _request_id: ContextVar[str] = ContextVar("request_id", default="-")
 
@@ -40,9 +36,9 @@ class _JSONFormatter(logging.Formatter):
         return _json.dumps(payload)
 
 
-_log_level = getattr(logging, os.environ.get("LOG_LEVEL", "INFO").upper(), logging.INFO)
+_log_level = getattr(logging, settings.log_level.upper(), logging.INFO)
 
-if os.environ.get("LOG_FORMAT") == "json":
+if settings.log_format == "json":
     _formatter: logging.Formatter = _JSONFormatter()
 else:
     _formatter = logging.Formatter(
@@ -91,10 +87,7 @@ async def request_middleware(request: Request, call_next):
     return response
 
 
-_origins = [
-    o.strip()
-    for o in os.environ.get("ALLOWED_ORIGINS", "http://127.0.0.1:5173").split(",")
-]
+_origins = [o.strip() for o in settings.allowed_origins.split(",")]
 
 app.add_middleware(
     CORSMiddleware,
@@ -105,8 +98,4 @@ app.add_middleware(
 
 app.include_router(ai.router)
 app.include_router(user.router)
-
-
-@app.get("/health")
-def health():
-    return {"status": "ok"}
+app.include_router(health.router)
