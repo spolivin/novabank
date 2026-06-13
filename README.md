@@ -1,18 +1,19 @@
 # NovaBank
 
-![CI](https://github.com/spolivin/novabank/actions/workflows/ci.yml/badge.svg?branch=master)
+![CI (backend)](https://github.com/spolivin/novabank/actions/workflows/ci-backend.yml/badge.svg?branch=master)
+![CI (frontend)](https://github.com/spolivin/novabank/actions/workflows/ci-frontend.yml/badge.svg?branch=master)
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-latest-009688?logo=fastapi&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.136.1-009688?logo=fastapi&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-auth%20%2B%20db-3FCF8E?logo=supabase&logoColor=white)
-![Claude](https://img.shields.io/badge/Claude-Haiku-D97757?logo=anthropic&logoColor=white)
+![Claude](https://img.shields.io/badge/Claude-Sonnet-D97757?logo=anthropic&logoColor=white)
 
-A fake bank built as a portfolio project. Features a marketing site, authenticated dashboard, and an AI assistant powered by the Claude API.
+A full-stack banking demo built as a portfolio project. Features a marketing site, authenticated dashboard, and an AI assistant powered by the Claude API.
 
 ## Stack
 
@@ -21,7 +22,7 @@ A fake bank built as a portfolio project. Features a marketing site, authenticat
 | Frontend  | React 19, TypeScript, Vite, Tailwind v4, Motion, React Router v7 |
 | Backend   | FastAPI (Python), uv                                             |
 | Auth + DB | Supabase                                                         |
-| AI        | Claude Haiku via Anthropic API                                   |
+| AI        | Claude Sonnet via Anthropic API                                  |
 | Deploy    | Vercel (frontend), Railway (backend)                             |
 
 ## Features
@@ -40,9 +41,9 @@ The AI assistant sends the full conversation history on each request (no server-
 ## Security decisions worth noting
 
 - **JWT verification via JWKS** — signature is verified against Supabase's public key, not just decoded
-- **Rate limiting** — 2 req/min per user on `/ai/chat`; 10 req/min on `/ai/history`
+- **Rate limiting** — 2 req/min per user on `/ai/chat`; 10 req/min on `/ai/history`; 3 req/hour on `DELETE /users/me`
 - **HTTP body limit** — requests over 32 KB are rejected with 413 before reaching any route handler
-- **Payload limits** — chat requests capped at 50 messages, 4000 characters each (Pydantic)
+- **Payload limits** — input capped at 500 characters per message (Pydantic); history limited to 40 messages per request
 - **API docs disabled** — `/docs`, `/redoc`, and `/openapi.json` return 404 in all environments
 - **Security headers** — `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, and `Content-Security-Policy: default-src 'none'` applied to every response
 - **Service role key stays server-side** — only the anon (publishable) key is exposed in the browser bundle
@@ -83,5 +84,6 @@ make api-format     # isort + black
 make api-build      # Build backend Docker image
 make api-docker     # Run containerised backend (uses backend/.env)
 make api-logs       # Tail Docker container logs
+make api-grep q=error  # Filter container logs by keyword
 make api-stop       # Stop the Docker container
 ```
