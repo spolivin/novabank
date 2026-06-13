@@ -1,45 +1,18 @@
-name: CI
+name: CI (frontend)
 
 on:
   push:
     branches: [master]
     paths:
-      - "backend/**"
       - "frontend/**"
-      - ".github/workflows/ci.yml"
+      - ".github/workflows/ci-frontend.yml"
   pull_request:
     branches: [master]
     paths:
-      - "backend/**"
       - "frontend/**"
-      - ".github/workflows/ci.yml"
+      - ".github/workflows/ci-frontend.yml"
 
 jobs:
-  backend:
-    name: Backend (test)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-          cache-dependency-glob: backend/uv.lock
-
-      - name: Set up Python
-        run: uv python install 3.12
-
-      - name: Install dependencies
-        run: uv sync --group dev
-
-      - name: Test
-        run: uv run pytest tests/ -v
-
   frontend:
     name: Frontend (lint + test + build)
     runs-on: ubuntu-latest
