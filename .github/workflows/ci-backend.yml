@@ -1,31 +1,23 @@
 name: CI (backend)
 
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/novabank-backend
+
 on:
   push:
     branches: [master]
     paths:
       - "backend/**"
-      - ".github/workflows/ci-backend.yml"
   pull_request:
     branches: [master]
-    paths:
-      - "backend/**"
-      - ".github/workflows/ci-backend.yml"
-
-env:
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/novabank-backend
 
 jobs:
-  backend:
-    name: Backend (test + docker build)
+  test:
+    name: Backend / Test
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     defaults:
       run:
         working-directory: backend
-
     steps:
       - uses: actions/checkout@v4
 
@@ -44,8 +36,18 @@ jobs:
       - name: Test
         run: uv run pytest tests/ -v
 
+  docker:
+    name: Backend / Docker
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
       - name: Log in to GHCR
-        if: github.event_name == 'push'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -53,7 +55,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract Docker metadata
-        if: github.event_name == 'push'
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -63,17 +64,9 @@ jobs:
             type=sha,prefix=sha-,format=short
 
       - name: Build and push Docker image
-        if: github.event_name == 'push'
         uses: docker/build-push-action@v6
         with:
           context: ./backend
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-      - name: Build Docker image (PR only)
-        if: github.event_name == 'pull_request'
-        uses: docker/build-push-action@v6
-        with:
-          context: ./backend
-          push: false

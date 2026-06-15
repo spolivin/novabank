@@ -5,16 +5,12 @@ on:
     branches: [master]
     paths:
       - "frontend/**"
-      - ".github/workflows/ci-frontend.yml"
   pull_request:
     branches: [master]
-    paths:
-      - "frontend/**"
-      - ".github/workflows/ci-frontend.yml"
 
 jobs:
   frontend:
-    name: Frontend (lint + test + build)
+    name: Frontend / Lint, test & build
     runs-on: ubuntu-latest
     defaults:
       run:
