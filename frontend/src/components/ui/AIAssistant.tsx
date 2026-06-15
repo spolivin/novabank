@@ -3,6 +3,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { Bot, MessageCircle, Send, User, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 import { fetchChatHistory, sendChatMessage } from "@/lib/api";
 
@@ -246,6 +247,7 @@ export default function AIAssistant() {
                                 </span>
                               ) : msg.role === "assistant" ? (
                                 <ReactMarkdown
+                                  remarkPlugins={[remarkGfm]}
                                   components={{
                                     p: ({ children }) => (
                                       <p className="mb-1 last:mb-0">{children}</p>
@@ -260,6 +262,23 @@ export default function AIAssistant() {
                                       <ol className="list-decimal list-inside mb-1">{children}</ol>
                                     ),
                                     li: ({ children }) => <li className="mb-0.5">{children}</li>,
+                                    table: ({ children }) => (
+                                      <div className="overflow-x-auto my-1">
+                                        <table className="w-full text-xs border-collapse">
+                                          {children}
+                                        </table>
+                                      </div>
+                                    ),
+                                    th: ({ children }) => (
+                                      <th className="border border-white/20 bg-white/5 px-2 py-1 text-left font-semibold">
+                                        {children}
+                                      </th>
+                                    ),
+                                    td: ({ children }) => (
+                                      <td className="border border-white/20 px-2 py-1">
+                                        {children}
+                                      </td>
+                                    ),
                                   }}
                                 >
                                   {msg.text}
