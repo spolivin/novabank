@@ -20,6 +20,9 @@ test:
 install:
 	cd frontend && npm install
 
+audit:
+	cd frontend && npm audit
+
 # Supabase 
 db-start:
 	cd frontend && npx supabase start
