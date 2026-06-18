@@ -5,8 +5,14 @@ on:
     branches: [master]
     paths:
       - "frontend/**"
+      - "!frontend/public/**"
+      - "!frontend/vercel.json"
+      - "!frontend/.env.example"
+      - "!frontend/.prettierrc"
+      - "!frontend/.prettierignore"
   pull_request:
     branches: [master]
+  workflow_dispatch:
 
 jobs:
   frontend:
