@@ -19,14 +19,13 @@ def health():
 async def health_db():
     try:
         await asyncio.to_thread(
-            lambda: supabase_admin.table("conversations")
-            .select("id")
-            .limit(1)
-            .execute()
+            lambda: (
+                supabase_admin.table("conversations").select("id").limit(1).execute()
+            )
         )
         return {"status": "ok"}
-    except Exception:
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Database unavailable",
-        )
+        ) from e

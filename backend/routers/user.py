@@ -25,9 +25,9 @@ async def delete_account(request: Request, user: dict = Security(verify_jwt)):
         if isinstance(e, AuthApiError) and "not found" in str(e).lower():
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-            )
+            ) from e
         logger.exception("Failed to delete user %s", user_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to delete account",
-        )
+        ) from e
