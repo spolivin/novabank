@@ -16,7 +16,7 @@ on:
 
 jobs:
   frontend:
-    name: Frontend / Lint, test & build
+    name: Frontend / CI
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -37,6 +37,9 @@ jobs:
 
       - name: Lint (ESLint)
         run: npm run lint
+
+      - name: Typecheck (tsc)
+        run: npm run typecheck
 
       - name: Test (Vitest)
         run: npm run test

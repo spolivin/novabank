@@ -17,7 +17,7 @@ on:
 
 jobs:
   test:
-    name: Backend / Test
+    name: Backend / CI
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -36,6 +36,9 @@ jobs:
 
       - name: Install dependencies
         run: uv sync --group dev
+
+      - name: Lint
+        run: uv run ruff check .
 
       - name: Test
         run: uv run pytest tests/ -v
