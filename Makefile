@@ -8,6 +8,9 @@ build:
 lint:
 	cd frontend && npm run lint
 
+typecheck:
+	cd frontend && npm run typecheck
+
 format:
 	cd frontend && npm run format
 
@@ -62,4 +65,13 @@ api-test:
 	cd backend && uv run pytest tests/ -v
 
 api-format:
-	cd backend && uv run isort . && uv run black .
+	cd backend && uv run ruff format .
+
+api-format-check:
+	cd backend && uv run ruff format --check .
+
+api-lint:
+	cd backend && uv run ruff check --fix .
+
+api-lint-check:
+	cd backend && uv run ruff check .
