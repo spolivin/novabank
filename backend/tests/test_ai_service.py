@@ -9,9 +9,7 @@ _FAKE_ROW_ID = "aaaaaaaa-0000-0000-0000-000000000000"
 
 def _make_supa_mock(history_data=None):
     mock = MagicMock()
-    select_chain = (
-        mock.table.return_value.select.return_value.eq.return_value.order.return_value.limit.return_value
-    )
+    select_chain = mock.table.return_value.select.return_value.eq.return_value.order.return_value.limit.return_value
     select_chain.execute.return_value.data = history_data or []
     mock.table.return_value.insert.return_value.execute.return_value.data = [
         {"id": _FAKE_ROW_ID}
@@ -25,8 +23,9 @@ def _make_claude_mock(reply="Hello from Nova"):
 
 async def test_get_reply_returns_reply():
     mock_supa = _make_supa_mock()
-    with patch("services.ai.supabase_admin", mock_supa), patch(
-        "services.ai._call_claude", _make_claude_mock()
+    with (
+        patch("services.ai.supabase_admin", mock_supa),
+        patch("services.ai._call_claude", _make_claude_mock()),
     ):
         result = await get_reply("user-123", "hi")
     assert result == "Hello from Nova"
@@ -41,8 +40,9 @@ async def test_get_reply_prepends_history():
     # After the user message is inserted, DB returns all rows newest-first (DESC)
     mock_supa = _make_supa_mock(history_data=list(reversed(prior + [new_msg])))
     mock_claude = _make_claude_mock("reply")
-    with patch("services.ai.supabase_admin", mock_supa), patch(
-        "services.ai._call_claude", mock_claude
+    with (
+        patch("services.ai.supabase_admin", mock_supa),
+        patch("services.ai._call_claude", mock_claude),
     ):
         await get_reply("user-123", "new message")
     called_messages = mock_claude.call_args[0][0]
@@ -51,8 +51,9 @@ async def test_get_reply_prepends_history():
 
 async def test_get_reply_saves_to_supabase():
     mock_supa = _make_supa_mock()
-    with patch("services.ai.supabase_admin", mock_supa), patch(
-        "services.ai._call_claude", _make_claude_mock("reply")
+    with (
+        patch("services.ai.supabase_admin", mock_supa),
+        patch("services.ai._call_claude", _make_claude_mock("reply")),
     ):
         await get_reply("user-123", "hi")
     insert_mock = mock_supa.table.return_value.insert
@@ -68,8 +69,11 @@ async def test_get_reply_saves_to_supabase():
 
 async def test_get_reply_reraises_on_claude_error():
     mock_supa = _make_supa_mock()
-    with patch("services.ai.supabase_admin", mock_supa), patch(
-        "services.ai._call_claude", MagicMock(side_effect=RuntimeError("API down"))
+    with (
+        patch("services.ai.supabase_admin", mock_supa),
+        patch(
+            "services.ai._call_claude", MagicMock(side_effect=RuntimeError("API down"))
+        ),
     ):
         with pytest.raises(RuntimeError, match="API down"):
             await get_reply("user-123", "hi")
@@ -77,8 +81,11 @@ async def test_get_reply_reraises_on_claude_error():
 
 async def test_get_reply_cleanup_on_claude_error():
     mock_supa = _make_supa_mock()
-    with patch("services.ai.supabase_admin", mock_supa), patch(
-        "services.ai._call_claude", MagicMock(side_effect=RuntimeError("API down"))
+    with (
+        patch("services.ai.supabase_admin", mock_supa),
+        patch(
+            "services.ai._call_claude", MagicMock(side_effect=RuntimeError("API down"))
+        ),
     ):
         with pytest.raises(RuntimeError):
             await get_reply("user-123", "hi")

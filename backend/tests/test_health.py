@@ -16,9 +16,7 @@ async def test_health():
 
 async def test_health_db_success():
     with patch("routers.health.supabase_admin") as mock_supa:
-        mock_supa.table.return_value.select.return_value.limit.return_value.execute.return_value = (
-            MagicMock()
-        )
+        mock_supa.table.return_value.select.return_value.limit.return_value.execute.return_value = MagicMock()
         async with AsyncClient(
             transport=ASGITransport(app=app), base_url="http://test"
         ) as ac:
