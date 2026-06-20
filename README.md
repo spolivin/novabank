@@ -73,6 +73,30 @@ make api-start
 
 The only value that requires a real secret locally is `ANTHROPIC_API_KEY`. Supabase local dev keys can be retrieved with `make db-status` after starting the instance.
 
+## Pre-commit hooks
+
+Code quality hooks run automatically on every commit: trailing whitespace, end-of-file newlines, merge conflict markers, large files, JSON/YAML validation, secret detection, ruff format + lint (backend), and conventional commit message enforcement.
+
+The hooks are installed as part of `make install`. If you need to install them manually:
+
+```bash
+cd backend && uv sync && uv run pre-commit install && uv run pre-commit install --hook-type commit-msg
+```
+
+To run all hooks against the entire codebase without committing:
+
+```bash
+make pre-commit
+```
+
+Commit messages must follow the [Conventional Commits](https://www.conventionalcommits.org/) format:
+
+```
+type(scope): description
+
+# Valid types: feat, fix, refactor, chore, docs, style, test, perf, ci
+```
+
 ## Other useful commands
 
 ```bash
