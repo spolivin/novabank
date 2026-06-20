@@ -22,11 +22,12 @@ test:
 
 install:
 	cd frontend && npm install
+	cd backend && uv sync && uv run pre-commit install
 
 audit:
 	cd frontend && npm audit
 
-# Supabase 
+# Supabase
 db-start:
 	cd frontend && npx supabase start
 
