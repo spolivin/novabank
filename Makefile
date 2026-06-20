@@ -22,7 +22,10 @@ test:
 
 install:
 	cd frontend && npm install
-	cd backend && uv sync && uv run pre-commit install
+	cd backend && uv sync && uv run pre-commit install && uv run pre-commit install --hook-type commit-msg
+
+pre-commit:
+	cd backend && uv run pre-commit run --all-files
 
 audit:
 	cd frontend && npm audit
