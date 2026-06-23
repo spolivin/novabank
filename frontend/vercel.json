@@ -8,7 +8,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co https://*.railway.app; frame-ancestors 'none'"
+          "value": "default-src 'self'; script-src 'self' https://vercel.live; style-src 'self' 'unsafe-inline' https://vercel.live; img-src 'self' data: https://vercel.live; connect-src 'self' https://*.supabase.co https://*.railway.app wss://ws-us3.pusher.com https://sockjs-us3.pusher.com; frame-src https://vercel.live; frame-ancestors 'none'"
         },
         { "key": "X-Frame-Options", "value": "DENY" },
         { "key": "X-Content-Type-Options", "value": "nosniff" },
