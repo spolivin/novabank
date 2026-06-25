@@ -91,14 +91,14 @@ export default function Dashboard() {
               className="flex items-center gap-2 text-sm text-brand-fg-muted hover:text-brand-fg transition-colors"
             >
               <Home size={16} />
-              Home
+              <span className="hidden sm:inline">Home</span>
             </Link>
             <button
               onClick={handleSignOut}
               className="flex items-center gap-2 text-sm text-brand-fg-muted hover:text-brand-fg transition-colors"
             >
               <LogOut size={16} />
-              Log out
+              <span className="hidden sm:inline">Log out</span>
             </button>
           </div>
         </motion.div>
