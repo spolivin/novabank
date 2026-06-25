@@ -13,9 +13,11 @@ const bullets = [
 export const AppMockupSection = () => (
   <Section className="bg-brand-surface">
     <motion.div {...scrollAnimation} className="flex flex-col md:flex-row items-center gap-10">
-      <div className="w-50 h-80 shrink-0 bg-brand-bg border-2 border-brand-accent rounded-lg flex items-center justify-center">
-        <div className="w-30 h-60 bg-brand-surface/50" />
-      </div>
+      <img
+        src="/AppMockup.webp"
+        alt="NovaBank app mockup"
+        className="w-80 shrink-0"
+      />
       <div className="flex-1 flex flex-col items-center justify-center text-center">
         <div>
           <h2 className="text-3xl font-bold leading-tight text-brand-fg">
