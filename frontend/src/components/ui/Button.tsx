@@ -28,7 +28,8 @@ const variantStyles: Record<NonNullable<ButtonProps["variant"]>, string> = {
   dark: "bg-brand-bg text-brand-accent hover:scale-[1.02] active:scale-[0.98]",
   darkCard:
     "bg-brand-surface text-brand-accent border-2 border-brand-accent/20 hover:scale-[1.02] active:scale-[0.98]",
-  accentCard: "bg-brand-accent/90 text-brand-surface hover:scale-[1.02] active:scale-[0.98]",
+  accentCard:
+    "bg-brand-accent/90 text-brand-surface border-2 border-brand-surface/40 hover:scale-[1.02] active:scale-[0.98]",
   danger:
     "bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 hover:scale-[1.02] active:scale-[0.98]",
   dangerSolid:

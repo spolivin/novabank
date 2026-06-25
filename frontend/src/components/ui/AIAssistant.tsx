@@ -50,6 +50,18 @@ export default function AIAssistant() {
   }, [messages, open]);
 
   useEffect(() => {
+    const isSmall = window.innerWidth < 640;
+    if (open && isSmall) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  useEffect(() => {
     if (!open) {
       hasFetchedRef.current = false;
       return;
