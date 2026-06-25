@@ -26,7 +26,7 @@ export const AppMockupSection = () => (
             always available.
           </p>
         </div>
-        <ul className="space-y-3 mt-8 max-w-sm">
+        <ul className="space-y-3 mt-8 max-w-sm text-left">
           {bullets.map((item) => (
             <li key={item} className="flex items-center gap-3 text-brand-fg-muted">
               <Check className="text-brand-accent flex-shrink-0" />
