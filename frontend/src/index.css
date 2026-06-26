@@ -10,6 +10,16 @@
   --color-brand-error: #f87171;
 }
 
+@keyframes icon-glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 6px 1px rgba(0, 201, 167, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 14px 4px rgba(0, 201, 167, 0.65);
+  }
+}
+
 @keyframes marquee {
   from {
     transform: translateX(0);
@@ -40,10 +50,13 @@
 
 @layer utilities {
   .animate-marquee {
-    animation: marquee 20s linear infinite;
+    animation: marquee 30s linear infinite;
   }
   .animate-dot-pulse {
     animation: dot-pulse 1.2s ease-in-out infinite;
+  }
+  .animate-icon-glow {
+    animation: icon-glow-pulse 2.4s ease-in-out infinite;
   }
   .animate-progress-fill {
     animation: progress-fill linear forwards;

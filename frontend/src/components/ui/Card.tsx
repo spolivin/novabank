@@ -8,6 +8,7 @@ interface CardProps {
   title?: string;
   description: string;
   tag?: string;
+  glowIcon?: boolean;
 }
 
 const motionProps = {
@@ -15,14 +16,23 @@ const motionProps = {
   transition: { duration: 0.25, ease: "easeOut" },
 } as const;
 
-export const Card = ({ horizontal = false, icon, title, description, tag }: CardProps) => (
+export const Card = ({
+  horizontal = false,
+  icon,
+  title,
+  description,
+  tag,
+  glowIcon = false,
+}: CardProps) => (
   <motion.div
     {...motionProps}
     className={`flex gap-4 rounded-2xl p-8 bg-brand-surface ${
       horizontal ? "flex-row items-center" : "flex-col items-start"
     }`}
   >
-    <div className="flex items-center justify-center bg-brand-accent/20 rounded-xl w-12 h-12 text-brand-accent shrink-0">
+    <div
+      className={`w-12 h-12 shrink-0 overflow-hidden rounded-lg ${glowIcon ? "animate-icon-glow" : ""}`}
+    >
       {icon}
     </div>
     <div className="flex flex-col gap-2">

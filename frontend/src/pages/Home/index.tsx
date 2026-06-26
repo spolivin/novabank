@@ -5,7 +5,7 @@ import { PartnerMarquee } from "@/pages/Home/components/PartnerMarquee";
 import { TestimonialSection } from "@/pages/Home/components/TestimonialSection";
 
 import { AppMockupSection } from "./components/AppMockupSection";
-import { PARTNERS, TESTIMONIALS, features } from "./home.data";
+import { PARTNERS, TESTIMONIALS, features } from "./home.data.tsx";
 
 export default function Home() {
   return (
@@ -24,6 +24,7 @@ export default function Home() {
         title="Everything you need"
         subtitle="From everyday banking to long-term savings, NovaBank has every tool you need to take control of your finances."
         features={features}
+        glowIcon
       />
       <AppMockupSection />
       <TestimonialSection title="What our customers are saying" testimonials={TESTIMONIALS} />
