@@ -42,25 +42,25 @@ export const pricingRows: PricingRow[] = [
 
 export const features = [
   {
-    icon: "💳",
+    icon: <img src="/icons/Cards/Contactless-Payments.svg" alt="" />,
     title: "Contactless Payments",
     description:
       "Make secure payments with a simple tap. Fast, convenient, and accepted worldwide.",
   },
   {
-    icon: "📱",
+    icon: <img src="/icons/Cards/Apple-Pay-Google-Pay.svg" alt="" />,
     title: "Apple Pay & Google Pay",
     description:
       "Pay with your phone using Apple Pay or Google Pay. Enjoy the convenience of mobile payments wherever you go.",
   },
   {
-    icon: "🔒",
+    icon: <img src="/icons/Cards/Instant-Freeze.svg" alt="" />,
     title: "Instant Freeze",
     description:
       "Lost your card? No worries. Instantly freeze your card from the app to prevent unauthorized transactions.",
   },
   {
-    icon: "📊",
+    icon: <img src="/icons/Cards/Spending-Limits.svg" alt="" />,
     title: "Spending Limits",
     description:
       "Take control of your finances by setting daily, weekly, or monthly spending limits on your card. Stay on budget effortlessly.",

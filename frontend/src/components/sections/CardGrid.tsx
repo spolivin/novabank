@@ -18,9 +18,16 @@ interface CardGridProps {
   subtitle?: string;
   features: Feature[];
   horizontal?: boolean;
+  glowIcon?: boolean;
 }
 
-export const CardGrid = ({ title, subtitle, features, horizontal = false }: CardGridProps) => (
+export const CardGrid = ({
+  title,
+  subtitle,
+  features,
+  horizontal = false,
+  glowIcon = false,
+}: CardGridProps) => (
   <Section>
     <motion.div {...scrollAnimation}>
       <div className={`text-center ${horizontal ? "mb-5" : ""}`}>
@@ -42,6 +49,7 @@ export const CardGrid = ({ title, subtitle, features, horizontal = false }: Card
             description={feature.description}
             tag={feature.tag}
             horizontal={horizontal}
+            glowIcon={glowIcon}
           />
         ))}
       </div>
