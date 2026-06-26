@@ -1,34 +1,34 @@
 export const products = [
   {
-    title: "Startup",
+    title: "Everyday",
     price: "0",
     features: [
-      "1 business debit card",
-      "Basic invoicing tools",
-      "Up to 2 team members",
+      "Free debit card",
+      "1% cashback on all purchases",
+      "2 free ATM withdrawals per month",
       "Mobile app access",
     ],
     featured: false,
   },
   {
-    title: "Growth",
-    price: "19",
+    title: "Savings",
+    price: "4",
     features: [
-      "Everything in Startup",
-      "Unlimited invoicing",
-      "Up to 10 team members",
-      "Expense categorization",
+      "Eveything in Everyday",
+      "4.5% APY on savings balance",
+      "Auto-roundup transactions",
+      "Budgeting tools",
     ],
     featured: true,
   },
   {
-    title: "Enterprise",
-    price: "49",
+    title: "Premium",
+    price: "12",
     features: [
-      "Everything in Growth",
-      "Unlimited team members",
-      "Full API access",
-      "Dedicated account manager",
+      "Everything in Savings",
+      "Unlimited free ATM withdrawals",
+      "Priority customer support",
+      "Concierge services",
     ],
     featured: false,
   },
@@ -36,27 +36,26 @@ export const products = [
 
 export const features = [
   {
-    icon: "🧾",
-    title: "Invoicing",
-    description: "Create, send, and track professional invoices in seconds. Get paid faster.",
+    icon: <img src="/icons/Personal/Fee-Free-ATM.svg" alt="" />,
+    title: "Fee-Free ATM",
+    description: "Access 55,000+ ATMs nationwide at zero cost.",
   },
   {
-    icon: "👥",
-    title: "Multi-User Access",
+    icon: <img src="/icons/Personal/Instant-Notifications.svg" alt="" />,
+    title: "Instant Notifications",
     description:
-      "Add team members with customizable permissions. Collaborate securely and efficiently.",
+      "Real-time alerts for every transaction, so you always know what's happening with your money.",
   },
   {
-    icon: "🔌",
-    title: "API Integrations",
+    icon: <img src="/icons/Personal/Round-up-Savings.svg" alt="" />,
+    title: "Round-up Savings",
     description:
-      "Connect your account to your favorite tools and automate your workflows with our powerful API.",
+      "Automatically round up your purchases to the nearest dollar and save the difference.",
   },
   {
-    icon: "📊",
-    title: "Expense Management",
-    description:
-      "Easily categorize and track your expenses. Get insights to help your business grow.",
+    icon: <img src="/icons/Personal/Budgeting-Tools.svg" alt="" />,
+    title: "Budgeting Tools",
+    description: "Track your spending and stay on top of your finances.",
   },
 ];
 
@@ -66,13 +65,12 @@ export const steps = [
     description: "Create your account in under 2 minutes with just an email.",
   },
   {
-    title: "Verify",
-    description: "Provide some basic information to verify your identity and business details.",
+    title: "Verify Your Identity",
+    description: "Complete the verification process to ensure the security of your account.",
   },
   {
-    title: "Fund",
-    description:
-      "Add funds to your account using a bank transfer, debit card, or mobile check deposit.",
+    title: "Fund Your Account",
+    description: "Add money to your new account and start using it.",
   },
 ];
 
