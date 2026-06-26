@@ -1,9 +1,10 @@
 import { motion } from "motion/react";
 
 import { scrollAnimation } from "@/animations";
+import { type Partner } from "@/pages/Home/home.data.tsx";
 
 interface PartnerMarqueeProps {
-  partners: string[];
+  partners: Partner[];
 }
 
 export const PartnerMarquee = ({ partners }: PartnerMarqueeProps) => {
@@ -15,14 +16,14 @@ export const PartnerMarquee = ({ partners }: PartnerMarqueeProps) => {
       <p className="text-center text-xl font-semibold uppercase tracking-widest text-brand-fg-muted mb-8">
         Trusted by industry leaders
       </p>
-      <div className="flex animate-marquee">
-        {partners.concat(partners).map((name, i) => (
-          <span
+      <div className="flex w-max animate-marquee items-center">
+        {partners.concat(partners).map((partner, i) => (
+          <img
             key={i}
-            className="flex-shrink-0 mx-12 text-brand-fg-muted font-semibold text-lg whitespace-nowrap"
-          >
-            {name}
-          </span>
+            src={partner.logo}
+            alt={partner.name}
+            className="flex-shrink-0 mx-12 h-8 w-auto object-contain"
+          />
         ))}
       </div>
     </motion.div>
