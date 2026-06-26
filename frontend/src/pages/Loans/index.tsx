@@ -25,6 +25,7 @@ export default function Loans() {
           </>
         }
         subheading="Competitive rates, instant decisions, and zero hidden fees. Configure your loan below and see your payments in real time."
+        backgroundImage="/banners/Loans-banner.avif"
       >
         <LoanConfiguratorCard
           amount={amount}

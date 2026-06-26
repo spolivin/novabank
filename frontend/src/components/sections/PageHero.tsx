@@ -14,6 +14,7 @@ interface BaseHeroProps {
   secondaryButton?: { label: string; href: string };
   badge?: string;
   features?: { title: string }[];
+  backgroundImage?: string;
 }
 
 interface DefaultHeroProps extends BaseHeroProps {
@@ -41,12 +42,20 @@ export function PageHero({
   secondaryButton,
   badge,
   features,
+  backgroundImage,
   ...rest
 }: PageHeroProps) {
   const children = "children" in rest ? rest.children : undefined;
+  const bgStyle = backgroundImage
+    ? {
+        backgroundImage: `linear-gradient(135deg, rgba(13,43,69,0.82) 0%, rgba(26,74,110,0.82) 100%), url(${backgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }
+    : undefined;
   if (variant === "centered") {
     return (
-      <Section className="bg-hero flex items-center overflow-hidden min-h-[640px]">
+      <Section className="bg-hero flex items-center overflow-hidden min-h-[640px]" style={bgStyle}>
         <motion.div {...motionProps}>
           <div className="max-w-5xl mx-auto text-center">
             {badge && (
@@ -86,7 +95,10 @@ export function PageHero({
     );
   }
   return (
-    <Section className="bg-hero flex items-center justify-center overflow-hidden min-h-[640px]">
+    <Section
+      className="bg-hero flex items-center justify-center overflow-hidden min-h-[640px]"
+      style={bgStyle}
+    >
       <motion.div
         {...motionProps}
         className="flex flex-col lg:flex-row items-center justify-between gap-16"
