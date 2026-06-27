@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect } from "react";
 
 import { Check } from "lucide-react";
 import { motion } from "motion/react";
@@ -46,6 +46,19 @@ export function PageHero({
   ...rest
 }: PageHeroProps) {
   const children = "children" in rest ? rest.children : undefined;
+
+  useEffect(() => {
+    if (!backgroundImage) return;
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "image";
+    link.href = backgroundImage;
+    document.head.appendChild(link);
+    return () => {
+      document.head.removeChild(link);
+    };
+  }, [backgroundImage]);
+
   const bgStyle = backgroundImage
     ? {
         backgroundImage: `linear-gradient(135deg, rgba(13,43,69,0.82) 0%, rgba(26,74,110,0.82) 100%), url(${backgroundImage})`,
