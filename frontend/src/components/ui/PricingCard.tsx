@@ -36,7 +36,7 @@ export const PricingCard = ({ name, price, highlighted = false, rows }: PricingC
         </div>
       ))}
     </div>
-    <Button variant={highlighted ? "accentCard" : "secondary"} fullWidth>
+    <Button variant={highlighted ? "accentCard" : "secondary"} fullWidth href="/signup">
       Apply
     </Button>
   </div>

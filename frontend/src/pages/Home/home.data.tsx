@@ -28,8 +28,8 @@ export const features = [
     description: "Generate one-time or recurring virtual cards for safe online shopping.",
   },
   {
-    icon: <img src="/icons/Home/Saving-Goals.svg" alt="" />,
-    title: "Saving Goals",
+    icon: <img src="/icons/Home/Savings-Goals.svg" alt="" />,
+    title: "Savings Goals",
     description: "Set targets, track progress, and automate round-ups toward what matters most.",
   },
   {

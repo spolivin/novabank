@@ -14,7 +14,7 @@ export default function Home() {
       <PageHero
         heading="The Future of Banking"
         subheading="Manage your money with confidence. Instant transfers, smart budgeting, and bank-grade security - all in one beautifully simple app."
-        primaryButton={{ label: "Open Account", href: "/personal" }}
+        primaryButton={{ label: "Open Account", href: "/signup" }}
         secondaryButton={{ label: "Learn More", href: "/about" }}
         backgroundImage="/banners/Home-banner.avif"
       />
@@ -31,7 +31,7 @@ export default function Home() {
       <Banner
         heading="Start banking smarter today"
         subheading="Join over 500,000 people who trust NovaBank with their finances."
-        primaryButton={{ label: "Get Started", href: "/personal" }}
+        primaryButton={{ label: "Get Started", href: "/signup" }}
       />
     </>
   );

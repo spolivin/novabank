@@ -11,12 +11,12 @@ export const teamMembers: TeamMember[] = [
   {
     name: "Sarah Chen",
     role: "Co-founder & CEO",
-    bio: "Former VP at Stripe. Spent a decade reimagining payments infrastructure before founding Novabank.",
+    bio: "Former VP at Stripe. Spent a decade reimagining payments infrastructure before founding NovaBank.",
   },
   {
     name: "Marcus Webb",
     role: "Co-founder & CTO",
-    bio: "Ex-Google engineer who led core banking platform development at Monzo before joining Sarah to build Novabank.",
+    bio: "Ex-Google engineer who led core banking platform development at Monzo before joining Sarah to build NovaBank.",
   },
   {
     name: "Priya Nair",
@@ -26,7 +26,7 @@ export const teamMembers: TeamMember[] = [
   {
     name: "James Okafor",
     role: "Chief Risk Officer",
-    bio: "20 years in regulatory compliance at the Federal Reserve. Ensures Novabank operates with integrity at every layer.",
+    bio: "20 years in regulatory compliance at the Federal Reserve. Ensures NovaBank operates with integrity at every layer.",
   },
   {
     name: "Lena Fischer",
@@ -36,7 +36,7 @@ export const teamMembers: TeamMember[] = [
   {
     name: "David Park",
     role: "Head of Engineering",
-    bio: "Scaled infrastructure at Robinhood through 10x growth. Keeps Novabank fast, reliable, and secure around the clock.",
+    bio: "Scaled infrastructure at Robinhood through 10x growth. Keeps NovaBank fast, reliable, and secure around the clock.",
   },
 ];
 
@@ -46,27 +46,27 @@ export const timelineSteps: Omit<TimelineStepProps, "number">[] = [
     side: "left",
     title: "Founded in San Francisco",
     description:
-      "Novabank was incorporated by a team of fintech veterans and former regulators with one goal - build a bank that actually works for people, not the other way around.",
+      "NovaBank was incorporated by a team of fintech veterans and former regulators with one goal - build a bank that actually works for people, not the other way around.",
   },
   {
     year: "2020",
     side: "right",
     title: "First million customers",
     description:
-      "Just 18 months after launch, Novabank crossed one million active customers — driven entirely by word of mouth. No branch network, no billboards. Just a product people genuinely wanted to tell their friends about.",
+      "Just 18 months after launch, NovaBank crossed one million active customers — driven entirely by word of mouth. No branch network, no billboards. Just a product people genuinely wanted to tell their friends about.",
   },
   {
     year: "2022",
     side: "left",
     title: "Launched business banking",
     description:
-      "Responding to demand from our own customers, we introduced dedicated business accounts with invoicing, multi-user access, and accounting integrations. Within a year, over 50,000 small businesses had made Novabank their primary bank.",
+      "Responding to demand from our own customers, we introduced dedicated business accounts with invoicing, multi-user access, and accounting integrations. Within a year, over 50,000 small businesses had made NovaBank their primary bank.",
   },
   {
     year: "2024",
     side: "right",
     title: "Global expansion",
     description:
-      "Novabank extended its reach to 40+ countries, enabling customers to spend in 150+ currencies with no foreign transaction fees. Our infrastructure now processes over $2 billion in cross-border payments every month.",
+      "NovaBank extended its reach to 40+ countries, enabling customers to spend in 150+ currencies with no foreign transaction fees. Our infrastructure now processes over $2 billion in cross-border payments every month.",
   },
 ];

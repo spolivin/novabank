@@ -80,27 +80,27 @@ export const faqs = [
   {
     question: "Are there any fees I should know about?",
     answer:
-      "No hidden fees here! We offer transparent pricing with no monthly maintenance fees, no overdraft fees, and free ATM access at over 55,000 locations nationwide. The only fee you might encounter is a $2 fee for out-of-network ATM withdrawals, but we reimburse up to 4 of those per month for our Premium account holders.",
+      "No hidden fees on your plan. We offer transparent pricing with no monthly maintenance fees on the Startup plan, and flat monthly rates for Growth and Enterprise. Incoming wires are always free, and outgoing domestic wires are included on Growth and above. Enterprise accounts also get unlimited team members and a dedicated account manager at no extra cost.",
   },
   {
-    question: "How do I open an account?",
+    question: "How do I open a business account?",
     answer:
-      "Opening an account is easy! Just click the 'Open Account' button on our website, fill out the online application form with your personal information, and submit it. You'll need to provide some basic details like your name, address, date of birth, and Social Security number for identity verification. Once your application is approved, you'll receive your debit card in the mail within 5-7 business days.",
+      "Opening a business account takes about 5 minutes. Click 'Open Account', fill in your business details — legal name, EIN, registered address, and a few details about your business type — and submit. We'll verify your business and notify you by email once approved. Most applications are reviewed within one business day.",
   },
   {
-    question: "Can I upgrade or downgrade my account later?",
+    question: "Can I upgrade or downgrade my plan later?",
     answer:
-      "Absolutely! We understand that your financial needs may change over time. You can easily upgrade or downgrade your account at any time through your online dashboard or by contacting our customer support team. There are no lock-in periods, so you can switch plans whenever it makes the most sense for you.",
+      "Absolutely. You can upgrade or downgrade your plan at any time from your business dashboard with no lock-in periods or cancellation fees. Changes take effect at the start of your next billing cycle, so you're never charged for capacity you don't use.",
   },
   {
     question: "What security measures do you have in place?",
     answer:
-      "Your security is our top priority. We use bank-level encryption to protect your data, and all transactions are monitored for suspicious activity. We also offer two-factor authentication for an extra layer of security on your account. If you ever notice any unauthorized transactions, our support team is available 24/7 to assist you.",
+      "Your business data and funds are protected with AES-256 encryption, real-time transaction monitoring, and role-based access controls so you can limit what each team member can see and do. We also support two-factor authentication on all accounts. Our support team is available 24/7 if you spot anything suspicious.",
   },
   {
     question: "How do I contact customer support?",
     answer:
-      "Our customer support team is here to help you with any questions or issues you may have. You can reach us via email at support@novabank.com.",
+      "Our business support team is available 24/7 by email at support@novabank.com. Enterprise customers also get a dedicated account manager reachable directly by phone.",
   },
   {
     question: "What if I have more questions?",

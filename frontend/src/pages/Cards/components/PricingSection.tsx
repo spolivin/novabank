@@ -26,14 +26,17 @@ export const PricingSection = () => {
             >
               Monthly
             </span>
-            <div
-              className="relative rounded-full w-16 h-8 bg-brand-surface"
+            <button
+              role="switch"
+              aria-checked={isAnnual}
+              aria-label="Toggle annual billing"
+              className="relative rounded-full w-16 h-8 bg-brand-surface cursor-pointer p-0"
               onClick={() => setIsAnnual(!isAnnual)}
             >
               <div
-                className={`absolute w-8 h-8 rounded-full bg-brand-fg/50 transition-transform duration-200 ${isAnnual ? "translate-x-8" : "translate-x-0"}`}
+                className={`absolute top-0 left-0 w-8 h-8 rounded-full bg-brand-fg/50 transition-transform duration-200 ${isAnnual ? "translate-x-8" : "translate-x-0"}`}
               />
-            </div>
+            </button>
             <span
               className={`text-xs font-medium ${isAnnual ? "text-brand-fg" : "text-brand-fg-muted"}`}
             >

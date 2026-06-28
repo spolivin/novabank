@@ -21,7 +21,7 @@ export default function Careers() {
       />
       <CardGrid title="Why NovaBank" features={values} horizontal />
       <RoleList
-        title="Checkout available vacancies"
+        title="Check out available vacancies"
         subtitle="Do not be afraid to apply!"
         roles={roles}
       />

@@ -19,8 +19,8 @@ export default function Cards() {
             The card that <span className="text-brand-accent">works harder</span> for you
           </>
         }
-        subheading="Each cashback on every purchase, pay nothing abroad, and control your spending - all from one beautifully simple card."
-        primaryButton={{ label: "Apply Now", href: "/contact" }}
+        subheading="Earn cashback on every purchase, pay nothing abroad, and control your spending - all from one beautifully simple card."
+        primaryButton={{ label: "Apply Now", href: "/signup" }}
         secondaryButton={{ label: "Compare Cards", href: "#pricing" }}
         backgroundImage="/banners/Cards-banner.avif"
       >
@@ -36,7 +36,7 @@ export default function Cards() {
       <Banner
         heading="Choose your card today"
         subheading="Join thousands who earn more with every swipe. Apply in minutes."
-        primaryButton={{ label: "Apply Now", href: "/contact" }}
+        primaryButton={{ label: "Apply Now", href: "/signup" }}
       />
     </>
   );

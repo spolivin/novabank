@@ -148,7 +148,9 @@ export default function Signup() {
           {confirmed && (
             <p className="text-brand-accent text-sm">Check your email to confirm your account.</p>
           )}
-          {errors.root?.message && <p className="text-red-400 text-sm">{errors.root.message}</p>}
+          {errors.root?.message && (
+            <p className="text-brand-error text-sm">{errors.root.message}</p>
+          )}
 
           <div className="text-sm text-brand-fg-muted text-center">
             This is a demo project. Do not use real personal information.
@@ -187,7 +189,7 @@ function Field({
     <div className="flex flex-col gap-1.5">
       <label className="text-brand-fg text-sm font-medium">{label}</label>
       {children}
-      {error && <p className="text-red-400 text-xs">{error}</p>}
+      {error && <p className="text-brand-error text-xs">{error}</p>}
     </div>
   );
 }

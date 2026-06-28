@@ -39,9 +39,13 @@ export const ProductCard = ({ title, price, features, featured }: ProductCardPro
       ))}
     </ul>
     {featured ? (
-      <Button variant="accentCard">Get Started</Button>
+      <Button variant="accentCard" href="/signup">
+        Get Started
+      </Button>
     ) : (
-      <Button variant="darkCard">Get Started</Button>
+      <Button variant="darkCard" href="/signup">
+        Get Started
+      </Button>
     )}
     {featured && (
       <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-brand-surface text-sm text-brand-accent font-semibold px-3 py-1 rounded-full">

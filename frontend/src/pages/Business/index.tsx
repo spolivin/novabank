@@ -20,7 +20,7 @@ export default function Business() {
           </>
         }
         subheading="Powerful tools for invoicing, team spending, and integrations - all in one account. Grow with confidence and zero hidden fees."
-        primaryButton={{ label: "Open a Business Account", href: "/contact" }}
+        primaryButton={{ label: "Open a Business Account", href: "/signup" }}
         secondaryButton={{ label: "Talk to Sales", href: "/contact" }}
         backgroundImage="/banners/Business-banner.avif"
       />
@@ -48,7 +48,7 @@ export default function Business() {
       <Banner
         heading="Ready to grow your business with NovaBank?"
         subheading="Join thousands of businesses who trust us to power their finances."
-        primaryButton={{ label: "Open a Business Account", href: "/contact" }}
+        primaryButton={{ label: "Open a Business Account", href: "/signup" }}
       />
     </>
   );

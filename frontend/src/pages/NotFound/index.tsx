@@ -22,7 +22,7 @@ export default function NotFound() {
       </p>
       <Link
         to={ROUTES.HOME}
-        className="px-6 py-3 rounded-md bg-brand-accent text-brand-bg font-semibold hover:scale-[1.05] active:scale-[0.98] transition-transform duration-200"
+        className="px-6 py-3 rounded-xl bg-brand-accent text-brand-bg font-semibold hover:scale-[1.05] active:scale-[0.98] transition-transform duration-200"
       >
         Back to home
       </Link>

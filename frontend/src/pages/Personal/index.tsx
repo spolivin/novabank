@@ -1,4 +1,5 @@
 import { AccordionSection } from "@/components/sections/AccordionSection";
+import { Banner } from "@/components/sections/Banner";
 import { CardGrid } from "@/components/sections/CardGrid";
 import { PageHero } from "@/components/sections/PageHero";
 import { ProductGrid } from "@/components/sections/ProductGrid";
@@ -19,7 +20,7 @@ export default function Personal() {
           </>
         }
         subheading="Simple, transparent accounts with no hidden fees. Built for the way you live - whether you're saving for a goal or spending every day."
-        primaryButton={{ label: "Open Account", href: "/contact" }}
+        primaryButton={{ label: "Open Account", href: "/signup" }}
         secondaryButton={{ label: "See Our Cards", href: "/cards" }}
         backgroundImage="/banners/Personal-banner.avif"
       />
@@ -43,6 +44,11 @@ export default function Personal() {
         title="Common questions"
         subtitle="Everything you need to know about our accounts, fees, and features."
         items={faqs}
+      />
+      <Banner
+        heading="Start banking with NovaBank today"
+        subheading="Open your account in minutes. No hidden fees, no paperwork."
+        primaryButton={{ label: "Open Account", href: "/signup" }}
       />
     </>
   );

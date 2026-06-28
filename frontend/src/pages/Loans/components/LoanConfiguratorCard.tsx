@@ -58,7 +58,7 @@ export function LoanConfiguratorCard({ amount, term, onAmountChange, onTermChang
                   : "bg-transparent text-brand-fg-muted border-brand-border hover:border-brand-accent/50 hover:text-brand-fg"
               }`}
             >
-              {t}mo
+              {t} mo
             </button>
           ))}
         </div>
