@@ -14,7 +14,7 @@ export const products = [
     title: "Savings",
     price: "4",
     features: [
-      "Eveything in Everyday",
+      "Everything in Everyday",
       "4.5% APY on savings balance",
       "Auto-roundup transactions",
       "Budgeting tools",

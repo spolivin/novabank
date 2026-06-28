@@ -40,13 +40,13 @@ export default function Security() {
       />
       <BadgeGrid
         title="Independently certified"
-        subtitle="Our security practices are audited and certified by leading third-party organization"
+        subtitle="Our security practices are audited and certified by leading third-party organizations."
         features={securityFeatures}
       />
       <FraudProtectionSection />
       <Banner
         heading="Bank with confidence"
-        subheading="Join NovaBank and experience security that never sleeps"
+        subheading="Join NovaBank and experience security that never sleeps."
         primaryButton={{ label: "Open a Secure Account", href: "/contact" }}
       />
     </>

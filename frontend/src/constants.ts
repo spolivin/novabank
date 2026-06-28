@@ -32,7 +32,7 @@ export const PAGE_TITLES = {
   CONTACT: "NovaBank - Contact",
   CAREERS: "NovaBank - Careers",
   NOT_FOUND: "NovaBank - Page Not Found",
-  LOGIN: "NovaBank - Login",
+  LOGIN: "NovaBank - Log In",
   SIGNUP: "NovaBank - Sign Up",
   DASHBOARD: "NovaBank - Dashboard",
 } as const;

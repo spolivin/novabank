@@ -9,8 +9,8 @@ export const features = [
     tag: "Military grade encryption",
   },
   {
-    icon: <img src="/icons/Security/Biometric-Authentification.svg" alt="" />,
-    title: "Biometric Authentification",
+    icon: <img src="/icons/Security/Biometric-Authentication.svg" alt="" />,
+    title: "Biometric Authentication",
     description:
       "Face ID, Touch ID, and fingerprint recognition ensure only you can access your account. Multi-factor authentication adds an extra layer that blocks unauthorized access.",
     tag: "You are the password",
@@ -19,8 +19,8 @@ export const features = [
     icon: <img src="/icons/Security/FDIC-Insured.svg" alt="" />,
     title: "FDIC Insured",
     description:
-      "Your deposits are insured by the Federal Deposit Insurance Corporation up to $250.000 per depositor. Even in the unlikely event of a bank failure, your money is safe.",
-    tag: "Up to $250.000 protected",
+      "Your deposits are insured by the Federal Deposit Insurance Corporation up to $250,000 per depositor. Even in the unlikely event of a bank failure, your money is safe.",
+    tag: "Up to $250,000 protected",
   },
 ];
 
