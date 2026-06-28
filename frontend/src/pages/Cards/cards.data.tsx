@@ -40,6 +40,29 @@ export const pricingRows: PricingRow[] = [
   },
 ];
 
+export const pricingRowsAnnual: PricingRow[] = [
+  {
+    feature: "Cashback",
+    values: { Classic: "1%", Gold: "2%", Platinum: "3.5%" },
+  },
+  {
+    feature: "Foreign transaction fee",
+    values: { Classic: "2%", Gold: "1%", Platinum: "None" },
+  },
+  {
+    feature: "Credit limit",
+    values: {
+      Classic: "Up to $7,500",
+      Gold: "Up to $25,000",
+      Platinum: "Up to $100,000",
+    },
+  },
+  {
+    feature: "Lounge access",
+    values: { Classic: "1 visit/year", Gold: "4 visits/year", Platinum: "Unlimited" },
+  },
+];
+
 export const features = [
   {
     icon: <img src="/icons/Cards/Contactless-Payments.svg" alt="" />,
