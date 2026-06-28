@@ -69,7 +69,7 @@ export function PageHero({
   if (variant === "centered") {
     return (
       <Section className="bg-hero flex items-center overflow-hidden min-h-[640px]" style={bgStyle}>
-        <motion.div {...motionProps}>
+        <motion.div {...motionProps} className="w-full">
           <div className="max-w-5xl mx-auto text-center">
             {badge && (
               <div className="inline-block bg-brand-accent/20 text-brand-accent text-xs font-medium px-4 py-2 rounded-full mb-6">
