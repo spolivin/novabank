@@ -103,7 +103,9 @@ export default function Login() {
             </div>
           </Field>
 
-          {errors.root?.message && <p className="text-red-400 text-sm">{errors.root.message}</p>}
+          {errors.root?.message && (
+            <p className="text-brand-error text-sm">{errors.root.message}</p>
+          )}
 
           <button
             type="submit"
@@ -138,7 +140,7 @@ function Field({
     <div className="flex flex-col gap-1.5">
       <label className="text-brand-fg text-sm font-medium">{label}</label>
       {children}
-      {error && <p className="text-red-400 text-xs">{error}</p>}
+      {error && <p className="text-brand-error text-xs">{error}</p>}
     </div>
   );
 }

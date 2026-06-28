@@ -46,7 +46,9 @@ export default function Footer() {
           <span>The future of banking, today. Simple, secure, and built for your life.</span>
         </div>
         <div className="flex flex-col gap-4">
-          <h2 className="text-sm md:text-xl font-bold text-brand-fg uppercase">Products</h2>
+          <h2 className="text-sm md:text-base lg:text-xl font-bold text-brand-fg uppercase">
+            Products
+          </h2>
           {PRODUCT_LINKS.map(({ to, label }) => (
             <Link key={to} to={to} className="hover:underline self-start">
               {label}
@@ -54,7 +56,9 @@ export default function Footer() {
           ))}
         </div>
         <div className="flex flex-col gap-4">
-          <h2 className="text-sm md:text-xl font-bold text-brand-fg uppercase">Company</h2>
+          <h2 className="text-sm md:text-base lg:text-xl font-bold text-brand-fg uppercase">
+            Company
+          </h2>
           {COMPANY_LINKS.map(({ to, label }) => (
             <Link key={to} to={to} className="hover:underline self-start">
               {label}
@@ -62,7 +66,9 @@ export default function Footer() {
           ))}
         </div>
         <div className="flex flex-col gap-4">
-          <h2 className="text-sm md:text-xl font-bold text-brand-fg uppercase">Follow us</h2>
+          <h2 className="text-sm md:text-base lg:text-xl font-bold text-brand-fg uppercase">
+            Follow us
+          </h2>
           {SOCIAL_LINKS.map(({ href, label }) => (
             <a
               key={href}
@@ -77,7 +83,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="flex items-center justify-center text-brand-fg-muted py-10">
-        @{new Date().getFullYear()} NovaBank. All rights reserved.
+        &copy;{new Date().getFullYear()} NovaBank. All rights reserved.
       </div>
     </footer>
   );
