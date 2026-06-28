@@ -5,13 +5,14 @@ import { motion } from "motion/react";
 import { scrollAnimation } from "@/animations";
 import { Section } from "@/components/layout/Section";
 
-import { pricingTiers, pricingTiersAnnual } from "../cards.data";
+import { pricingRows, pricingRowsAnnual, pricingTiers, pricingTiersAnnual } from "../cards.data";
 import { PricingCards } from "./PricingCards";
 import { PricingTable } from "./PricingTable";
 
 export const PricingSection = () => {
   const [isAnnual, setIsAnnual] = useState(false);
   const tiers = isAnnual ? pricingTiersAnnual : pricingTiers;
+  const rows = isAnnual ? pricingRowsAnnual : pricingRows;
 
   return (
     <Section id="pricing">
@@ -45,10 +46,10 @@ export const PricingSection = () => {
         </div>
 
         <div className="md:hidden">
-          <PricingCards tiers={tiers} />
+          <PricingCards tiers={tiers} rows={rows} />
         </div>
         <div className="hidden md:block">
-          <PricingTable tiers={tiers} />
+          <PricingTable tiers={tiers} rows={rows} />
         </div>
       </motion.div>
     </Section>

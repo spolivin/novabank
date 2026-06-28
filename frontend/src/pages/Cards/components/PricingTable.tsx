@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/Button";
 
-import { pricingRows } from "../cards.data";
-import type { PricingTier } from "../cards.data";
+import type { PricingRow, PricingTier } from "../cards.data";
 
 interface PricingTableProps {
   tiers: readonly { name: PricingTier; price: string; highlighted: boolean }[];
+  rows: PricingRow[];
 }
 
-export const PricingTable = ({ tiers }: PricingTableProps) => (
+export const PricingTable = ({ tiers, rows }: PricingTableProps) => (
   <div className="rounded-xl border border-brand-fg/20 overflow-hidden">
     <table className="w-full text-sm table-fixed">
       <thead>
@@ -34,10 +34,10 @@ export const PricingTable = ({ tiers }: PricingTableProps) => (
         </tr>
       </thead>
       <tbody>
-        {pricingRows.map((row, rowIndex) => (
+        {rows.map((row, rowIndex) => (
           <tr
             key={row.feature}
-            className={`${rowIndex === pricingRows.length - 1 ? "border-b border-brand-fg/20" : ""} ${rowIndex % 2 === 0 ? "bg-brand-bg" : "bg-brand-surface/20"}`}
+            className={`${rowIndex === rows.length - 1 ? "border-b border-brand-fg/20" : ""} ${rowIndex % 2 === 0 ? "bg-brand-bg" : "bg-brand-surface/20"}`}
           >
             <td className="text-brand-fg-muted border-r border-brand-fg/20 px-4 py-4 text-left">
               {row.feature}

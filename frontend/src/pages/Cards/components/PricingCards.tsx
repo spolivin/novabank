@@ -1,13 +1,13 @@
 import { PricingCard } from "@/components/ui/PricingCard";
 
-import { pricingRows } from "../cards.data";
-import type { PricingTier } from "../cards.data";
+import type { PricingRow, PricingTier } from "../cards.data";
 
 interface PricingCardsProps {
   tiers: readonly { name: PricingTier; price: string; highlighted: boolean }[];
+  rows: PricingRow[];
 }
 
-export const PricingCards = ({ tiers }: PricingCardsProps) => (
+export const PricingCards = ({ tiers, rows }: PricingCardsProps) => (
   <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 -mx-6 px-6">
     {tiers.map(({ name, price, highlighted }) => (
       <PricingCard
@@ -15,7 +15,7 @@ export const PricingCards = ({ tiers }: PricingCardsProps) => (
         name={name}
         price={price}
         highlighted={highlighted}
-        rows={pricingRows.map((row) => ({ feature: row.feature, value: row.values[name] }))}
+        rows={rows.map((row) => ({ feature: row.feature, value: row.values[name] }))}
       />
     ))}
   </div>
