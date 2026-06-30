@@ -86,12 +86,8 @@ export default function Navbar() {
     >
       <nav className="max-w-7xl mx-auto px-6 h-[72px] flex items-center justify-between">
         {/* Logo */}
-        <Link
-          to={ROUTES.HOME}
-          className="text-brand-fg font-bold text-3xl"
-          onClick={() => setOpen(false)}
-        >
-          Nova<span className="text-brand-accent">Bank</span>
+        <Link to={ROUTES.HOME} onClick={() => setOpen(false)} aria-label="NovaBank home">
+          <img src="/logos/Nova-Bank-Logo.svg" alt="NovaBank" className="h-8 w-auto" />
         </Link>
         {/* Navigation links */}
         <ul className="hidden md:flex gap-8">

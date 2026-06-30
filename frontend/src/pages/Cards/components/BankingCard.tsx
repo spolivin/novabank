@@ -56,7 +56,12 @@ export const BankingCard = ({
           style={{ background: glareBackground, opacity: glareOpacity }}
         />
         <div className="flex justify-between">
-          <p className="font-bold text-base sm:text-xl">NovaBank</p>
+          <img
+            src="/logos/Nova-Bank-Logo-Black.svg"
+            alt="NovaBank"
+            className="h-6 sm:h-8 w-auto self-center"
+          />
+
           <img src="/partners/MasterCard.svg" alt="Mastercard" className="w-12 sm:w-14" />
         </div>
         <div className="flex items-center gap-3">
