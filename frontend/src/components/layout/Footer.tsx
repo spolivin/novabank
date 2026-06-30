@@ -40,8 +40,8 @@ export default function Footer() {
     <footer className="px-6 md:px-10 bg-brand-surface">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-10 text-xs text-brand-fg-muted border-b-1 border-brand-fg-muted/10 py-10">
         <div className="col-span-2 md:col-span-1 flex flex-col gap-4 max-w-[200px]">
-          <Link to={ROUTES.HOME} className="text-brand-fg font-bold text-xl">
-            Nova<span className="text-brand-accent">Bank</span>
+          <Link to={ROUTES.HOME} aria-label="NovaBank home">
+            <img src="/logos/Nova-Bank-Logo.svg" alt="NovaBank" className="h-8 w-auto" />
           </Link>
           <span>The future of banking, today. Simple, secure, and built for your life.</span>
         </div>
