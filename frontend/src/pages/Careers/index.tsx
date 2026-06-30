@@ -4,7 +4,7 @@ import { PageHero } from "@/components/sections/PageHero";
 import { PAGE_TITLES } from "@/constants";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
-import { perks, roles, values } from "./careers.data";
+import { roles, values } from "./careers.data";
 import { RoleList } from "./components/RoleList";
 
 export default function Careers() {
@@ -17,6 +17,7 @@ export default function Careers() {
         </>
         subheading="We are a team of builders, thinkers, and problem solvers on a mission to make banking work for everyone. Come build with us."
         primaryButton={{ label: "Check vacancies", href: "#roles" }}
+        backgroundImage="/banners/Careers-banner.avif"
         variant="centered"
       />
       <CardGrid title="Why NovaBank" features={values} horizontal />
@@ -25,7 +26,6 @@ export default function Careers() {
         subtitle="Do not be afraid to apply!"
         roles={roles}
       />
-      <CardGrid title="Perks & benefits" features={perks} />
       <Banner
         heading="Do not see a role that fits?"
         subheading="Send us your CV!"
