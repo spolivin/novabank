@@ -22,6 +22,7 @@ export default function Security() {
           </>
         }
         subheading="Security is our top priority. With state-of-the-art encryption, 24/7 monitoring, and a dedicated fraud team, we ensure your finances are protected around the clock."
+        backgroundImage="/banners/Security-banner.avif"
         badge="Bank-grade security"
         features={[
           { title: "State-of-the-Art Encryption" },
