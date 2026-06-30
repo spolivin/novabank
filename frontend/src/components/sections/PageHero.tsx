@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect } from "react";
+import { type ReactNode } from "react";
 
 import { Check } from "lucide-react";
 import { motion } from "motion/react";
@@ -47,28 +47,29 @@ export function PageHero({
 }: PageHeroProps) {
   const children = "children" in rest ? rest.children : undefined;
 
-  useEffect(() => {
-    if (!backgroundImage) return;
-    const link = document.createElement("link");
-    link.rel = "preload";
-    link.as = "image";
-    link.href = backgroundImage;
-    document.head.appendChild(link);
-    return () => {
-      document.head.removeChild(link);
-    };
-  }, [backgroundImage]);
+  const background = backgroundImage && (
+    <>
+      <img
+        src={backgroundImage}
+        alt=""
+        aria-hidden="true"
+        fetchPriority="high"
+        decoding="async"
+        className="absolute inset-0 w-full h-full object-cover -z-20"
+      />
+      <div
+        className="absolute inset-0 -z-10"
+        style={{
+          background: "linear-gradient(135deg, rgba(13,43,69,0.82) 0%, rgba(26,74,110,0.82) 100%)",
+        }}
+      />
+    </>
+  );
 
-  const bgStyle = backgroundImage
-    ? {
-        backgroundImage: `linear-gradient(135deg, rgba(13,43,69,0.82) 0%, rgba(26,74,110,0.82) 100%), url(${backgroundImage})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }
-    : undefined;
   if (variant === "centered") {
     return (
-      <Section className="bg-hero flex items-center overflow-hidden min-h-[640px]" style={bgStyle}>
+      <Section className="bg-hero relative isolate flex items-center overflow-hidden min-h-[640px]">
+        {background}
         <motion.div {...motionProps} className="w-full">
           <div className="max-w-5xl mx-auto text-center">
             {badge && (
@@ -108,10 +109,8 @@ export function PageHero({
     );
   }
   return (
-    <Section
-      className="bg-hero flex items-center justify-center overflow-hidden min-h-[640px]"
-      style={bgStyle}
-    >
+    <Section className="bg-hero relative isolate flex items-center justify-center overflow-hidden min-h-[640px]">
+      {background}
       <motion.div
         {...motionProps}
         className="flex flex-col lg:flex-row items-center justify-between gap-16"

@@ -3,6 +3,7 @@ import { Suspense, lazy } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import MainLayout from "@/components/layout/Layout";
+import PageLoader from "@/components/layout/PageLoader";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import ProtectedRoute from "@/components/ui/ProtectedRoute";
 import { ROUTES } from "@/constants";
@@ -54,9 +55,11 @@ export default function App() {
   return (
     <AuthProvider>
       <ErrorBoundary>
-        <Suspense fallback={<div className="min-h-screen bg-brand-bg" />}>
-          <RouterProvider router={router} />
-        </Suspense>
+        <PageLoader>
+          <Suspense fallback={<div className="min-h-screen bg-brand-bg" />}>
+            <RouterProvider router={router} />
+          </Suspense>
+        </PageLoader>
       </ErrorBoundary>
     </AuthProvider>
   );
