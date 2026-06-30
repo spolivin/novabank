@@ -10,12 +10,16 @@ const BANNER_IMAGES = [
   "/banners/Careers-banner.avif",
 ];
 
+// Module-level cache: holding the decoded HTMLImageElements for the whole session
+// keeps their bitmaps alive so route banners reuse them without re-decoding.
+const decodedBanners: HTMLImageElement[] = [];
+
 interface PageLoaderProps {
   children: ReactNode;
 }
 
 export default function PageLoader({ children }: PageLoaderProps) {
-  const [loadedCount, setLoadedCount] = useState(0);
+  const [imagesReady, setImagesReady] = useState(false);
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
 
   useEffect(() => {
@@ -23,11 +27,29 @@ export default function PageLoader({ children }: PageLoaderProps) {
     return () => clearTimeout(timer);
   }, []);
 
-  // Count each image once it finishes (or fails, so one bad asset can't block forever).
-  const handleSettled = () => setLoadedCount((count) => count + 1);
+  // Download AND fully decode every banner before revealing the page, so the first
+  // paint on each route reuses an already-decoded image instead of decoding on demand.
+  useEffect(() => {
+    let cancelled = false;
 
-  const imagesLoaded = loadedCount >= BANNER_IMAGES.length;
-  const showPage = imagesLoaded && minTimeElapsed;
+    const decodeAll = BANNER_IMAGES.map((src) => {
+      const img = new Image();
+      img.src = src;
+      decodedBanners.push(img);
+      // decode() rejects on a broken image; swallow so one bad asset can't block the app.
+      return img.decode().catch(() => undefined);
+    });
+
+    Promise.all(decodeAll).then(() => {
+      if (!cancelled) setImagesReady(true);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const showPage = imagesReady && minTimeElapsed;
 
   // Prevent scrolling while the loader overlay is visible.
   useEffect(() => {
@@ -41,16 +63,6 @@ export default function PageLoader({ children }: PageLoaderProps) {
 
   return (
     <>
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed -z-50 opacity-0"
-        style={{ left: "-9999px", top: 0 }}
-      >
-        {BANNER_IMAGES.map((src) => (
-          <img key={src} src={src} alt="" onLoad={handleSettled} onError={handleSettled} />
-        ))}
-      </div>
-
       {!showPage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-brand-bg">
           <img src="/logos/N-Logo-Symbol.svg" alt="Loading" className="w-16 h-16 animate-spin" />
