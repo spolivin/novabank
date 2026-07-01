@@ -22,15 +22,26 @@ class _RequestIdFilter(logging.Filter):
         return True
 
 
+# Standard LogRecord attributes — anything outside this set passed via
+# `extra=` is treated as a structured field and emitted as its own JSON key.
+_RESERVED = frozenset(logging.makeLogRecord({}).__dict__) | {
+    "request_id",
+    "message",
+    "asctime",
+}
+
+
 class _JSONFormatter(logging.Formatter):
     def format(self, record):
         payload = {
-            "ts": self.formatTime(record, "%Y-%m-%dT%H:%M:%SZ"),
             "level": record.levelname,
             "logger": record.name,
             "request_id": getattr(record, "request_id", "-"),
             "msg": record.getMessage(),
         }
+        for key, value in record.__dict__.items():
+            if key not in _RESERVED:
+                payload[key] = value
         if record.exc_info:
             payload["exc"] = self.formatException(record.exc_info)
         return _json.dumps(payload)
@@ -81,7 +92,17 @@ async def request_middleware(request: Request, call_next):
     response = await call_next(request)
     ms = (time.perf_counter() - start) * 1000
     logger.info(
-        "%s %s %d %.0fms", request.method, request.url.path, response.status_code, ms
+        "%s %s %d %.0fms",
+        request.method,
+        request.url.path,
+        response.status_code,
+        ms,
+        extra={
+            "method": request.method,
+            "path": request.url.path,
+            "status": response.status_code,
+            "duration_ms": round(ms, 1),
+        },
     )
     response.headers.update(_SECURITY_HEADERS)
     return response
