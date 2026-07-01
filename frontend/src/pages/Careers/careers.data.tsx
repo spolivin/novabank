@@ -1,44 +1,31 @@
-// careers.data.ts
 import { type RoleProps } from "@/components/ui/RoleCard";
-
-export interface Perk {
-  icon: string;
-  title: string;
-  description: string;
-}
-
-export interface Value {
-  icon: string;
-  title: string;
-  description: string;
-}
 
 export interface Role extends RoleProps {
   id: string;
 }
 
 // ─── Why NovaBank ────────────────────────────────────────────
-export const values: Value[] = [
+export const values = [
   {
-    icon: "🚀",
+    icon: <img src="/icons/Careers/Grow-fast.svg" alt="" />,
     title: "Grow fast",
     description:
       "We invest in your development with a dedicated learning budget, mentorship, and clear progression paths.",
   },
   {
-    icon: "🌍",
+    icon: <img src="/icons/Careers/Work-remotely.svg" alt="" />,
     title: "Work remotely",
     description:
       "Fully remote-first culture with flexible hours. Work from wherever you do your best thinking.",
   },
   {
-    icon: "💡",
+    icon: <img src="/icons/Careers/Make-an-impact.svg" alt="" />,
     title: "Make an impact",
     description:
       "Small teams, real ownership. Your work ships to millions of users — no bureaucracy in the way.",
   },
   {
-    icon: "🤝",
+    icon: <img src="/icons/Careers/People-first.svg" alt="" />,
     title: "People first",
     description:
       "We hire for character and curiosity. Diverse, kind, and direct — the team you actually want to work with.",
@@ -116,47 +103,5 @@ export const roles: Role[] = [
     description:
       "Ensure NovaBank meets regulatory requirements across all markets while we scale internationally. You will monitor changing regulations, conduct internal audits, maintain our compliance documentation, and partner with legal and engineering to implement controls. You are comfortable translating dense regulatory language into clear, actionable requirements for the product team.",
     stack: ["Jira", "Confluence", "OneTrust", "Excel"],
-  },
-];
-
-// ─── Culture points ───────────────────────────────────────────
-export const culturePoints: string[] = [
-  "Async-first communication — no pointless meetings",
-  "Transparent salaries and equity for everyone",
-  "Ship fast, learn faster — we celebrate smart failures",
-  "Quarterly offsites to connect in person",
-];
-
-// ─── Perks ───────────────────────────────────────────────────
-export const perks: Perk[] = [
-  {
-    icon: "🏥",
-    title: "Health coverage",
-    description: "Full medical, dental, and vision for you and your family.",
-  },
-  {
-    icon: "📈",
-    title: "Equity",
-    description: "Meaningful equity stake so you share in what we build together.",
-  },
-  {
-    icon: "📚",
-    title: "Learning budget",
-    description: "$2,000 per year for courses, books, and conferences.",
-  },
-  {
-    icon: "🖥️",
-    title: "Home office setup",
-    description: "Full equipment budget to build the workspace you need.",
-  },
-  {
-    icon: "🏖️",
-    title: "Unlimited PTO",
-    description: "Take the time you need. We trust you to manage your energy.",
-  },
-  {
-    icon: "👶",
-    title: "Parental leave",
-    description: "16 weeks fully paid leave for all new parents.",
   },
 ];

@@ -18,12 +18,20 @@ export const PartnerMarquee = ({ partners }: PartnerMarqueeProps) => {
       </p>
       <div className="flex w-max animate-marquee items-center">
         {partners.concat(partners).map((partner, i) => (
-          <img
+          <a
             key={i}
-            src={partner.logo}
-            alt={partner.name}
-            className="flex-shrink-0 mx-12 h-8 w-auto object-contain"
-          />
+            href={partner.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={partner.name}
+            className="flex-shrink-0 mx-12"
+          >
+            <img
+              src={partner.logo}
+              alt={partner.name}
+              className="h-8 w-auto object-contain transition-opacity hover:opacity-70"
+            />
+          </a>
         ))}
       </div>
     </motion.div>

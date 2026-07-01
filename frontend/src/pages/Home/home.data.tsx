@@ -3,17 +3,26 @@ import { type TestimonialItem } from "@/components/ui/TestimonialCarousel";
 export interface Partner {
   name: string;
   logo: string;
+  url: string;
 }
 
 export const PARTNERS: Partner[] = [
-  { name: "Visa", logo: "/partners/Visa.svg" },
-  { name: "Mastercard", logo: "/partners/MasterCard.svg" },
-  { name: "PayPal", logo: "/partners/PayPal.svg" },
-  { name: "Stripe", logo: "/partners/Stripe.svg" },
-  { name: "Goldman Sachs", logo: "/partners/GoldmanSachs.svg" },
-  { name: "JPMorgan", logo: "/partners/J-P-Morgan.svg" },
-  { name: "BlackRock", logo: "/partners/BlackRock.svg" },
-  { name: "Fidelity", logo: "/partners/Fidelity.svg" },
+  { name: "Visa", logo: "/partners/Visa.svg", url: "https://www.visa.com" },
+  { name: "Mastercard", logo: "/partners/MasterCard.svg", url: "https://www.mastercard.com" },
+  { name: "PayPal", logo: "/partners/PayPal.svg", url: "https://www.paypal.com" },
+  { name: "Stripe", logo: "/partners/Stripe.svg", url: "https://www.stripe.com" },
+  {
+    name: "Goldman Sachs",
+    logo: "/partners/GoldmanSachs.svg",
+    url: "https://www.goldmansachs.com",
+  },
+  { name: "JPMorgan", logo: "/partners/J-P-Morgan.svg", url: "https://www.jpmorgan.com" },
+  {
+    name: "BlackRock",
+    logo: "/partners/BlackRock.svg",
+    url: "https://www.blackrock.com/corporate",
+  },
+  { name: "Fidelity", logo: "/partners/Fidelity.svg", url: "https://www.fidelity.com" },
 ];
 
 export const features = [
