@@ -1,8 +1,9 @@
 import asyncio
 import logging
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Request, status
 
+from dependencies.limiter import limiter
 from dependencies.supabase import supabase_admin
 
 logger = logging.getLogger(__name__)
@@ -11,12 +12,14 @@ router = APIRouter(prefix="/health")
 
 
 @router.get("/api")
-def health():
+@limiter.limit("60/minute")
+def health(request: Request):
     return {"status": "ok"}
 
 
 @router.get("/db")
-async def health_db():
+@limiter.limit("20/minute")
+async def health_db(request: Request):
     try:
         await asyncio.to_thread(
             lambda: (

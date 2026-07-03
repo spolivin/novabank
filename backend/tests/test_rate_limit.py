@@ -42,6 +42,23 @@ async def test_history_rate_limit_blocks_after_limit(client):
     assert r.status_code == 429
 
 
+async def test_health_api_rate_limit_blocks_after_limit(client):
+    for _ in range(60):
+        r = await client.get("/health/api")
+        assert r.status_code == 200
+    r = await client.get("/health/api")
+    assert r.status_code == 429
+
+
+async def test_health_db_rate_limit_blocks_after_limit(client):
+    with patch("routers.health.supabase_admin"):
+        for _ in range(20):
+            r = await client.get("/health/db")
+            assert r.status_code == 200
+        r = await client.get("/health/db")
+    assert r.status_code == 429
+
+
 async def test_rate_limit_is_per_user(client):
     """Exhausting one user's limit does not affect another user's counter."""
     chat_limit = limiter._route_limits["routers.ai.chat"][0]
