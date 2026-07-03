@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Bot, MessageCircle, Send, User, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -33,6 +33,32 @@ function formatDayLabel(date: Date): string {
   if (date.toDateString() === today.toDateString()) return "Today";
   if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
   return date.toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
+}
+
+interface DayGroup {
+  key: string;
+  label: string | null;
+  messages: Message[];
+}
+
+function groupMessagesByDay(messages: Message[]): DayGroup[] {
+  const groups: DayGroup[] = [];
+  messages.forEach((msg, i) => {
+    const prev = messages[i - 1];
+    const startNewDay =
+      msg.timestamp &&
+      (!prev?.timestamp || msg.timestamp.toDateString() !== prev.timestamp.toDateString());
+    if (groups.length === 0 || startNewDay) {
+      groups.push({
+        key: msg.id,
+        label: msg.timestamp ? formatDayLabel(msg.timestamp) : null,
+        messages: [msg],
+      });
+    } else {
+      groups[groups.length - 1].messages.push(msg);
+    }
+  });
+  return groups;
 }
 
 export default function AIAssistant() {
@@ -212,24 +238,18 @@ export default function AIAssistant() {
                     </span>
                   </div>
                 ) : (
-                  messages.map((msg, i) => {
-                    const prevMsg = messages[i - 1];
-                    const showSeparator =
-                      msg.timestamp &&
-                      (!prevMsg?.timestamp ||
-                        msg.timestamp.toDateString() !== prevMsg.timestamp.toDateString());
-                    return (
-                      <Fragment key={msg.id}>
-                        {showSeparator && (
-                          <div className="flex items-center gap-2 my-1">
-                            <hr className="flex-1 border-white/10" />
-                            <span className="text-[10px] text-brand-fg-muted/60 select-none">
-                              {formatDayLabel(msg.timestamp!)}
-                            </span>
-                            <hr className="flex-1 border-white/10" />
-                          </div>
-                        )}
+                  groupMessagesByDay(messages).map((group) => (
+                    <div key={group.key} className="space-y-3">
+                      {group.label && (
+                        <div className="sticky top-0 z-10 flex justify-center py-1 pointer-events-none">
+                          <span className="rounded-full bg-brand-accent/15 px-3 py-1 text-[11px] font-semibold text-brand-accent shadow-md ring-1 ring-brand-accent/30 backdrop-blur-sm select-none">
+                            {group.label}
+                          </span>
+                        </div>
+                      )}
+                      {group.messages.map((msg) => (
                         <div
+                          key={msg.id}
                           className={`flex items-end gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                         >
                           {msg.role === "assistant" && (
@@ -315,9 +335,9 @@ export default function AIAssistant() {
                             </div>
                           )}
                         </div>
-                      </Fragment>
-                    );
-                  })
+                      ))}
+                    </div>
+                  ))
                 )}
                 {!historyLoading && <div ref={bottomRef} />}
               </div>
