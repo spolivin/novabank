@@ -1,5 +1,4 @@
 import asyncio
-import logging
 
 import jwt
 from fastapi import HTTPException, Security, status
@@ -7,8 +6,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt import PyJWKClient
 
 from config import settings
-
-logger = logging.getLogger(__name__)
+from log_context import add_log_fields
 
 _jwks_client = PyJWKClient(
     str(settings.supabase_url).rstrip("/") + "/auth/v1/.well-known/jwks.json",
@@ -32,7 +30,9 @@ async def verify_jwt(
     try:
         return await asyncio.to_thread(verify_token, credentials.credentials)
     except jwt.PyJWTError as e:
-        logger.warning("JWT validation failed: %s", e)
+        # Recorded on the request's canonical line (WARNING via the 401 status);
+        # no separate log line needed.
+        add_log_fields(error="invalid_token")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
         ) from e

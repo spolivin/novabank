@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, Request, Security, status
 
 from dependencies.auth import verify_jwt
 from dependencies.limiter import limiter
+from log_context import add_log_fields
 from schemas.chat import ChatRequest, ChatResponse, HistoryMessage
 from services import ai as ai_service
 
@@ -16,11 +17,13 @@ router = APIRouter(prefix="/ai")
 @limiter.limit("10/minute")
 async def history(request: Request, user: dict = Security(verify_jwt)):
     user_id = user["sub"]
-    logger.info("History request from user %s", user_id)
+    add_log_fields(user_id=user_id)
     try:
         turns = await ai_service.get_history(user_id)
+        add_log_fields(turns=len(turns))
         return turns
     except Exception as e:
+        add_log_fields(error=type(e).__name__)
         logger.exception("History fetch failed for user %s", user_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -32,12 +35,13 @@ async def history(request: Request, user: dict = Security(verify_jwt)):
 @limiter.limit("2/minute")
 async def chat(request: Request, body: ChatRequest, user: dict = Security(verify_jwt)):
     user_id = user["sub"]
-    logger.info("Chat request from user %s", user_id)
+    add_log_fields(user_id=user_id)
     try:
         reply = await ai_service.get_reply(user_id, body.message)
-        logger.info("Chat reply sent to user %s (%d chars)", user_id, len(reply))
+        add_log_fields(reply_chars=len(reply))
         return ChatResponse(reply=reply)
     except Exception as e:
+        add_log_fields(error=type(e).__name__)
         logger.exception("Chat failed for user %s", user_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

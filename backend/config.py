@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     anthropic_api_key: str
     log_level: str = "INFO"
     log_format: str = ""
+    third_party_log_level: str = "WARNING"
     allowed_origins: str = "http://127.0.0.1:5173"
 
 

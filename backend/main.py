@@ -11,6 +11,7 @@ from slowapi.errors import RateLimitExceeded
 
 from config import settings
 from dependencies.limiter import limiter
+from log_context import add_log_fields, get_log_fields, reset_log_fields
 from routers import ai, health, user
 
 _request_id: ContextVar[str] = ContextVar("request_id", default="-")
@@ -63,11 +64,26 @@ _handler.addFilter(_RequestIdFilter())
 
 logging.basicConfig(level=_log_level, handlers=[_handler], force=True)
 
+# Quiet noisy third-party loggers (per-request HTTP chatter from httpx and the
+# transitive Supabase/Anthropic clients) while keeping their warnings/errors.
+# Override with THIRD_PARTY_LOG_LEVEL=DEBUG to restore the full HTTP trail.
+_NOISY_LOGGERS = ("httpx", "httpcore", "hpack", "anthropic", "urllib3", "postgrest")
+_tp_level = getattr(logging, settings.third_party_log_level.upper(), logging.WARNING)
+for _name in _NOISY_LOGGERS:
+    logging.getLogger(_name).setLevel(_tp_level)
+
 logger = logging.getLogger(__name__)
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+
+def _rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    add_log_fields(error="rate_limited")
+    return _rate_limit_exceeded_handler(request, exc)
+
+
+app.add_exception_handler(RateLimitExceeded, _rate_limit_handler)
 
 
 _SECURITY_HEADERS = {
@@ -88,10 +104,19 @@ async def request_middleware(request: Request, call_next):
     ):
         return Response(status_code=status.HTTP_413_CONTENT_TOO_LARGE)
     _request_id.set(str(uuid.uuid4())[:8])
+    reset_log_fields()
     start = time.perf_counter()
     response = await call_next(request)
     ms = (time.perf_counter() - start) * 1000
-    logger.info(
+    # One canonical line per request; severity follows the outcome.
+    if response.status_code < 400:
+        level = logging.INFO
+    elif response.status_code < 500:
+        level = logging.WARNING
+    else:
+        level = logging.ERROR
+    logger.log(
+        level,
         "%s %s %d %.0fms",
         request.method,
         request.url.path,
@@ -102,6 +127,7 @@ async def request_middleware(request: Request, call_next):
             "path": request.url.path,
             "status": response.status_code,
             "duration_ms": round(ms, 1),
+            **get_log_fields(),
         },
     )
     response.headers.update(_SECURITY_HEADERS)
