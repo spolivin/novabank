@@ -71,6 +71,13 @@ async def get_history(user_id: str) -> list[dict]:
     return list(reversed(result.data))
 
 
+async def clear_history(user_id: str) -> int:
+    result = await asyncio.to_thread(
+        supabase_admin.table("conversations").delete().eq("user_id", user_id).execute
+    )
+    return len(result.data)
+
+
 async def get_reply(user_id: str, message: str) -> str:
     insert_result = await asyncio.to_thread(
         supabase_admin.table("conversations")

@@ -44,6 +44,17 @@ export const sendChatMessage = async (message: string): Promise<string> => {
   return data.reply;
 };
 
+export const clearChatHistory = async (): Promise<void> => {
+  const token = await getAccessToken();
+
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/ai/history`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!response.ok) throw new Error("Failed to clear history");
+};
+
 export const deleteAccount = async () => {
   const token = await getAccessToken();
 

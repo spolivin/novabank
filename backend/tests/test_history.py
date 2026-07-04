@@ -39,3 +39,28 @@ async def test_history_service_error_returns_500(client):
         response = await client.get("/ai/history")
     assert response.status_code == 500
     assert response.json()["detail"] == "Failed to fetch history"
+
+
+async def test_clear_history_success(client):
+    with patch(
+        "routers.ai.ai_service.clear_history", new=AsyncMock(return_value=3)
+    ) as mock_clear:
+        response = await client.delete("/ai/history")
+    assert response.status_code == 204
+    assert response.content == b""
+    mock_clear.assert_awaited_once()
+
+
+async def test_clear_history_missing_auth(unauthed_client):
+    response = await unauthed_client.delete("/ai/history")
+    assert response.status_code == 401
+
+
+async def test_clear_history_service_error_returns_500(client):
+    with patch(
+        "routers.ai.ai_service.clear_history",
+        new=AsyncMock(side_effect=RuntimeError("db failure")),
+    ):
+        response = await client.delete("/ai/history")
+    assert response.status_code == 500
+    assert response.json()["detail"] == "Failed to clear history"

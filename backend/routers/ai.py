@@ -31,6 +31,23 @@ async def history(request: Request, user: dict = Security(verify_jwt)):
         ) from e
 
 
+@router.delete("/history", status_code=status.HTTP_204_NO_CONTENT)
+@limiter.limit("5/minute")
+async def clear_history(request: Request, user: dict = Security(verify_jwt)):
+    user_id = user["sub"]
+    add_log_fields(user_id=user_id)
+    try:
+        deleted = await ai_service.clear_history(user_id)
+        add_log_fields(deleted=deleted)
+    except Exception as e:
+        add_log_fields(error=type(e).__name__)
+        logger.exception("History clear failed for user %s", user_id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to clear history",
+        ) from e
+
+
 @router.post("/chat", response_model=ChatResponse)
 @limiter.limit("2/minute")
 async def chat(request: Request, body: ChatRequest, user: dict = Security(verify_jwt)):
