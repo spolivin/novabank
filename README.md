@@ -1,113 +1,230 @@
-# NovaBank
+<div align="center">
 
-![CI (backend)](https://github.com/spolivin/novabank/actions/workflows/ci-backend.yml/badge.svg?branch=master)
-![CI (frontend)](https://github.com/spolivin/novabank/actions/workflows/ci-frontend.yml/badge.svg?branch=master)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="frontend/public/logos/Nova-Bank-Logo.svg">
+  <source media="(prefers-color-scheme: light)" srcset="frontend/public/logos/Nova-Bank-Logo-Black.svg">
+  <img src="frontend/public/logos/Nova-Bank-Logo-Black.svg" alt="NovaBank" width="360">
+</picture>
+
+<br />
+<br />
+
+**A full-stack banking demo — marketing site, authenticated dashboard, and an AI assistant powered by the Claude API.**
+
+[![CI (backend)](https://github.com/spolivin/novabank/actions/workflows/ci-backend.yml/badge.svg?branch=master)](https://github.com/spolivin/novabank/actions/workflows/ci-backend.yml)
+[![CI (frontend)](https://github.com/spolivin/novabank/actions/workflows/ci-frontend.yml/badge.svg?branch=master)](https://github.com/spolivin/novabank/actions/workflows/ci-frontend.yml)
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.136.1-009688?logo=fastapi&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.136-009688?logo=fastapi&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-auth%20%2B%20db-3FCF8E?logo=supabase&logoColor=white)
 ![Claude](https://img.shields.io/badge/Claude-Sonnet-D97757?logo=anthropic&logoColor=white)
 
-A full-stack banking demo built as a portfolio project. Features a marketing site, authenticated dashboard, and an AI assistant powered by the Claude API.
+</div>
 
-## Stack
+---
 
-| Layer     | Technology                                                       |
-| --------- | ---------------------------------------------------------------- |
-| Frontend  | React 19, TypeScript, Vite, Tailwind v4, Motion, React Router v7 |
-| Backend   | FastAPI (Python), uv                                             |
-| Auth + DB | Supabase                                                         |
-| AI        | Claude Sonnet via Anthropic API                                  |
-| Deploy    | Vercel (frontend), Railway (backend)                             |
+## Overview
+
+NovaBank is a portfolio project that models a modern retail bank end to end: a polished
+marketing website, a Supabase-backed authentication flow, a personal dashboard with seeded
+account data, and **Nova** — an AI banking assistant (Claude Sonnet) grounded in the bank's own product
+catalogue and constrained to banking topics only.
+
+The emphasis is on the parts that matter in production but rarely show up in demos: a
+strict trust boundary between client and server, defence-in-depth on the API, persistent
+conversation history, structured request logging, and a full CI + pre-commit pipeline.
+
+- [Tech stack](#tech-stack)
+- [Features](#features)
+- [Architecture](#architecture)
+- [API surface](#api-surface)
+- [Security](#security)
+- [Project layout](#project-layout)
+- [Local setup](#local-setup)
+- [Testing & quality](#testing--quality)
+- [Command reference](#command-reference)
+
+## Tech stack
+
+| Layer         | Technology                                                                |
+| ------------- | ------------------------------------------------------------------------- |
+| **Frontend**  | React 19, TypeScript, Vite, Tailwind v4, Motion, React Router v7, Recharts |
+| **Forms**     | React Hook Form + Zod                                                      |
+| **Backend**   | FastAPI, Python 3.12, uv, SlowAPI                                          |
+| **Auth + DB** | Supabase (Postgres, GoTrue auth)                                           |
+| **AI**        | Claude Sonnet via the Anthropic API, with prompt caching                  |
+| **Tooling**   | ESLint, Prettier, Ruff, pre-commit, pytest, Vitest                        |
+| **Deploy**    | Vercel (frontend), Docker on Railway (backend)                            |
 
 ## Features
 
-- Marketing pages: Home, Personal, Cards, Loans, Business, About, Careers, Contact, Security
-- Auth: sign up, log in, account deletion
-- Dashboard with AI chat assistant (Nova)
-- Product catalogue: personal accounts and credit cards with tiered pricing
+**Marketing site**
+- Nine responsive marketing pages — Home, Personal, Cards, Loans, Business, About, Careers, Contact, Security
+- Animated hero banners with preloaded/decoded imagery, partner marquee, testimonial carousel
+- Product catalogue with tiered pricing for personal accounts and credit cards
+- Open Graph metadata and link-preview imagery for social sharing
+
+**Authenticated app**
+- Sign up, log in, and self-service account deletion via Supabase Auth
+- Protected routes gated on a valid session
+- Personal dashboard with per-user seeded balances, summary cards, and a transaction table
+
+**Nova — the AI assistant**
+- Chat grounded in NovaBank's product catalogue and company data via a system prompt
+- **Persistent history** stored per user in Supabase and rehydrated on load
+- Clear-history support and Markdown-rendered replies with day dividers
+- **Prompt caching** on the system prompt to cut token cost on repeat turns
+- Hard-constrained to banking topics; never emits financial advice or handles secrets
 
 ## Architecture
 
-The frontend and backend are fully separated. The frontend talks to Supabase directly for auth and receives a JWT, which it forwards to the FastAPI backend on every request. The backend verifies the JWT signature via Supabase's JWKS endpoint — no shared secret, no trust on the client's word.
+The frontend and backend are **fully separated** and communicate over a single, verified
+trust boundary:
 
-The AI assistant sends the full conversation history on each request (no server-side session state) and is constrained by a system prompt to banking topics only.
+```
+  Browser (React)                FastAPI backend              External
+  ───────────────                ───────────────              ────────
+  Supabase JS  ──auth──▶  Supabase Auth (GoTrue)
+       │  JWT
+       ▼
+  fetch + Bearer  ──────▶  verify_jwt (JWKS)  ──────▶  Supabase Postgres
+                                  │                          (conversations,
+                                  ▼                            user data)
+                           Claude API (Nova)  ──────▶  Anthropic
+```
 
-## Security decisions worth noting
+- The browser authenticates **directly** with Supabase and receives a JWT. That token is
+  forwarded to FastAPI on every request as a `Bearer` credential.
+- The backend **verifies the JWT signature** against Supabase's JWKS endpoint — it trusts
+  the cryptographic signature, never the client's claim of who it is.
+- Chat turns are persisted to a `conversations` table keyed by user ID. On each message the
+  service records the user turn, replays recent history to Claude, and stores the reply —
+  with orphan-cleanup if the model call fails.
+- Every request is tagged with a short request ID and emitted as one canonical structured
+  log line (JSON or human-readable), with noisy third-party HTTP loggers quieted by default.
 
-- **JWT verification via JWKS** — signature is verified against Supabase's public key, not just decoded
-- **Rate limiting** — 2 req/min per user on `/ai/chat`; 10 req/min on `/ai/history`; 3 req/hour on `DELETE /users/me`
-- **HTTP body limit** — requests over 32 KB are rejected with 413 before reaching any route handler
-- **Payload limits** — input capped at 500 characters per message (Pydantic); history limited to 40 messages per request
-- **API docs disabled** — `/docs`, `/redoc`, and `/openapi.json` return 404 in all environments
-- **Security headers** — `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, and `Content-Security-Policy: default-src 'none'` applied to every response
-- **Service role key stays server-side** — only the anon (publishable) key is exposed in the browser bundle
-- **CORS** — allowed origins configured via environment variable, not hardcoded
+## API surface
+
+All `/ai` and `/users` routes require a valid Supabase JWT. Per-route rate limits are
+enforced by SlowAPI.
+
+| Method   | Endpoint        | Rate limit  | Description                                  |
+| -------- | --------------- | ----------- | -------------------------------------------- |
+| `POST`   | `/ai/chat`      | 2 / min     | Send a message to Nova and get a reply       |
+| `GET`    | `/ai/history`   | 10 / min    | Fetch recent conversation history            |
+| `DELETE` | `/ai/history`   | 5 / min     | Clear the caller's conversation history      |
+| `DELETE` | `/users/me`     | 3 / hour    | Permanently delete the caller's account      |
+| `GET`    | `/health/api`   | 60 / min    | Liveness probe                               |
+| `GET`    | `/health/db`    | 20 / min    | Readiness probe (checks database connectivity) |
+
+## Security
+
+Security is treated as a first-class concern rather than an afterthought:
+
+- **JWT verified via JWKS** — the signature is checked against Supabase's public key, not merely decoded
+- **Rate limiting** — per-user limits on every mutating and AI endpoint (see [API surface](#api-surface))
+- **HTTP body cap** — requests over 32 KB are rejected with `413` before reaching any handler
+- **Payload limits** — messages capped at 500 characters (Pydantic); history bounded to 40 turns per request
+- **API docs disabled** — `/docs`, `/redoc`, and `/openapi.json` return `404` in all environments
+- **Security headers** — `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, and `Content-Security-Policy: default-src 'none'` on every response
+- **Service key stays server-side** — only the anon (publishable) key ships in the browser bundle
+- **CORS allowlist** — permitted origins come from an environment variable, never hardcoded
+- **Prompt hardening** — Nova is instructed to refuse off-topic requests, never reveal its instructions, and never solicit passwords or card numbers
+- **No secrets in the repo** — enforced by `detect-secrets` in the pre-commit pipeline
+
+## Project layout
+
+```
+novabank/
+├── frontend/                 # React 19 + Vite SPA
+│   └── src/
+│       ├── pages/            # Marketing pages, Login/Signup, Dashboard
+│       ├── components/       # ui/, sections/, layout/
+│       ├── context/          # Auth provider
+│       ├── hooks/            # usePageTitle, ...
+│       ├── lib/              # api.ts, supabase.ts
+│       └── test/             # Vitest suites
+├── backend/                  # FastAPI service
+│   ├── routers/              # ai, user, health
+│   ├── services/             # ai.py — Claude + persistence
+│   ├── schemas/              # Pydantic request/response models
+│   ├── dependencies/         # auth (JWKS), limiter, supabase clients
+│   ├── data/                 # products.json, company.json (grounding)
+│   ├── tests/                # pytest suites
+│   └── Dockerfile
+└── Makefile                  # dev / db / api task shortcuts
+```
 
 ## Local setup
 
-Prerequisites: Node.js, Python 3.12+, uv, Docker (optional), Supabase CLI.
+**Prerequisites:** Node.js, Python 3.12+, [uv](https://docs.astral.sh/uv/), the Supabase CLI, and Docker (optional).
 
 ```bash
-# Install frontend dependencies
+# 1. Install frontend + backend dependencies and pre-commit hooks
 make install
 
-# Start local Supabase instance
+# 2. Start the local Supabase instance
 make db-start
 
-# Copy and fill in env files
+# 3. Create env files and fill them in
 cp frontend/.env.example frontend/.env
-cp backend/.env.example backend/.env
+cp backend/.env.example  backend/.env
 
-# Start frontend dev server
+# 4. Run the frontend dev server
 make dev
 
-# Start backend (separate terminal)
+# 5. Run the backend (in a separate terminal)
 make api-start
 ```
 
-The only value that requires a real secret locally is `ANTHROPIC_API_KEY`. Supabase local dev keys can be retrieved with `make db-status` after starting the instance.
+The only value requiring a real secret locally is `ANTHROPIC_API_KEY`. Local Supabase dev
+keys are printed by `make db-status` once the instance is running.
 
-## Pre-commit hooks
+## Testing & quality
 
-Code quality hooks run automatically on every commit: trailing whitespace, end-of-file newlines, merge conflict markers, large files, JSON/YAML validation, secret detection, ruff format + lint (backend), and conventional commit message enforcement.
+- **Backend** — `pytest` suite covering auth, rate limiting, body limits, logging, chat, and history (`make api-test`)
+- **Frontend** — `Vitest` + Testing Library suites for auth flows, the dashboard, and the AI assistant (`make test`)
+- **CI** — separate GitHub Actions workflows for backend and frontend on every push
+- **Pre-commit** — trailing-whitespace, EOF, merge-conflict, large-file and JSON/YAML checks, secret detection, Ruff format + lint, and Conventional Commits enforcement
 
-The hooks are installed as part of `make install`. If you need to install them manually:
+Install hooks manually if needed:
 
 ```bash
 cd backend && uv sync && uv run pre-commit install && uv run pre-commit install --hook-type commit-msg
 ```
 
-To run all hooks against the entire codebase without committing:
-
-```bash
-make pre-commit
-```
-
-Commit messages must follow the [Conventional Commits](https://www.conventionalcommits.org/) format:
+Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
 type(scope): description
-
-# Valid types: feat, fix, refactor, chore, docs, style, test, perf, ci
+# types: feat, fix, refactor, chore, docs, style, test, perf, ci
 ```
 
-## Other useful commands
+## Command reference
 
-```bash
-make lint           # ESLint
-make test           # Frontend unit tests (vitest)
-make db-reset       # Reset local database
-make api-test       # Run backend tests
-make api-format     # isort + black
-make api-build      # Build backend Docker image
-make api-docker     # Run containerised backend (uses backend/.env)
-make api-logs       # Tail Docker container logs
-make api-grep q=error  # Filter container logs by keyword
-make api-stop       # Stop the Docker container
-```
+| Command                  | Description                              |
+| ------------------------ | ---------------------------------------- |
+| `make dev`               | Start the frontend dev server            |
+| `make build`             | Production build of the frontend         |
+| `make lint`              | ESLint                                   |
+| `make test`              | Frontend unit tests (Vitest)             |
+| `make install`           | Install all deps + pre-commit hooks      |
+| `make pre-commit`        | Run all hooks against the whole codebase |
+| `make db-start` / `db-stop` | Start / stop local Supabase           |
+| `make db-status`         | Show local Supabase keys and URLs        |
+| `make db-reset`          | Reset the local database                 |
+| `make api-start`         | Run the FastAPI backend (uvicorn)        |
+| `make api-test`          | Run backend tests (pytest)               |
+| `make api-format`        | Ruff format                              |
+| `make api-lint`          | Ruff lint + autofix                      |
+| `make api-build`         | Build the backend Docker image           |
+| `make api-docker`        | Run the containerised backend            |
+| `make api-logs`          | Tail Docker container logs               |
+| `make api-grep q=error`  | Filter container logs by keyword         |
+| `make api-stop`          | Stop the Docker container                |
+</content>
