@@ -17,7 +17,9 @@ export const PartnerMarquee = ({ partners }: PartnerMarqueeProps) => {
         Trusted by industry leaders
       </p>
       <div className="flex w-max animate-marquee items-center">
-        {partners.concat(partners).map((partner, i) => (
+        {/* Render 4 copies so the -50% shift (= 2 copies wide) always overflows
+            even ultrawide (3000px+) viewports, keeping the loop seamless. */}
+        {[...partners, ...partners, ...partners, ...partners].map((partner, i) => (
           <a
             key={i}
             href={partner.url}
