@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
-import { Bot, MessageCircle, Send, User, X } from "lucide-react";
+import { Bot, MessageCircle, Send, Trash2, User, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-import { fetchChatHistory, sendChatMessage } from "@/lib/api";
+import { clearChatHistory, fetchChatHistory, sendChatMessage } from "@/lib/api";
 
 interface Message {
   id: string;
@@ -14,12 +14,14 @@ interface Message {
   timestamp?: Date;
 }
 
-const INITIAL_MESSAGE: Message = {
-  id: "0",
-  role: "assistant",
-  text: "Hi! I'm your NovaBank AI assistant. How can I help you today?",
-  timestamp: new Date(),
-};
+function initialMessage(): Message {
+  return {
+    id: "0",
+    role: "assistant",
+    text: "Hi! I'm your NovaBank AI assistant. How can I help you today?",
+    timestamp: new Date(),
+  };
+}
 
 function validDate(value: unknown): Date | undefined {
   const d = new Date(value as string);
@@ -63,10 +65,13 @@ function groupMessagesByDay(messages: Message[]): DayGroup[] {
 
 export default function AIAssistant() {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
+  const [messages, setMessages] = useState<Message[]>(() => [initialMessage()]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [confirmClear, setConfirmClear] = useState(false);
+  const [clearError, setClearError] = useState(false);
+  const [clearing, setClearing] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const hasFetchedRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -159,6 +164,23 @@ export default function AIAssistant() {
     }
   }
 
+  async function handleClearHistory() {
+    if (clearing) return;
+    setClearing(true);
+    setClearError(false);
+    try {
+      await clearChatHistory();
+      setMessages([initialMessage()]);
+      hasFetchedRef.current = false;
+      setConfirmClear(false);
+    } catch {
+      // Leave the confirm bar open with an error so the user can retry
+      setClearError(true);
+    } finally {
+      setClearing(false);
+    }
+  }
+
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -215,14 +237,52 @@ export default function AIAssistant() {
                     </span>
                   </div>
                 </div>
-                <button
-                  onClick={() => setOpen(false)}
-                  className="p-1 text-brand-fg-muted hover:text-brand-fg transition-colors cursor-pointer"
-                  aria-label="Close chat"
-                >
-                  <X size={16} />
-                </button>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setConfirmClear(true)}
+                    className="p-1 text-brand-fg-muted hover:text-brand-fg transition-colors cursor-pointer"
+                    aria-label="Clear chat history"
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                  <button
+                    onClick={() => setOpen(false)}
+                    className="p-1 text-brand-fg-muted hover:text-brand-fg transition-colors cursor-pointer"
+                    aria-label="Close chat"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
               </div>
+
+              {confirmClear && (
+                <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-white/10 bg-brand-bg/40">
+                  <span
+                    className={`text-xs ${clearError ? "text-brand-error" : "text-brand-fg-muted"}`}
+                  >
+                    {clearError ? "Couldn't clear. Try again?" : "Clear all messages?"}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setConfirmClear(false);
+                        setClearError(false);
+                      }}
+                      disabled={clearing}
+                      className="text-xs text-brand-fg-muted hover:text-brand-fg transition-colors cursor-pointer disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleClearHistory}
+                      disabled={clearing}
+                      className="text-xs font-semibold text-brand-error hover:opacity-80 transition-opacity cursor-pointer disabled:opacity-50"
+                    >
+                      {clearing ? "Clearing…" : "Clear"}
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
                 {historyLoading ? (

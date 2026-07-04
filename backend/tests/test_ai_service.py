@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from services.ai import get_history, get_reply
+from services.ai import clear_history, get_history, get_reply
 
 _FAKE_ROW_ID = "aaaaaaaa-0000-0000-0000-000000000000"
 
@@ -116,3 +116,26 @@ async def test_get_history_empty():
     with patch("services.ai.supabase_admin", mock_supa):
         result = await get_history("user-123")
     assert result == []
+
+
+def _make_delete_mock(deleted_rows):
+    mock = MagicMock()
+    mock.table.return_value.delete.return_value.eq.return_value.execute.return_value.data = deleted_rows
+    return mock
+
+
+async def test_clear_history_deletes_scoped_to_user():
+    mock_supa = _make_delete_mock([{"id": "a"}, {"id": "b"}])
+    with patch("services.ai.supabase_admin", mock_supa):
+        deleted = await clear_history("user-123")
+    assert deleted == 2
+    eq_call = mock_supa.table.return_value.delete.return_value.eq.call_args
+    assert eq_call == (("user_id", "user-123"),)
+    mock_supa.table.assert_called_with("conversations")
+
+
+async def test_clear_history_returns_zero_when_empty():
+    mock_supa = _make_delete_mock([])
+    with patch("services.ai.supabase_admin", mock_supa):
+        deleted = await clear_history("user-123")
+    assert deleted == 0

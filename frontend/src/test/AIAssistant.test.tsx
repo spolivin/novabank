@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import AIAssistant from "@/components/ui/AIAssistant";
-import { fetchChatHistory, sendChatMessage } from "@/lib/api";
+import { clearChatHistory, fetchChatHistory, sendChatMessage } from "@/lib/api";
 
 const MOTION_PROPS = new Set([
   "initial",
@@ -39,8 +39,10 @@ vi.mock("motion/react", () => ({
 vi.mock("@/lib/api");
 
 beforeEach(() => {
+  vi.clearAllMocks();
   vi.mocked(fetchChatHistory).mockResolvedValue([]);
   vi.mocked(sendChatMessage).mockResolvedValue("Nova reply");
+  vi.mocked(clearChatHistory).mockResolvedValue();
 });
 
 async function openAssistant() {
@@ -131,5 +133,54 @@ describe("AIAssistant", () => {
     vi.mocked(fetchChatHistory).mockClear();
     await openAssistant();
     await waitFor(() => expect(fetchChatHistory).toHaveBeenCalledOnce());
+  });
+
+  it("clears history after confirming and resets to the greeting", async () => {
+    vi.mocked(fetchChatHistory).mockResolvedValue([
+      { role: "user", content: "hello", created_at: "2026-06-06T10:00:00Z" },
+      { role: "assistant", content: "hi there", created_at: "2026-06-06T10:00:01Z" },
+    ]);
+    render(<AIAssistant />);
+    await openAssistant();
+    await screen.findByText("hello");
+
+    await userEvent.click(screen.getByRole("button", { name: /clear chat history/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^clear$/i }));
+
+    await waitFor(() => expect(clearChatHistory).toHaveBeenCalledOnce());
+    expect(screen.queryByText("hello")).not.toBeInTheDocument();
+    expect(screen.getByText(/hi! i'm your novabank/i)).toBeInTheDocument();
+  });
+
+  it("cancelling the clear confirmation keeps messages", async () => {
+    vi.mocked(fetchChatHistory).mockResolvedValue([
+      { role: "user", content: "hello", created_at: "2026-06-06T10:00:00Z" },
+    ]);
+    render(<AIAssistant />);
+    await openAssistant();
+    await screen.findByText("hello");
+
+    await userEvent.click(screen.getByRole("button", { name: /clear chat history/i }));
+    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+
+    expect(clearChatHistory).not.toHaveBeenCalled();
+    expect(screen.getByText("hello")).toBeInTheDocument();
+  });
+
+  it("keeps messages when clearing fails", async () => {
+    vi.mocked(fetchChatHistory).mockResolvedValue([
+      { role: "user", content: "hello", created_at: "2026-06-06T10:00:00Z" },
+    ]);
+    vi.mocked(clearChatHistory).mockRejectedValue(new Error("Failed to clear history"));
+    render(<AIAssistant />);
+    await openAssistant();
+    await screen.findByText("hello");
+
+    await userEvent.click(screen.getByRole("button", { name: /clear chat history/i }));
+    await userEvent.click(screen.getByRole("button", { name: /^clear$/i }));
+
+    await waitFor(() => expect(clearChatHistory).toHaveBeenCalledOnce());
+    expect(screen.getByText("hello")).toBeInTheDocument();
+    expect(await screen.findByText(/couldn't clear/i)).toBeInTheDocument();
   });
 });
