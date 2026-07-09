@@ -40,7 +40,11 @@ NovaBank company information, security, platform features, fees, and FAQs:\n{jso
 
 _client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
 
-_HISTORY_LIMIT = 40
+# How many past rows the chat UI loads (display/audit only — no token cost).
+_UI_HISTORY_LIMIT = 200
+# How many past rows are sent to Claude as context (5 turns). This is the
+# per-token cost lever: the history is re-sent uncached on every chat turn.
+_CONTEXT_LIMIT = 10
 
 
 def _call_claude(messages: list[dict]) -> str:
@@ -59,16 +63,21 @@ def _call_claude(messages: list[dict]) -> str:
     return response.content[0].text
 
 
-async def get_history(user_id: str) -> list[dict]:
+async def get_history(user_id: str, limit: int = _UI_HISTORY_LIMIT) -> list[dict]:
     result = await asyncio.to_thread(
         supabase_admin.table("conversations")
         .select("role, content, created_at")
         .eq("user_id", user_id)
         .order("created_at", desc=True)
-        .limit(_HISTORY_LIMIT)
+        .limit(limit)
         .execute
     )
     return list(reversed(result.data))
+
+
+async def get_context(user_id: str) -> list[dict]:
+    """Recent turns sent to Claude — trimmed to bound per-request token cost."""
+    return await get_history(user_id, limit=_CONTEXT_LIMIT)
 
 
 async def clear_history(user_id: str) -> int:
@@ -86,7 +95,7 @@ async def get_reply(user_id: str, message: str) -> str:
     )
     user_row_id: str = insert_result.data[0]["id"]
 
-    history = await get_history(user_id)
+    history = await get_context(user_id)
 
     claude_messages = [{"role": m["role"], "content": m["content"]} for m in history]
     logger.debug("Sending request to Claude (turns=%d)", len(claude_messages))

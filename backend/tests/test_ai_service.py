@@ -2,7 +2,14 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from services.ai import clear_history, get_history, get_reply
+from services.ai import (
+    _CONTEXT_LIMIT,
+    _UI_HISTORY_LIMIT,
+    clear_history,
+    get_context,
+    get_history,
+    get_reply,
+)
 
 _FAKE_ROW_ID = "aaaaaaaa-0000-0000-0000-000000000000"
 
@@ -11,6 +18,25 @@ def _make_supa_mock(history_data=None):
     mock = MagicMock()
     select_chain = mock.table.return_value.select.return_value.eq.return_value.order.return_value.limit.return_value
     select_chain.execute.return_value.data = history_data or []
+    mock.table.return_value.insert.return_value.execute.return_value.data = [
+        {"id": _FAKE_ROW_ID}
+    ]
+    return mock
+
+
+def _make_limit_honoring_supa_mock(newest_first_rows):
+    """Mock whose .limit(n) actually slices, mirroring Supabase's LIMIT."""
+    mock = MagicMock()
+    chain = (
+        mock.table.return_value.select.return_value.eq.return_value.order.return_value
+    )
+
+    def limit(n):
+        limited = MagicMock()
+        limited.execute.return_value.data = newest_first_rows[:n]
+        return limited
+
+    chain.limit.side_effect = limit
     mock.table.return_value.insert.return_value.execute.return_value.data = [
         {"id": _FAKE_ROW_ID}
     ]
@@ -116,6 +142,56 @@ async def test_get_history_empty():
     with patch("services.ai.supabase_admin", mock_supa):
         result = await get_history("user-123")
     assert result == []
+
+
+def _limit_arg(mock_supa):
+    limit_mock = mock_supa.table.return_value.select.return_value.eq.return_value.order.return_value.limit
+    return limit_mock.call_args[0][0]
+
+
+async def test_get_history_uses_ui_limit_by_default():
+    mock_supa = _make_supa_mock()
+    with patch("services.ai.supabase_admin", mock_supa):
+        await get_history("user-123")
+    assert _limit_arg(mock_supa) == _UI_HISTORY_LIMIT
+
+
+async def test_get_context_uses_context_limit():
+    mock_supa = _make_supa_mock()
+    with patch("services.ai.supabase_admin", mock_supa):
+        await get_context("user-123")
+    assert _limit_arg(mock_supa) == _CONTEXT_LIMIT
+
+
+async def test_get_reply_uses_context_limit_not_ui_limit():
+    mock_supa = _make_supa_mock()
+    with (
+        patch("services.ai.supabase_admin", mock_supa),
+        patch("services.ai._call_claude", _make_claude_mock("reply")),
+    ):
+        await get_reply("user-123", "hi")
+    assert _limit_arg(mock_supa) == _CONTEXT_LIMIT
+
+
+async def test_get_reply_sends_exactly_context_limit_newest_turns_to_claude():
+    # 14-message conversation, chronological (oldest -> newest)
+    convo = [
+        {"role": "user" if i % 2 == 0 else "assistant", "content": f"msg{i}"}
+        for i in range(14)
+    ]
+    # DB returns rows newest-first (ORDER BY created_at DESC), limit slices there
+    mock_supa = _make_limit_honoring_supa_mock(list(reversed(convo)))
+    mock_claude = _make_claude_mock("reply")
+    with (
+        patch("services.ai.supabase_admin", mock_supa),
+        patch("services.ai._call_claude", mock_claude),
+    ):
+        await get_reply("user-123", "msg13")
+    sent = mock_claude.call_args[0][0]
+    # Exactly the last 10 messages, re-ordered oldest -> newest
+    assert len(sent) == _CONTEXT_LIMIT
+    assert sent == convo[-_CONTEXT_LIMIT:]
+    assert sent[0]["content"] == "msg4" and sent[-1]["content"] == "msg13"
 
 
 def _make_delete_mock(deleted_rows):
