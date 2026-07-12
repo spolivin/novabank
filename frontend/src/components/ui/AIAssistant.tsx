@@ -73,6 +73,7 @@ export default function AIAssistant() {
   const [clearError, setClearError] = useState(false);
   const [clearing, setClearing] = useState(false);
   const messagesRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const hasFetchedRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -93,6 +94,32 @@ export default function AIAssistant() {
     }
     return () => {
       document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  // On mobile the panel is `fixed inset-0` (full screen height). When the
+  // keyboard opens it only shrinks the *visible* viewport, so the input ends up
+  // below the keyboard and the browser scrolls the whole panel up to reveal it —
+  // dragging the first message off-screen. Size the panel to the visual viewport
+  // instead so the input stays above the keyboard and nothing needs to scroll.
+  useEffect(() => {
+    const vv = window.visualViewport;
+    const el = panelRef.current;
+    if (!open || !vv || !el || window.innerWidth >= 640) return;
+    const apply = () => {
+      el.style.bottom = "auto";
+      el.style.top = `${vv.offsetTop}px`;
+      el.style.height = `${vv.height}px`;
+    };
+    apply();
+    vv.addEventListener("resize", apply);
+    vv.addEventListener("scroll", apply);
+    return () => {
+      vv.removeEventListener("resize", apply);
+      vv.removeEventListener("scroll", apply);
+      el.style.bottom = "";
+      el.style.top = "";
+      el.style.height = "";
     };
   }, [open]);
 
@@ -220,6 +247,7 @@ export default function AIAssistant() {
         <AnimatePresence>
           {open && (
             <motion.div
+              ref={panelRef}
               initial={{ opacity: 0, y: 16, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 16, scale: 0.95 }}
