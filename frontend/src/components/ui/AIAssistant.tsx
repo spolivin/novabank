@@ -100,16 +100,17 @@ export default function AIAssistant() {
   // On mobile the panel is `fixed inset-0` (full screen height). When the
   // keyboard opens it only shrinks the *visible* viewport, so the input ends up
   // below the keyboard and the browser scrolls the whole panel up to reveal it —
-  // dragging the first message off-screen. Size the panel to the visual viewport
-  // instead so the input stays above the keyboard and nothing needs to scroll.
+  // dragging the first message off-screen. Instead of shrinking the panel (which
+  // exposes the dashboard behind it for a frame as the keyboard animates in), keep
+  // it full-screen and pad the bottom by the keyboard's height so the input sits
+  // above the keyboard while the panel background still covers everything.
   useEffect(() => {
     const vv = window.visualViewport;
     const el = panelRef.current;
     if (!open || !vv || !el || window.innerWidth >= 640) return;
     const apply = () => {
-      el.style.bottom = "auto";
-      el.style.top = `${vv.offsetTop}px`;
-      el.style.height = `${vv.height}px`;
+      const occluded = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      el.style.paddingBottom = `${occluded}px`;
     };
     apply();
     vv.addEventListener("resize", apply);
@@ -117,9 +118,7 @@ export default function AIAssistant() {
     return () => {
       vv.removeEventListener("resize", apply);
       vv.removeEventListener("scroll", apply);
-      el.style.bottom = "";
-      el.style.top = "";
-      el.style.height = "";
+      el.style.paddingBottom = "";
     };
   }, [open]);
 
