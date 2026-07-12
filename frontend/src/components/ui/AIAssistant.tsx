@@ -72,12 +72,16 @@ export default function AIAssistant() {
   const [confirmClear, setConfirmClear] = useState(false);
   const [clearError, setClearError] = useState(false);
   const [clearing, setClearing] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<HTMLDivElement>(null);
   const hasFetchedRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (!open) return;
+    // Scroll the list container directly (never scrollIntoView, which can bubble
+    // up and push content off-screen on mobile when the list isn't yet scrollable).
+    const el = messagesRef.current;
+    if (el?.scrollTo) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
   }, [messages, open]);
 
   useEffect(() => {
@@ -284,7 +288,7 @@ export default function AIAssistant() {
                 </div>
               )}
 
-              <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+              <div ref={messagesRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
                 {historyLoading ? (
                   <div className="flex justify-center items-center h-full">
                     <span className="flex gap-1 items-center">
@@ -399,7 +403,6 @@ export default function AIAssistant() {
                     </div>
                   ))
                 )}
-                {!historyLoading && <div ref={bottomRef} />}
               </div>
 
               <div className="px-4 py-3 border-t border-white/10 flex gap-2">
