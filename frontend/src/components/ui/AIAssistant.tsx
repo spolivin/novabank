@@ -72,12 +72,17 @@ export default function AIAssistant() {
   const [confirmClear, setConfirmClear] = useState(false);
   const [clearError, setClearError] = useState(false);
   const [clearing, setClearing] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const hasFetchedRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (!open) return;
+    // Scroll the list container directly (never scrollIntoView, which can bubble
+    // up and push content off-screen on mobile when the list isn't yet scrollable).
+    const el = messagesRef.current;
+    if (el?.scrollTo) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
   }, [messages, open]);
 
   useEffect(() => {
@@ -89,6 +94,31 @@ export default function AIAssistant() {
     }
     return () => {
       document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  // On mobile the panel is `fixed inset-0` (full screen height). When the
+  // keyboard opens it only shrinks the *visible* viewport, so the input ends up
+  // below the keyboard and the browser scrolls the whole panel up to reveal it —
+  // dragging the first message off-screen. Instead of shrinking the panel (which
+  // exposes the dashboard behind it for a frame as the keyboard animates in), keep
+  // it full-screen and pad the bottom by the keyboard's height so the input sits
+  // above the keyboard while the panel background still covers everything.
+  useEffect(() => {
+    const vv = window.visualViewport;
+    const el = panelRef.current;
+    if (!open || !vv || !el || window.innerWidth >= 640) return;
+    const apply = () => {
+      const occluded = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      el.style.paddingBottom = `${occluded}px`;
+    };
+    apply();
+    vv.addEventListener("resize", apply);
+    vv.addEventListener("scroll", apply);
+    return () => {
+      vv.removeEventListener("resize", apply);
+      vv.removeEventListener("scroll", apply);
+      el.style.paddingBottom = "";
     };
   }, [open]);
 
@@ -216,6 +246,7 @@ export default function AIAssistant() {
         <AnimatePresence>
           {open && (
             <motion.div
+              ref={panelRef}
               initial={{ opacity: 0, y: 16, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 16, scale: 0.95 }}
@@ -284,7 +315,7 @@ export default function AIAssistant() {
                 </div>
               )}
 
-              <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+              <div ref={messagesRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
                 {historyLoading ? (
                   <div className="flex justify-center items-center h-full">
                     <span className="flex gap-1 items-center">
@@ -399,7 +430,6 @@ export default function AIAssistant() {
                     </div>
                   ))
                 )}
-                {!historyLoading && <div ref={bottomRef} />}
               </div>
 
               <div className="px-4 py-3 border-t border-white/10 flex gap-2">
