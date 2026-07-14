@@ -73,7 +73,6 @@ export default function AIAssistant() {
   const [clearError, setClearError] = useState(false);
   const [clearing, setClearing] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const hasFetchedRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -93,28 +92,30 @@ export default function AIAssistant() {
   }, [open]);
 
   useEffect(() => {
-    if (!open) {
-      hasFetchedRef.current = false;
-      return;
-    }
-    if (hasFetchedRef.current) return;
-    hasFetchedRef.current = true;
+    if (!open) return;
+    // A close/reopen can leave an earlier fetch in flight; ignore its result so a
+    // stale response can't overwrite the newer one.
+    let cancelled = false;
     setHistoryLoading(true);
     fetchChatHistory()
       .then((history) => {
-        if (history.length > 0) {
-          setMessages(
-            history.map((m, i) => ({
-              id: String(i),
-              role: m.role,
-              text: m.content,
-              timestamp: validDate(m.created_at),
-            }))
-          );
-        }
+        if (cancelled || history.length === 0) return;
+        setMessages(
+          history.map((m, i) => ({
+            id: String(i),
+            role: m.role,
+            text: m.content,
+            timestamp: validDate(m.created_at),
+          }))
+        );
       })
       .catch(() => {})
-      .finally(() => setHistoryLoading(false));
+      .finally(() => {
+        if (!cancelled) setHistoryLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [open]);
 
   async function handleSend() {
@@ -171,7 +172,6 @@ export default function AIAssistant() {
     try {
       await clearChatHistory();
       setMessages([initialMessage()]);
-      hasFetchedRef.current = false;
       setConfirmClear(false);
     } catch {
       // Leave the confirm bar open with an error so the user can retry
