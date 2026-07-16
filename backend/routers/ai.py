@@ -49,7 +49,8 @@ async def clear_history(request: Request, user: dict = Security(verify_jwt)):
 
 
 @router.post("/chat", response_model=ChatResponse)
-@limiter.limit("2/minute")
+@limiter.limit("8/minute")
+@limiter.limit("60/day")
 async def chat(request: Request, body: ChatRequest, user: dict = Security(verify_jwt)):
     user_id = user["sub"]
     add_log_fields(user_id=user_id)

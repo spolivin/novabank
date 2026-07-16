@@ -96,15 +96,38 @@ _SECURITY_HEADERS = {
 _MAX_BODY = 32 * 1024  # 32 KB
 
 
+def _with_security_headers(response: Response) -> Response:
+    response.headers.update(_SECURITY_HEADERS)
+    return response
+
+
 @app.middleware("http")
 async def request_middleware(request: Request, call_next):
-    if (
-        request.headers.get("content-length")
-        and int(request.headers["content-length"]) > _MAX_BODY
-    ):
-        return Response(status_code=status.HTTP_413_CONTENT_TOO_LARGE)
     _request_id.set(str(uuid.uuid4())[:8])
     reset_log_fields()
+
+    # Fast path: reject on a declared Content-Length before reading any body.
+    # A malformed header is itself a bad request; never let int() raise.
+    declared = request.headers.get("content-length")
+    if declared is not None:
+        try:
+            if int(declared) > _MAX_BODY:
+                return _with_security_headers(
+                    Response(status_code=status.HTTP_413_CONTENT_TOO_LARGE)
+                )
+        except ValueError:
+            return _with_security_headers(
+                Response(status_code=status.HTTP_400_BAD_REQUEST)
+            )
+
+    # Backstop: a chunked request omits Content-Length, so the header check
+    # above can't see it. Measure the actual body. Starlette caches it, so the
+    # downstream handler still reads the same bytes.
+    if len(await request.body()) > _MAX_BODY:
+        return _with_security_headers(
+            Response(status_code=status.HTTP_413_CONTENT_TOO_LARGE)
+        )
+
     start = time.perf_counter()
     response = await call_next(request)
     ms = (time.perf_counter() - start) * 1000
@@ -130,8 +153,7 @@ async def request_middleware(request: Request, call_next):
             **get_log_fields(),
         },
     )
-    response.headers.update(_SECURITY_HEADERS)
-    return response
+    return _with_security_headers(response)
 
 
 _origins = [o.strip() for o in settings.allowed_origins.split(",")]

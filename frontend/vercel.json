@@ -17,7 +17,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' https://vercel.live; style-src 'self' 'unsafe-inline' https://vercel.live; img-src 'self' data: https://vercel.live; connect-src 'self' https://*.supabase.co https://*.railway.app wss://ws-us3.pusher.com https://sockjs-us3.pusher.com; frame-src https://vercel.live; frame-ancestors 'none'"
+          "value": "default-src 'self'; base-uri 'none'; form-action 'self'; script-src 'self' https://vercel.live; style-src 'self' 'unsafe-inline' https://vercel.live; img-src 'self' data: https://vercel.live; connect-src 'self' https://xjfwylclmjjauzcwzvop.supabase.co https://novabank-backend-production.up.railway.app wss://ws-us3.pusher.com https://sockjs-us3.pusher.com; frame-src https://vercel.live; frame-ancestors 'none'"
         },
         { "key": "X-Frame-Options", "value": "DENY" },
         { "key": "X-Content-Type-Options", "value": "nosniff" },
