@@ -113,14 +113,20 @@ trust boundary:
 All `/ai` and `/users` routes require a valid Supabase JWT. Per-route rate limits are
 enforced by SlowAPI.
 
-| Method   | Endpoint        | Rate limit  | Description                                  |
-| -------- | --------------- | ----------- | -------------------------------------------- |
-| `POST`   | `/ai/chat`      | 2 / min     | Send a message to Nova and get a reply       |
-| `GET`    | `/ai/history`   | 10 / min    | Fetch recent conversation history            |
-| `DELETE` | `/ai/history`   | 5 / min     | Clear the caller's conversation history      |
-| `DELETE` | `/users/me`     | 3 / hour    | Permanently delete the caller's account      |
-| `GET`    | `/health/api`   | 60 / min    | Liveness probe                               |
-| `GET`    | `/health/db`    | 20 / min    | Readiness probe (checks database connectivity) |
+| Method   | Endpoint        | Rate limit       | Description                                  |
+| -------- | --------------- | ---------------- | -------------------------------------------- |
+| `POST`   | `/ai/chat`      | 8 / min; 60 / day | Send a message to Nova and get a reply       |
+| `GET`    | `/ai/history`   | 10 / min         | Fetch recent conversation history            |
+| `DELETE` | `/ai/history`   | 5 / min          | Clear the caller's conversation history      |
+| `DELETE` | `/users/me`     | 3 / hour         | Permanently delete the caller's account      |
+| `GET`    | `/health/api`   | unlimited        | Liveness probe                               |
+| `GET`    | `/health/db`    | 60 / min         | Readiness probe (checks database connectivity) |
+
+Limits are keyed per user (the `sub` claim), falling back to the caller's IP —
+read from `X-Forwarded-For` — for unauthenticated requests. `/ai/chat` carries a
+daily cap as well as a per-minute one: it is the only endpoint that spends money,
+so it is bounded on both axes. The liveness probe is deliberately unlimited, since
+a `429` there would read as "unhealthy" to the platform.
 
 ## Security
 
@@ -128,10 +134,11 @@ Security is treated as a first-class concern rather than an afterthought:
 
 - **JWT verified via JWKS** — the signature is checked against Supabase's public key, not merely decoded
 - **Rate limiting** — per-user limits on every mutating and AI endpoint (see [API surface](#api-surface))
-- **HTTP body cap** — requests over 32 KB are rejected with `413` before reaching any handler
-- **Payload limits** — messages capped at 500 characters (Pydantic); history bounded to 40 turns per request
+- **HTTP body cap** — requests over 32 KB are rejected with `413` before reaching any handler. The body is *measured*, not taken on trust: a declared `Content-Length` is rejected on the fast path, and chunked requests (which omit it) are caught by the measured backstop
+- **Payload limits** — messages capped at 500 characters (Pydantic); 10 rows (5 turns) of history are replayed to Claude per request, and 200 rows loaded for display
 - **API docs disabled** — `/docs`, `/redoc`, and `/openapi.json` return `404` in all environments
-- **Security headers** — `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, and `Content-Security-Policy: default-src 'none'` on every response
+- **Security headers** — `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, and `Content-Security-Policy: default-src 'none'` on every response, including rejected ones
+- **Browser CSP** — the frontend ships its own strict policy: no `unsafe-eval`, no inline scripts, `base-uri`/`form-action` locked, `frame-ancestors 'none'`, and `connect-src` pinned to the exact Supabase and backend hosts so a successful XSS would have nowhere to exfiltrate to
 - **Service key stays server-side** — only the anon (publishable) key ships in the browser bundle
 - **CORS allowlist** — permitted origins come from an environment variable, never hardcoded
 - **Prompt hardening** — Nova is instructed to refuse off-topic requests, never reveal its instructions, and never solicit passwords or card numbers
