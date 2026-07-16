@@ -276,7 +276,7 @@ async def test_canonical_records_rate_limited_error(client, caplog):
     limiter.reset()
     with caplog.at_level(logging.INFO, logger="main"):
         with patch("routers.ai.ai_service.get_reply", new=AsyncMock(return_value="ok")):
-            for _ in range(2):  # chat limit is 2/minute
+            for _ in range(8):  # chat limit is 8/minute
                 await client.post("/ai/chat", json={"message": "hi"})
             r = await client.post("/ai/chat", json={"message": "hi"})
     assert r.status_code == 429

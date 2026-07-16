@@ -12,13 +12,12 @@ router = APIRouter(prefix="/health")
 
 
 @router.get("/api")
-@limiter.limit("60/minute")
-def health(request: Request):
+def health():
     return {"status": "ok"}
 
 
 @router.get("/db")
-@limiter.limit("20/minute")
+@limiter.limit("60/minute")
 async def health_db(request: Request):
     try:
         await asyncio.to_thread(

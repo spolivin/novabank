@@ -14,14 +14,14 @@ def reset_limiter():
 
 async def test_chat_rate_limit_allows_up_to_limit(client):
     with patch("routers.ai.ai_service.get_reply", new=AsyncMock(return_value="ok")):
-        for _ in range(2):
+        for _ in range(8):
             r = await client.post("/ai/chat", json={"message": "hi"})
             assert r.status_code == 200
 
 
 async def test_chat_rate_limit_blocks_after_limit(client):
     with patch("routers.ai.ai_service.get_reply", new=AsyncMock(return_value="ok")):
-        for _ in range(2):
+        for _ in range(8):
             await client.post("/ai/chat", json={"message": "hi"})
         r = await client.post("/ai/chat", json={"message": "hi"})
     assert r.status_code == 429
@@ -42,17 +42,16 @@ async def test_history_rate_limit_blocks_after_limit(client):
     assert r.status_code == 429
 
 
-async def test_health_api_rate_limit_blocks_after_limit(client):
-    for _ in range(60):
+async def test_health_api_is_not_rate_limited(client):
+    # Liveness probe is unlimited; well past the old cap it still answers 200.
+    for _ in range(80):
         r = await client.get("/health/api")
         assert r.status_code == 200
-    r = await client.get("/health/api")
-    assert r.status_code == 429
 
 
 async def test_health_db_rate_limit_blocks_after_limit(client):
     with patch("routers.health.supabase_admin"):
-        for _ in range(20):
+        for _ in range(60):
             r = await client.get("/health/db")
             assert r.status_code == 200
         r = await client.get("/health/db")
