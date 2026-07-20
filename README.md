@@ -116,17 +116,20 @@ enforced by SlowAPI.
 | Method   | Endpoint        | Rate limit       | Description                                  |
 | -------- | --------------- | ---------------- | -------------------------------------------- |
 | `POST`   | `/ai/chat`      | 8 / min; 60 / day | Send a message to Nova and get a reply       |
-| `GET`    | `/ai/history`   | 10 / min         | Fetch recent conversation history            |
-| `DELETE` | `/ai/history`   | 5 / min          | Clear the caller's conversation history      |
-| `DELETE` | `/users/me`     | 3 / hour         | Permanently delete the caller's account      |
+| `GET`    | `/ai/history`   | 10 / min         | Fetch recent conversation history (optional `?limit=` 1–200) |
+| `DELETE` | `/ai/history`   | 5 / min          | Clear the caller's conversation history (`204`) |
+| `DELETE` | `/users/me`     | 3 / hour         | Permanently delete the caller's account (`204`) |
 | `GET`    | `/health/api`   | unlimited        | Liveness probe                               |
-| `GET`    | `/health/db`    | 60 / min         | Readiness probe (checks database connectivity) |
+| `GET`    | `/health/db`    | 60 / min         | Readiness probe (checks DB; optionally token-gated) |
 
-Limits are keyed per user (the `sub` claim), falling back to the caller's IP —
-read from `X-Forwarded-For` — for unauthenticated requests. `/ai/chat` carries a
-daily cap as well as a per-minute one: it is the only endpoint that spends money,
-so it is bounded on both axes. The liveness probe is deliberately unlimited, since
-a `429` there would read as "unhealthy" to the platform.
+Limits are keyed per user (the `sub` claim), falling back to the caller's IP for
+unauthenticated requests. That IP is read from the direct connection by default;
+`X-Forwarded-For` is trusted only when `TRUSTED_PROXY_COUNT` is set to the number
+of proxies in front of the app, so a client cannot forge its rate-limit identity
+with a spoofed header. `/ai/chat` carries a daily cap as well as a per-minute one:
+it is the only endpoint that spends money, so it is bounded on both axes. The
+liveness probe is deliberately unlimited, since a `429` there would read as
+"unhealthy" to the platform.
 
 ## Security
 
@@ -134,6 +137,9 @@ Security is treated as a first-class concern rather than an afterthought:
 
 - **JWT verified via JWKS** — the signature is checked against Supabase's public key, not merely decoded
 - **Rate limiting** — per-user limits on every mutating and AI endpoint (see [API surface](#api-surface))
+- **Spoof-resistant client IP** — the rate-limit key reads the real client IP only from trusted proxy hops (`TRUSTED_PROXY_COUNT`); a forged `X-Forwarded-For` cannot mint a fresh bucket or shift another user's
+- **Gated DB health probe** — `/health/db` can require an `X-Health-Token` secret (`HEALTH_CHECK_TOKEN`), returning `404` to anonymous callers before any database query runs
+- **No-store on reads** — `Cache-Control: no-store` on the health and history endpoints keeps responses out of intermediary caches
 - **HTTP body cap** — requests over 32 KB are rejected with `413` before reaching any handler. The body is *measured*, not taken on trust: a declared `Content-Length` is rejected on the fast path, and chunked requests (which omit it) are caught by the measured backstop
 - **Payload limits** — messages capped at 500 characters (Pydantic); 10 rows (5 turns) of history are replayed to Claude per request, and 200 rows loaded for display
 - **API docs disabled** — `/docs`, `/redoc`, and `/openapi.json` return `404` in all environments
