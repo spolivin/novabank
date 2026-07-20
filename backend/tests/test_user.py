@@ -17,8 +17,8 @@ async def test_delete_user_success(client):
     with patch("routers.user.supabase_admin") as mock_supa:
         mock_supa.auth.admin.delete_user = MagicMock(return_value=None)
         response = await client.delete("/users/me")
-    assert response.status_code == 200
-    assert response.json() == {"message": "Account deleted successfully"}
+    assert response.status_code == 204
+    assert response.content == b""
     mock_supa.auth.admin.delete_user.assert_called_once_with("user-123")
 
 

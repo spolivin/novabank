@@ -2,6 +2,8 @@ import base64
 import json
 from unittest.mock import MagicMock
 
+import pytest
+
 from dependencies.limiter import _client_ip, _user_id_from_request
 
 
@@ -53,23 +55,43 @@ def test_non_bearer_scheme_falls_back_to_host():
     assert _user_id_from_request(request) == "2.2.2.2"
 
 
-def test_client_ip_prefers_forwarded_for():
+@pytest.fixture
+def trust_proxies(monkeypatch):
+    def _set(count):
+        monkeypatch.setattr("dependencies.limiter.settings.trusted_proxy_count", count)
+
+    return _set
+
+
+def test_client_ip_ignores_forwarded_for_without_trusted_proxy():
+    # Default trusted_proxy_count is 0: X-Forwarded-For is client-controlled and
+    # must not be trusted, so the direct peer is used.
+    request = _make_request(client_host="10.0.0.1", forwarded_for="203.0.113.5")
+    assert _client_ip(request) == "10.0.0.1"
+
+
+def test_client_ip_reads_trusted_hop_from_the_right(trust_proxies):
+    trust_proxies(1)
     request = _make_request(client_host="10.0.0.1", forwarded_for="203.0.113.5")
     assert _client_ip(request) == "203.0.113.5"
 
 
-def test_client_ip_takes_leftmost_of_forwarded_chain():
+def test_client_ip_ignores_spoofed_leftmost_entries(trust_proxies):
+    # A forged leftmost entry cannot displace the real client IP, which the
+    # trusted proxy appends on the right.
+    trust_proxies(1)
     request = _make_request(
-        client_host="10.0.0.1", forwarded_for="203.0.113.5, 70.1.2.3"
+        client_host="10.0.0.1", forwarded_for="1.1.1.1, 203.0.113.5"
     )
     assert _client_ip(request) == "203.0.113.5"
+
+
+def test_client_ip_falls_back_when_chain_shorter_than_trusted_count(trust_proxies):
+    trust_proxies(2)
+    request = _make_request(client_host="10.0.0.1", forwarded_for="203.0.113.5")
+    assert _client_ip(request) == "10.0.0.1"
 
 
 def test_client_ip_falls_back_to_host_without_forwarded_for():
     request = _make_request(client_host="10.0.0.1")
     assert _client_ip(request) == "10.0.0.1"
-
-
-def test_fallback_uses_forwarded_for_when_no_token():
-    request = _make_request(client_host="10.0.0.1", forwarded_for="203.0.113.5")
-    assert _user_id_from_request(request) == "203.0.113.5"
