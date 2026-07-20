@@ -26,6 +26,35 @@ async def test_history_empty(client):
     assert response.json() == []
 
 
+async def test_history_sets_no_store_cache_header(client):
+    with patch("routers.ai.ai_service.get_history", new=AsyncMock(return_value=[])):
+        response = await client.get("/ai/history")
+    assert response.headers["cache-control"] == "no-store"
+
+
+async def test_history_passes_limit_query_to_service(client):
+    mock = AsyncMock(return_value=[])
+    with patch("routers.ai.ai_service.get_history", new=mock):
+        response = await client.get("/ai/history?limit=5")
+    assert response.status_code == 200
+    assert mock.await_args.kwargs["limit"] == 5
+
+
+async def test_history_defaults_limit_to_ui_history_limit(client):
+    from services.ai import UI_HISTORY_LIMIT
+
+    mock = AsyncMock(return_value=[])
+    with patch("routers.ai.ai_service.get_history", new=mock):
+        await client.get("/ai/history")
+    assert mock.await_args.kwargs["limit"] == UI_HISTORY_LIMIT
+
+
+async def test_history_rejects_out_of_range_limit(client):
+    for bad in ("0", "201", "-1", "abc"):
+        response = await client.get(f"/ai/history?limit={bad}")
+        assert response.status_code == 422
+
+
 async def test_history_missing_auth(unauthed_client):
     response = await unauthed_client.get("/ai/history")
     assert response.status_code == 401

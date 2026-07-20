@@ -41,13 +41,21 @@ NovaBank company information, security, platform features, fees, and FAQs:\n{jso
 _client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
 
 # How many past rows the chat UI loads (display/audit only — no token cost).
-_UI_HISTORY_LIMIT = 200
+UI_HISTORY_LIMIT = 200
 # How many past rows are sent to Claude as context (5 turns). This is the
 # per-token cost lever: the history is re-sent uncached on every chat turn.
 _CONTEXT_LIMIT = 10
 
 
 def _call_claude(messages: list[dict]) -> str:
+    """Call the Claude API with the cached system prompt.
+
+    Args:
+        messages: The conversation messages sent as context.
+
+    Returns:
+        The assistant's reply text.
+    """
     response = _client.messages.create(
         model="claude-sonnet-4-6",
         max_tokens=1024,
@@ -63,7 +71,16 @@ def _call_claude(messages: list[dict]) -> str:
     return response.content[0].text
 
 
-async def get_history(user_id: str, limit: int = _UI_HISTORY_LIMIT) -> list[dict]:
+async def get_history(user_id: str, limit: int = UI_HISTORY_LIMIT) -> list[dict]:
+    """Fetch a user's stored conversation turns, oldest first.
+
+    Args:
+        user_id: The user whose history to fetch.
+        limit: Maximum number of most-recent rows to return.
+
+    Returns:
+        Conversation turns ordered oldest to newest.
+    """
     result = await asyncio.to_thread(
         supabase_admin.table("conversations")
         .select("role, content, created_at")
@@ -81,6 +98,14 @@ async def get_context(user_id: str) -> list[dict]:
 
 
 async def clear_history(user_id: str) -> int:
+    """Delete all of a user's conversation turns.
+
+    Args:
+        user_id: The user whose history to delete.
+
+    Returns:
+        The number of rows deleted.
+    """
     result = await asyncio.to_thread(
         supabase_admin.table("conversations").delete().eq("user_id", user_id).execute
     )
@@ -88,6 +113,23 @@ async def clear_history(user_id: str) -> int:
 
 
 async def get_reply(user_id: str, message: str) -> str:
+    """Persist a user message, generate a reply, and persist the reply.
+
+    The user message is stored first so it appears in the context sent to
+    Claude. If the API call fails, that message is rolled back to avoid leaving
+    an orphaned turn.
+
+    Args:
+        user_id: The user sending the message.
+        message: The user's message text.
+
+    Returns:
+        The assistant's reply.
+
+    Raises:
+        Exception: Propagates any error from the Claude API call (after
+            rolling back the stored user message).
+    """
     insert_result = await asyncio.to_thread(
         supabase_admin.table("conversations")
         .insert({"user_id": user_id, "role": "user", "content": message})

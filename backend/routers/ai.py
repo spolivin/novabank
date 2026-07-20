@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, HTTPException, Request, Security, status
+from fastapi import APIRouter, HTTPException, Query, Request, Response, Security, status
 
 from dependencies.auth import verify_jwt
 from dependencies.limiter import limiter
@@ -15,11 +15,33 @@ router = APIRouter(prefix="/ai")
 
 @router.get("/history", response_model=list[HistoryMessage])
 @limiter.limit("10/minute")
-async def history(request: Request, user: dict = Security(verify_jwt)):
+async def history(
+    request: Request,
+    response: Response,
+    limit: int = Query(
+        default=ai_service.UI_HISTORY_LIMIT, ge=1, le=ai_service.UI_HISTORY_LIMIT
+    ),
+    user: dict = Security(verify_jwt),
+):
+    """Return the authenticated user's stored conversation history.
+
+    Args:
+        request: The incoming request (required by the rate limiter).
+        response: The outgoing response, used to set cache headers.
+        limit: Maximum number of most-recent turns to return (1-200).
+        user: Decoded JWT claims for the authenticated user.
+
+    Returns:
+        The user's conversation turns, oldest first.
+
+    Raises:
+        HTTPException: 500 if the history cannot be fetched.
+    """
+    response.headers["Cache-Control"] = "no-store"
     user_id = user["sub"]
     add_log_fields(user_id=user_id)
     try:
-        turns = await ai_service.get_history(user_id)
+        turns = await ai_service.get_history(user_id, limit=limit)
         add_log_fields(turns=len(turns))
         return turns
     except Exception as e:
@@ -34,6 +56,15 @@ async def history(request: Request, user: dict = Security(verify_jwt)):
 @router.delete("/history", status_code=status.HTTP_204_NO_CONTENT)
 @limiter.limit("5/minute")
 async def clear_history(request: Request, user: dict = Security(verify_jwt)):
+    """Delete all of the authenticated user's conversation history.
+
+    Args:
+        request: The incoming request (required by the rate limiter).
+        user: Decoded JWT claims for the authenticated user.
+
+    Raises:
+        HTTPException: 500 if the history cannot be cleared.
+    """
     user_id = user["sub"]
     add_log_fields(user_id=user_id)
     try:
@@ -52,6 +83,22 @@ async def clear_history(request: Request, user: dict = Security(verify_jwt)):
 @limiter.limit("8/minute")
 @limiter.limit("60/day")
 async def chat(request: Request, body: ChatRequest, user: dict = Security(verify_jwt)):
+    """Generate an assistant reply for the user's message.
+
+    The user message and the generated reply are both persisted as conversation
+    turns.
+
+    Args:
+        request: The incoming request (required by the rate limiter).
+        body: The chat request payload.
+        user: Decoded JWT claims for the authenticated user.
+
+    Returns:
+        The assistant's reply.
+
+    Raises:
+        HTTPException: 500 if generating the reply fails.
+    """
     user_id = user["sub"]
     add_log_fields(user_id=user_id)
     try:

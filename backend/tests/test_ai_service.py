@@ -4,7 +4,7 @@ import pytest
 
 from services.ai import (
     _CONTEXT_LIMIT,
-    _UI_HISTORY_LIMIT,
+    UI_HISTORY_LIMIT,
     clear_history,
     get_context,
     get_history,
@@ -153,7 +153,7 @@ async def test_get_history_uses_ui_limit_by_default():
     mock_supa = _make_supa_mock()
     with patch("services.ai.supabase_admin", mock_supa):
         await get_history("user-123")
-    assert _limit_arg(mock_supa) == _UI_HISTORY_LIMIT
+    assert _limit_arg(mock_supa) == UI_HISTORY_LIMIT
 
 
 async def test_get_context_uses_context_limit():
