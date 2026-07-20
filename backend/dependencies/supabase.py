@@ -1,3 +1,5 @@
+"""Shared Supabase admin client built from the service-role key."""
+
 from supabase import create_client
 
 from config import settings

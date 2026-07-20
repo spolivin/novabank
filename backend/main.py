@@ -18,6 +18,8 @@ _request_id: ContextVar[str] = ContextVar("request_id", default="-")
 
 
 class _RequestIdFilter(logging.Filter):
+    """Logging filter that stamps each record with the current request id."""
+
     def filter(self, record):
         record.request_id = _request_id.get()
         return True
@@ -33,6 +35,12 @@ _RESERVED = frozenset(logging.makeLogRecord({}).__dict__) | {
 
 
 class _JSONFormatter(logging.Formatter):
+    """Formatter that renders each log record as a single JSON object.
+
+    Any non-standard attribute passed via ``extra=`` is emitted as its own
+    top-level key, so structured fields survive into the log line.
+    """
+
     def format(self, record):
         payload = {
             "level": record.levelname,
@@ -79,6 +87,15 @@ app.state.limiter = limiter
 
 
 def _rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    """Handle a rate-limit rejection, tagging the canonical log line.
+
+    Args:
+        request: The rejected request.
+        exc: The raised rate-limit exception.
+
+    Returns:
+        The default SlowAPI 429 response.
+    """
     add_log_fields(error="rate_limited")
     return _rate_limit_exceeded_handler(request, exc)
 
@@ -97,12 +114,34 @@ _MAX_BODY = 32 * 1024  # 32 KB
 
 
 def _with_security_headers(response: Response) -> Response:
+    """Add the standard security headers to a response in place.
+
+    Args:
+        response: The response to annotate.
+
+    Returns:
+        The same response, with security headers set.
+    """
     response.headers.update(_SECURITY_HEADERS)
     return response
 
 
 @app.middleware("http")
 async def request_middleware(request: Request, call_next):
+    """Per-request middleware: request id, body cap, and access logging.
+
+    Assigns a short request id, rejects oversized bodies, emits one canonical
+    access-log line per request (severity following the status code), and
+    applies security headers to every response.
+
+    Args:
+        request: The incoming request.
+        call_next: Callable that runs the rest of the stack.
+
+    Returns:
+        The downstream response, or a 400/413 error response if the body cap
+        is exceeded.
+    """
     _request_id.set(str(uuid.uuid4())[:8])
     reset_log_fields()
 
@@ -131,7 +170,6 @@ async def request_middleware(request: Request, call_next):
     start = time.perf_counter()
     response = await call_next(request)
     ms = (time.perf_counter() - start) * 1000
-    # One canonical line per request; severity follows the outcome.
     if response.status_code < 400:
         level = logging.INFO
     elif response.status_code < 500:
