@@ -210,7 +210,7 @@ async def test_canonical_records_action_on_account_deletion(client, caplog):
         with patch("routers.user.supabase_admin") as mock_supa:
             mock_supa.auth.admin.delete_user = MagicMock(return_value=None)
             r = await client.delete("/users/me")
-    assert r.status_code == 200
+    assert r.status_code == 204
 
     (record,) = _canonical_records(caplog)
     assert record.levelno == logging.INFO
