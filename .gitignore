@@ -20,6 +20,7 @@ frontend/.env.*
 frontend/supabase/.branches
 frontend/supabase/.temp
 frontend/supabase/snippets
+frontend/coverage
 
 # Logs
 logs
