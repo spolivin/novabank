@@ -17,7 +17,7 @@ export default function Careers() {
         </>
         subheading="We are a team of builders, thinkers, and problem solvers on a mission to make banking work for everyone. Come build with us."
         primaryButton={{ label: "Check vacancies", href: "#roles" }}
-        backgroundImage="/banners/Careers-banner.avif"
+        banner="Careers-banner"
         variant="centered"
       />
       <CardGrid title="Why NovaBank" features={values} horizontal />

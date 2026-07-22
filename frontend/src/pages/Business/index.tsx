@@ -22,7 +22,7 @@ export default function Business() {
         subheading="Powerful tools for invoicing, team spending, and integrations - all in one account. Grow with confidence and zero hidden fees."
         primaryButton={{ label: "Open a Business Account", href: "/signup" }}
         secondaryButton={{ label: "Talk to Sales", href: "/contact" }}
-        backgroundImage="/banners/Business-banner.avif"
+        banner="Business-banner"
       />
       <ProductGrid
         title="Choose your account"

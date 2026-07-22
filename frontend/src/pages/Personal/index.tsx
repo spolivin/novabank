@@ -22,7 +22,7 @@ export default function Personal() {
         subheading="Simple, transparent accounts with no hidden fees. Built for the way you live - whether you're saving for a goal or spending every day."
         primaryButton={{ label: "Open Account", href: "/signup" }}
         secondaryButton={{ label: "See Our Cards", href: "/cards" }}
-        backgroundImage="/banners/Personal-banner.avif"
+        banner="Personal-banner"
       />
       <ProductGrid
         title="Choose your account"

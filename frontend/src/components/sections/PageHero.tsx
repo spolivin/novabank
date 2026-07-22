@@ -1,9 +1,10 @@
-import { type ReactNode } from "react";
+import { type ReactNode, useCallback, useState } from "react";
 
 import { Check } from "lucide-react";
 import { motion } from "motion/react";
 
 import { Button } from "@/components/ui/Button";
+import { bannerFallback, bannerSrcSet } from "@/lib/banners";
 
 import { Section } from "../layout/Section";
 
@@ -14,7 +15,8 @@ interface BaseHeroProps {
   secondaryButton?: { label: string; href: string };
   badge?: string;
   features?: { title: string }[];
-  backgroundImage?: string;
+  /** Base name of a banner in public/banners, e.g. "Home-banner". */
+  banner?: string;
 }
 
 interface DefaultHeroProps extends BaseHeroProps {
@@ -34,6 +36,12 @@ const motionProps = {
 
 type PageHeroProps = DefaultHeroProps | CenteredHeroProps;
 
+// The navbar is transparent until scrolled, so the hero is pulled up under it
+// and pads itself back out — the background image runs full-bleed behind the bar.
+// min-h absorbs the 72px header so the visible hero keeps its original height.
+const heroClass =
+  "bg-hero relative isolate flex items-center overflow-hidden -mt-[72px] pt-[72px] min-h-[712px]";
+
 export function PageHero({
   variant,
   heading,
@@ -42,20 +50,38 @@ export function PageHero({
   secondaryButton,
   badge,
   features,
-  backgroundImage,
+  banner,
   ...rest
 }: PageHeroProps) {
   const children = "children" in rest ? rest.children : undefined;
+  const [loaded, setLoaded] = useState(false);
 
-  const background = backgroundImage && (
+  // A cached image can finish loading before React attaches onLoad, which would
+  // strand it at opacity-0. Catch that case when the node is first attached.
+  const imgRef = useCallback((node: HTMLImageElement | null) => {
+    if (node?.complete) setLoaded(true);
+  }, []);
+
+  const background = banner && (
     <>
       <img
-        src={backgroundImage}
+        ref={imgRef}
+        // sizes/srcSet before src: React assigns props in order, so this keeps a
+        // browser from ever starting a fetch for the fallback and then aborting
+        // it once the candidate list arrives.
+        sizes="100vw"
+        srcSet={bannerSrcSet(banner)}
+        src={bannerFallback(banner)}
         alt=""
         aria-hidden="true"
         fetchPriority="high"
         decoding="async"
-        className="absolute inset-0 w-full h-full object-cover -z-20"
+        onLoad={() => setLoaded(true)}
+        // The section's bg-hero gradient shows through until the image arrives,
+        // so a slow network degrades to the brand gradient instead of a flash.
+        className={`absolute inset-0 w-full h-full object-cover -z-20 transition-opacity duration-500 ${
+          loaded ? "opacity-100" : "opacity-0"
+        }`}
       />
       <div
         className="absolute inset-0 -z-10"
@@ -68,7 +94,7 @@ export function PageHero({
 
   if (variant === "centered") {
     return (
-      <Section className="bg-hero relative isolate flex items-center overflow-hidden min-h-[640px]">
+      <Section className={heroClass}>
         {background}
         <motion.div {...motionProps} className="w-full">
           <div className="max-w-5xl mx-auto text-center">
@@ -109,7 +135,7 @@ export function PageHero({
     );
   }
   return (
-    <Section className="bg-hero relative isolate flex items-center justify-center overflow-hidden min-h-[640px]">
+    <Section className={`${heroClass} justify-center`}>
       {background}
       <motion.div
         {...motionProps}
