@@ -1,55 +1,23 @@
 import { type ReactNode, useEffect, useState } from "react";
 
-const BANNER_IMAGES = [
-  "/banners/Home-banner.avif",
-  "/banners/Personal-banner.avif",
-  "/banners/Business-banner.avif",
-  "/banners/Cards-banner.avif",
-  "/banners/Loans-banner.avif",
-  "/banners/Security-banner.avif",
-  "/banners/Careers-banner.avif",
-];
-
-// Module-level cache: holding the decoded HTMLImageElements for the whole session
-// keeps their bitmaps alive so route banners reuse them without re-decoding.
-const decodedBanners: HTMLImageElement[] = [];
+/**
+ * Brand splash shown on first load. Purely decorative and purely time-based —
+ * it no longer gates on assets. Each route's hero requests its own banner when
+ * it mounts, and this window gives the home banner time to arrive before reveal.
+ */
+const SPLASH_DURATION_MS = 3000;
 
 interface PageLoaderProps {
   children: ReactNode;
 }
 
 export default function PageLoader({ children }: PageLoaderProps) {
-  const [imagesReady, setImagesReady] = useState(false);
-  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
+  const [showPage, setShowPage] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setMinTimeElapsed(true), 2000);
+    const timer = setTimeout(() => setShowPage(true), SPLASH_DURATION_MS);
     return () => clearTimeout(timer);
   }, []);
-
-  // Download AND fully decode every banner before revealing the page, so the first
-  // paint on each route reuses an already-decoded image instead of decoding on demand.
-  useEffect(() => {
-    let cancelled = false;
-
-    const decodeAll = BANNER_IMAGES.map((src) => {
-      const img = new Image();
-      img.src = src;
-      decodedBanners.push(img);
-      // decode() rejects on a broken image; swallow so one bad asset can't block the app.
-      return img.decode().catch(() => undefined);
-    });
-
-    Promise.all(decodeAll).then(() => {
-      if (!cancelled) setImagesReady(true);
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const showPage = imagesReady && minTimeElapsed;
 
   // Prevent scrolling while the loader overlay is visible.
   useEffect(() => {
