@@ -13,15 +13,6 @@ export const ROUTES = {
   DASHBOARD: "/dashboard",
 } as const;
 
-export const NAV_LINKS = [
-  { label: "Personal", to: ROUTES.PERSONAL },
-  { label: "Business", to: ROUTES.BUSINESS },
-  { label: "Cards", to: ROUTES.CARDS },
-  { label: "Loans", to: ROUTES.LOANS },
-  { label: "Security", to: ROUTES.SECURITY },
-  { label: "About", to: ROUTES.ABOUT },
-] as const;
-
 export const PAGE_TITLES = {
   PERSONAL: "NovaBank - Personal",
   BUSINESS: "NovaBank - Business",
