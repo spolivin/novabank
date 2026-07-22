@@ -22,7 +22,7 @@ export default function Cards() {
         subheading="Earn cashback on every purchase, pay nothing abroad, and control your spending - all from one beautifully simple card."
         primaryButton={{ label: "Apply Now", href: "/signup" }}
         secondaryButton={{ label: "Compare Cards", href: "#pricing" }}
-        backgroundImage="/banners/Cards-banner.avif"
+        banner="Cards-banner"
       >
         <BankingCard />
       </PageHero>

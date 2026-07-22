@@ -16,7 +16,7 @@ export default function Home() {
         subheading="Manage your money with confidence. Instant transfers, smart budgeting, and bank-grade security - all in one beautifully simple app."
         primaryButton={{ label: "Open Account", href: "/signup" }}
         secondaryButton={{ label: "Learn More", href: "/about" }}
-        backgroundImage="/banners/Home-banner.avif"
+        banner="Home-banner"
       />
       {/* Partner slider */}
       <PartnerMarquee partners={PARTNERS} />
