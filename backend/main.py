@@ -2,6 +2,7 @@ import json as _json
 import logging
 import time
 import uuid
+from contextlib import asynccontextmanager
 from contextvars import ContextVar
 
 from fastapi import FastAPI, Request, Response, status
@@ -10,7 +11,9 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from config import settings
+from dependencies.anthropic_client import close_anthropic, create_anthropic
 from dependencies.limiter import limiter
+from dependencies.supabase import close_supabase, create_supabase
 from log_context import add_log_fields, get_log_fields, reset_log_fields
 from routers import ai, health, user
 
@@ -82,7 +85,31 @@ for _name in _NOISY_LOGGERS:
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Create the shared async clients on startup and close them on shutdown.
+
+    Both clients own HTTP connection pools bound to the running event loop, so
+    they are constructed here rather than at import time.
+
+    Args:
+        app: The application whose ``state`` holds the clients.
+    """
+    app.state.supabase = await create_supabase()
+    app.state.anthropic = create_anthropic()
+    logger.info("Async clients initialised")
+    try:
+        yield
+    finally:
+        await close_anthropic(app.state.anthropic)
+        await close_supabase(app.state.supabase)
+        app.state.anthropic = None
+        app.state.supabase = None
+        logger.info("Async clients closed")
+
+
+app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
 app.state.limiter = limiter
 
 

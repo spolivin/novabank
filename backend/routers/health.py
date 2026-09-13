@@ -1,11 +1,11 @@
-import asyncio
 import logging
 
-from fastapi import APIRouter, HTTPException, Request, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from supabase import AsyncClient
 
 from config import settings
 from dependencies.limiter import limiter
-from dependencies.supabase import supabase_admin
+from dependencies.supabase import get_supabase
 
 logger = logging.getLogger(__name__)
 
@@ -28,12 +28,17 @@ def health(response: Response):
 
 @router.get("/db")
 @limiter.limit("60/minute")
-async def health_db(request: Request, response: Response):
+async def health_db(
+    request: Request,
+    response: Response,
+    supabase: AsyncClient = Depends(get_supabase),
+):
     """Readiness probe that checks Supabase connectivity.
 
     Args:
         request: The incoming request (required by the rate limiter).
         response: The outgoing response, used to set cache headers.
+        supabase: The shared async Supabase client.
 
     Returns:
         ``{"status": "ok"}`` when the database is reachable.
@@ -49,11 +54,7 @@ async def health_db(request: Request, response: Response):
     ):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     try:
-        await asyncio.to_thread(
-            lambda: (
-                supabase_admin.table("conversations").select("id").limit(1).execute()
-            )
-        )
+        await supabase.table("conversations").select("id").limit(1).execute()
         return {"status": "ok"}
     except Exception as e:
         raise HTTPException(
