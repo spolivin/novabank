@@ -111,6 +111,22 @@ flowchart LR
     jwt --> db
     jwt --> nova
     nova --> anthropic
+
+    classDef client fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#1e3a5f
+    classDef server fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#5c3d0a
+    classDef vendor fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#3c1d7a
+    classDef store  fill:#d1fae5,stroke:#059669,stroke-width:1.5px,color:#064e3b
+
+    class sdk,req client
+    class jwt,nova server
+    class auth,anthropic vendor
+    class db store
+
+    style browser  fill:#f8fafc,stroke:#94a3b8,stroke-width:1px,color:#0f172a
+    style backend  fill:#fffbeb,stroke:#94a3b8,stroke-width:1px,color:#0f172a
+    style external fill:#faf5ff,stroke:#94a3b8,stroke-width:1px,color:#0f172a
+
+    linkStyle 3 stroke:#dc2626,stroke-width:2.5px
 ```
 
 - The browser authenticates **directly** with Supabase and receives a JWT. That token is
