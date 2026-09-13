@@ -1,12 +1,12 @@
-import asyncio
 import logging
 
-from fastapi import APIRouter, HTTPException, Request, Security, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Security, status
+from supabase import AsyncClient
 from supabase_auth.errors import AuthApiError
 
 from dependencies.auth import verify_jwt
 from dependencies.limiter import limiter
-from dependencies.supabase import supabase_admin
+from dependencies.supabase import get_supabase
 from log_context import add_log_fields
 
 logger = logging.getLogger(__name__)
@@ -16,12 +16,17 @@ router = APIRouter(prefix="/users")
 
 @router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
 @limiter.limit("3/hour")
-async def delete_account(request: Request, user: dict = Security(verify_jwt)):
+async def delete_account(
+    request: Request,
+    user: dict = Security(verify_jwt),
+    supabase: AsyncClient = Depends(get_supabase),
+):
     """Permanently delete the authenticated user's account.
 
     Args:
         request: The incoming request (required by the rate limiter).
         user: Decoded JWT claims for the authenticated user.
+        supabase: The shared async Supabase client.
 
     Raises:
         HTTPException: 404 if the user no longer exists, 500 on any other
@@ -30,7 +35,7 @@ async def delete_account(request: Request, user: dict = Security(verify_jwt)):
     user_id = user["sub"]
     add_log_fields(user_id=user_id)
     try:
-        await asyncio.to_thread(supabase_admin.auth.admin.delete_user, user_id)
+        await supabase.auth.admin.delete_user(user_id)
         add_log_fields(action="account_deleted")
         logger.info("Account deleted: user %s", user_id)
     except Exception as e:

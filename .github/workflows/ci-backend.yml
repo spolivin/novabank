@@ -10,7 +10,6 @@ on:
       - "backend/**"
       - "!backend/tests/**"
       - "!backend/.env.example"
-      - "!backend/requirements.txt"
   pull_request:
     branches: [master]
   workflow_dispatch:
@@ -28,6 +27,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
+          version: "0.12.13"
           enable-cache: true
           cache-dependency-glob: backend/uv.lock
 

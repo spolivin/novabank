@@ -50,11 +50,10 @@ async def test_health_api_is_not_rate_limited(client):
 
 
 async def test_health_db_rate_limit_blocks_after_limit(client):
-    with patch("routers.health.supabase_admin"):
-        for _ in range(60):
-            r = await client.get("/health/db")
-            assert r.status_code == 200
+    for _ in range(60):
         r = await client.get("/health/db")
+        assert r.status_code == 200
+    r = await client.get("/health/db")
     assert r.status_code == 429
 
 

@@ -1,7 +1,7 @@
 import json
 import logging
 import re
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 from httpx import ASGITransport, AsyncClient
 from supabase_auth.errors import AuthApiError
@@ -207,9 +207,7 @@ async def test_canonical_level_follows_status(client, caplog):
 async def test_canonical_records_action_on_account_deletion(client, caplog):
     limiter.reset()
     with caplog.at_level(logging.INFO, logger="main"):
-        with patch("routers.user.supabase_admin") as mock_supa:
-            mock_supa.auth.admin.delete_user = MagicMock(return_value=None)
-            r = await client.delete("/users/me")
+        r = await client.delete("/users/me")
     assert r.status_code == 204
 
     (record,) = _canonical_records(caplog)
@@ -241,14 +239,13 @@ async def test_canonical_records_turns_on_history(client, caplog):
     assert record.turns == len(turns)
 
 
-async def test_canonical_records_user_not_found_error(client, caplog):
+async def test_canonical_records_user_not_found_error(client, caplog, fake_supabase):
     limiter.reset()
+    fake_supabase.auth.admin.delete_user = AsyncMock(
+        side_effect=AuthApiError("User not found", 404, None)
+    )
     with caplog.at_level(logging.INFO, logger="main"):
-        with patch("routers.user.supabase_admin") as mock_supa:
-            mock_supa.auth.admin.delete_user = MagicMock(
-                side_effect=AuthApiError("User not found", 404, None)
-            )
-            r = await client.delete("/users/me")
+        r = await client.delete("/users/me")
     assert r.status_code == 404
 
     (record,) = _canonical_records(caplog)

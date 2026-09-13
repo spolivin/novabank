@@ -1,9 +1,22 @@
 import logging
 
-from fastapi import APIRouter, HTTPException, Query, Request, Response, Security, status
+from anthropic import AsyncAnthropic
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Query,
+    Request,
+    Response,
+    Security,
+    status,
+)
+from supabase import AsyncClient
 
+from dependencies.anthropic_client import get_anthropic
 from dependencies.auth import verify_jwt
 from dependencies.limiter import limiter
+from dependencies.supabase import get_supabase
 from log_context import add_log_fields
 from schemas.chat import ChatRequest, ChatResponse, HistoryMessage
 from services import ai as ai_service
@@ -22,6 +35,7 @@ async def history(
         default=ai_service.UI_HISTORY_LIMIT, ge=1, le=ai_service.UI_HISTORY_LIMIT
     ),
     user: dict = Security(verify_jwt),
+    supabase: AsyncClient = Depends(get_supabase),
 ):
     """Return the authenticated user's stored conversation history.
 
@@ -30,6 +44,7 @@ async def history(
         response: The outgoing response, used to set cache headers.
         limit: Maximum number of most-recent turns to return (1-200).
         user: Decoded JWT claims for the authenticated user.
+        supabase: The shared async Supabase client.
 
     Returns:
         The user's conversation turns, oldest first.
@@ -41,7 +56,7 @@ async def history(
     user_id = user["sub"]
     add_log_fields(user_id=user_id)
     try:
-        turns = await ai_service.get_history(user_id, limit=limit)
+        turns = await ai_service.get_history(supabase, user_id, limit=limit)
         add_log_fields(turns=len(turns))
         return turns
     except Exception as e:
@@ -55,12 +70,17 @@ async def history(
 
 @router.delete("/history", status_code=status.HTTP_204_NO_CONTENT)
 @limiter.limit("5/minute")
-async def clear_history(request: Request, user: dict = Security(verify_jwt)):
+async def clear_history(
+    request: Request,
+    user: dict = Security(verify_jwt),
+    supabase: AsyncClient = Depends(get_supabase),
+):
     """Delete all of the authenticated user's conversation history.
 
     Args:
         request: The incoming request (required by the rate limiter).
         user: Decoded JWT claims for the authenticated user.
+        supabase: The shared async Supabase client.
 
     Raises:
         HTTPException: 500 if the history cannot be cleared.
@@ -68,7 +88,7 @@ async def clear_history(request: Request, user: dict = Security(verify_jwt)):
     user_id = user["sub"]
     add_log_fields(user_id=user_id)
     try:
-        deleted = await ai_service.clear_history(user_id)
+        deleted = await ai_service.clear_history(supabase, user_id)
         add_log_fields(deleted=deleted)
     except Exception as e:
         add_log_fields(error=type(e).__name__)
@@ -82,7 +102,13 @@ async def clear_history(request: Request, user: dict = Security(verify_jwt)):
 @router.post("/chat", response_model=ChatResponse)
 @limiter.limit("8/minute")
 @limiter.limit("60/day")
-async def chat(request: Request, body: ChatRequest, user: dict = Security(verify_jwt)):
+async def chat(
+    request: Request,
+    body: ChatRequest,
+    user: dict = Security(verify_jwt),
+    supabase: AsyncClient = Depends(get_supabase),
+    claude: AsyncAnthropic = Depends(get_anthropic),
+):
     """Generate an assistant reply for the user's message.
 
     The user message and the generated reply are both persisted as conversation
@@ -92,6 +118,8 @@ async def chat(request: Request, body: ChatRequest, user: dict = Security(verify
         request: The incoming request (required by the rate limiter).
         body: The chat request payload.
         user: Decoded JWT claims for the authenticated user.
+        supabase: The shared async Supabase client.
+        claude: The shared async Anthropic client.
 
     Returns:
         The assistant's reply.
@@ -102,7 +130,7 @@ async def chat(request: Request, body: ChatRequest, user: dict = Security(verify
     user_id = user["sub"]
     add_log_fields(user_id=user_id)
     try:
-        reply = await ai_service.get_reply(user_id, body.message)
+        reply = await ai_service.get_reply(supabase, claude, user_id, body.message)
         add_log_fields(reply_chars=len(reply))
         return ChatResponse(reply=reply)
     except Exception as e:

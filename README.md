@@ -107,6 +107,10 @@ trust boundary:
   with orphan-cleanup if the model call fails.
 - Every request is tagged with a short request ID and emitted as one canonical structured
   log line (JSON or human-readable), with noisy third-party HTTP loggers quieted by default.
+- **All I/O on the request path is non-blocking.** The Anthropic and Supabase clients are
+  the async variants, created once in the app's `lifespan`, handed to endpoints through
+  FastAPI dependency injection (`Depends`), and closed on shutdown — so connection pools
+  are bound to the serving event loop and no request is offloaded to a worker thread.
 
 ## API surface
 
@@ -166,7 +170,7 @@ novabank/
 │   ├── routers/              # ai, user, health
 │   ├── services/             # ai.py — Claude + persistence
 │   ├── schemas/              # Pydantic request/response models
-│   ├── dependencies/         # auth (JWKS), limiter, supabase clients
+│   ├── dependencies/         # auth (JWKS), limiter, async Supabase + Anthropic clients
 │   ├── data/                 # products.json, company.json (grounding)
 │   ├── tests/                # pytest suites
 │   └── Dockerfile
@@ -200,8 +204,9 @@ keys are printed by `make db-status` once the instance is running.
 
 ## Testing & quality
 
-- **Backend** — `pytest` suite covering auth, rate limiting, body limits, logging, chat, and history (`make api-test`)
+- **Backend** — `pytest` suite covering auth, rate limiting, body limits, logging, chat, history, and the client lifespan/injection wiring (`make api-test`)
 - **Frontend** — `Vitest` + Testing Library suites for auth flows, the dashboard, and the AI assistant (`make test`)
+- **Reproducible image builds** — the backend image installs from the committed `uv.lock` with a pinned uv version (`uv sync --locked`, dev dependencies omitted) and runs as a non-root user
 - **CI** — separate GitHub Actions workflows for backend and frontend on every push
 - **Pre-commit** — trailing-whitespace, EOF, merge-conflict, large-file and JSON/YAML checks, secret detection, Ruff format + lint, and Conventional Commits enforcement
 

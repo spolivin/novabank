@@ -5,8 +5,7 @@ __pycache__
 .venv
 .git
 .pytest_cache
+.ruff_cache
 .coverage
 tests/
 conftest.py
-pyproject.toml
-uv.lock
