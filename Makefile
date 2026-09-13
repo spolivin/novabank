@@ -54,7 +54,7 @@ api-build:
 	docker build -t novabank-backend ./backend
 
 api-docker:
-	docker run --rm -d --env-file backend/.env --add-host=host.docker.internal:host-gateway -e SUPABASE_URL=http://host.docker.internal:54321 -p 8000:8000 --name novabank-backend novabank-backend
+	docker run --rm -d --env-file backend/.env --add-host=host.docker.internal:host-gateway --dns-option single-request-reopen -e SUPABASE_URL=http://host.docker.internal:54321 -p 8000:8000 --name novabank-backend novabank-backend
 
 api-logs:
 	docker logs -f novabank-backend
