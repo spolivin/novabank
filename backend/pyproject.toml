@@ -10,6 +10,7 @@ dependencies = [
     "PyJWT>=2.10.0",
     "supabase>=2.30.0",
     "slowapi>=0.1.9",
+    "httpx>=0.28",
 ]
 
 [tool.uv]
@@ -45,7 +46,6 @@ dev = [
     "ruff>=0.9.0",
     "pytest>=8.0",
     "pytest-asyncio>=0.24",
-    "httpx>=0.28",
     "pytest-cov>=6.0",
     "pre-commit>=4.0",
 ]

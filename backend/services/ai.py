@@ -5,6 +5,8 @@ from pathlib import Path
 from anthropic import AsyncAnthropic
 from supabase import AsyncClient
 
+from db import execute_with_retry
+
 logger = logging.getLogger(__name__)
 
 _data_dir = Path(__file__).parent.parent / "data"
@@ -80,13 +82,14 @@ async def get_history(
     Returns:
         Conversation turns ordered oldest to newest.
     """
-    result = await (
-        supabase.table("conversations")
-        .select("role, content, created_at")
-        .eq("user_id", user_id)
-        .order("created_at", desc=True)
-        .limit(limit)
-        .execute()
+    result = await execute_with_retry(
+        lambda: (
+            supabase.table("conversations")
+            .select("role, content, created_at")
+            .eq("user_id", user_id)
+            .order("created_at", desc=True)
+            .limit(limit)
+        )
     )
     return list(reversed(result.data))
 
@@ -106,8 +109,8 @@ async def clear_history(supabase: AsyncClient, user_id: str) -> int:
     Returns:
         The number of rows deleted.
     """
-    result = await (
-        supabase.table("conversations").delete().eq("user_id", user_id).execute()
+    result = await execute_with_retry(
+        lambda: supabase.table("conversations").delete().eq("user_id", user_id)
     )
     return len(result.data)
 
@@ -134,10 +137,10 @@ async def get_reply(
         Exception: Propagates any error from the Claude API call (after
             rolling back the stored user message).
     """
-    insert_result = await (
-        supabase.table("conversations")
-        .insert({"user_id": user_id, "role": "user", "content": message})
-        .execute()
+    insert_result = await execute_with_retry(
+        lambda: supabase.table("conversations").insert(
+            {"user_id": user_id, "role": "user", "content": message}
+        )
     )
     user_row_id: str = insert_result.data[0]["id"]
 
@@ -150,17 +153,17 @@ async def get_reply(
     except Exception as e:
         logger.error("Claude API error: %s", e)
         try:
-            await (
-                supabase.table("conversations").delete().eq("id", user_row_id).execute()
+            await execute_with_retry(
+                lambda: supabase.table("conversations").delete().eq("id", user_row_id)
             )
         except Exception as cleanup_err:
             logger.error("Failed to clean up orphaned user message: %s", cleanup_err)
         raise
 
     logger.debug("Claude response received (%d chars)", len(reply))
-    await (
-        supabase.table("conversations")
-        .insert({"user_id": user_id, "role": "assistant", "content": reply})
-        .execute()
+    await execute_with_retry(
+        lambda: supabase.table("conversations").insert(
+            {"user_id": user_id, "role": "assistant", "content": reply}
+        )
     )
     return reply
