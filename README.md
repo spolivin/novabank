@@ -86,16 +86,31 @@ conversation history, structured request logging, and a full CI + pre-commit pip
 The frontend and backend are **fully separated** and communicate over a single, verified
 trust boundary:
 
-```
-  Browser (React)                FastAPI backend              External
-  ───────────────                ───────────────              ────────
-  Supabase JS  ──auth──▶  Supabase Auth (GoTrue)
-       │  JWT
-       ▼
-  fetch + Bearer  ──────▶  verify_jwt (JWKS)  ──────▶  Supabase Postgres
-                                  │                          (conversations,
-                                  ▼                            user data)
-                           Claude API (Nova)  ──────▶  Anthropic
+```mermaid
+flowchart LR
+    subgraph browser["Browser (React)"]
+        sdk["Supabase JS"]
+        req["fetch + Bearer"]
+    end
+
+    subgraph backend["FastAPI backend"]
+        jwt["verify_jwt (JWKS)"]
+        nova["Claude API client (Nova)"]
+    end
+
+    subgraph external["External"]
+        auth["Supabase Auth (GoTrue)"]
+        db[("Supabase Postgres<br/>conversations, user data")]
+        anthropic["Anthropic"]
+    end
+
+    sdk -- auth --> auth
+    auth -- JWT --> sdk
+    sdk --> req
+    req -- "Authorization: Bearer" --> jwt
+    jwt --> db
+    jwt --> nova
+    nova --> anthropic
 ```
 
 - The browser authenticates **directly** with Supabase and receives a JWT. That token is
