@@ -126,7 +126,8 @@ flowchart LR
     style backend  fill:#fffbeb,stroke:#94a3b8,stroke-width:1px,color:#0f172a
     style external fill:#faf5ff,stroke:#94a3b8,stroke-width:1px,color:#0f172a
 
-    linkStyle 3 stroke:#dc2626,stroke-width:2.5px
+    linkStyle 0,1,2,4,5,6 stroke:#6366f1,stroke-width:2px
+    linkStyle 3 stroke:#ef4444,stroke-width:2.5px
 ```
 
 - The browser authenticates **directly** with Supabase and receives a JWT. That token is
