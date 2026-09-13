@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from supabase import AsyncClient
 
 from config import settings
+from db import execute_with_retry
 from dependencies.limiter import limiter
 from dependencies.supabase import get_supabase
 
@@ -54,7 +55,9 @@ async def health_db(
     ):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     try:
-        await supabase.table("conversations").select("id").limit(1).execute()
+        await execute_with_retry(
+            lambda: supabase.table("conversations").select("id").limit(1)
+        )
         return {"status": "ok"}
     except Exception as e:
         raise HTTPException(
