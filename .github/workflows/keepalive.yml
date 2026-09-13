@@ -1,0 +1,18 @@
+name: Keepalive (Supabase)
+
+on:
+  schedule:
+    - cron: "0 9 * * 0,3"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    name: Ping DB health endpoint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /health/db
+        env:
+          BACKEND_URL: ${{ vars.BACKEND_URL }}
+          HEALTH_CHECK_TOKEN: ${{ secrets.HEALTH_CHECK_TOKEN }}
+        run: |
+          curl -fsS -H "X-Health-Token: $HEALTH_CHECK_TOKEN" "$BACKEND_URL/health/db"
