@@ -15,7 +15,7 @@ from dependencies.anthropic_client import close_anthropic, create_anthropic
 from dependencies.limiter import limiter
 from dependencies.supabase import close_supabase, create_supabase
 from log_context import add_log_fields, get_log_fields, reset_log_fields
-from routers import ai, health, user
+from routers import ai, health, transactions, user
 
 _request_id: ContextVar[str] = ContextVar("request_id", default="-")
 
@@ -232,4 +232,5 @@ app.add_middleware(
 
 app.include_router(ai.router)
 app.include_router(user.router)
+app.include_router(transactions.router)
 app.include_router(health.router)

@@ -81,8 +81,21 @@ describe("TransactionTable", () => {
     expect(screen.getByText("May 12, 2026")).toBeInTheDocument();
   });
 
-  it("renders an empty table body when given no transactions", () => {
+  it("shows an empty-state message when given no transactions", () => {
     const { container } = render(<TransactionTable transactions={[]} />);
-    expect(container.querySelectorAll("tbody tr")).toHaveLength(0);
+    expect(screen.getByText("No transactions found")).toBeInTheDocument();
+    expect(container.querySelectorAll("tbody tr")).toHaveLength(1);
+  });
+
+  it("shows a loading indicator while transactions are null", () => {
+    render(<TransactionTable transactions={null} />);
+    expect(screen.getByLabelText("Loading transactions")).toBeInTheDocument();
+    expect(screen.queryByText("No transactions found")).not.toBeInTheDocument();
+  });
+
+  it("shows an error message when loading failed", () => {
+    render(<TransactionTable transactions={null} error />);
+    expect(screen.getByText(/couldn't load transactions/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText("Loading transactions")).not.toBeInTheDocument();
   });
 });

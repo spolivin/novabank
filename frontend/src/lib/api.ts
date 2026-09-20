@@ -55,6 +55,25 @@ export const clearChatHistory = async (): Promise<void> => {
   if (!response.ok) throw new Error("Failed to clear history");
 };
 
+export interface Transaction {
+  id: string;
+  date: string;
+  description: string;
+  category: string;
+  amount: number;
+}
+
+export const fetchTransactions = async (): Promise<Transaction[]> => {
+  const token = await getAccessToken();
+
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/transactions`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!response.ok) throw new Error("Failed to fetch transactions");
+  return response.json();
+};
+
 export const deleteAccount = async () => {
   const token = await getAccessToken();
 
