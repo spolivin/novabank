@@ -11,6 +11,8 @@
 
 **A full-stack banking demo — marketing site, authenticated dashboard, and an AI assistant powered by the Claude API.**
 
+**[Live demo →](https://novabank-phi.vercel.app/)**
+
 [![CI (backend)](https://github.com/spolivin/novabank/actions/workflows/ci-backend.yml/badge.svg?branch=master)](https://github.com/spolivin/novabank/actions/workflows/ci-backend.yml)
 [![CI (frontend)](https://github.com/spolivin/novabank/actions/workflows/ci-frontend.yml/badge.svg?branch=master)](https://github.com/spolivin/novabank/actions/workflows/ci-frontend.yml)
 
