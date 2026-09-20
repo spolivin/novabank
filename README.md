@@ -72,7 +72,8 @@ conversation history, structured request logging, and a full CI + pre-commit pip
 **Authenticated app**
 - Sign up, log in, and self-service account deletion via Supabase Auth
 - Protected routes gated on a valid session
-- Personal dashboard with per-user seeded balances, summary cards, and a transaction table
+- Personal dashboard with per-user seeded summary cards and a transaction table backed by a
+  per-user Supabase `transactions` table (with an empty state when there are none)
 
 **Nova — the AI assistant**
 - Chat grounded in NovaBank's product catalogue and company data via a system prompt
@@ -101,7 +102,7 @@ flowchart LR
 
     subgraph external["External"]
         auth["Supabase Auth (GoTrue)"]
-        db[("Supabase Postgres<br/>conversations, user data")]
+        db[("Supabase Postgres<br/>conversations, transactions")]
         anthropic["Anthropic"]
     end
 
@@ -147,7 +148,7 @@ flowchart LR
 
 ## API surface
 
-All `/ai` and `/users` routes require a valid Supabase JWT. Per-route rate limits are
+All `/ai`, `/transactions` and `/users` routes require a valid Supabase JWT. Per-route rate limits are
 enforced by SlowAPI.
 
 | Method   | Endpoint        | Rate limit       | Description                                  |
@@ -155,6 +156,7 @@ enforced by SlowAPI.
 | `POST`   | `/ai/chat`      | 8 / min; 60 / day | Send a message to Nova and get a reply       |
 | `GET`    | `/ai/history`   | 10 / min         | Fetch recent conversation history (optional `?limit=` 1–200) |
 | `DELETE` | `/ai/history`   | 5 / min          | Clear the caller's conversation history (`204`) |
+| `GET`    | `/transactions` | 30 / min         | Fetch the caller's recent transactions, newest first (optional `?limit=` 1–50) |
 | `DELETE` | `/users/me`     | 3 / hour         | Permanently delete the caller's account (`204`) |
 | `GET`    | `/health/api`   | unlimited        | Liveness probe                               |
 | `GET`    | `/health/db`    | 60 / min         | Readiness probe (checks DB; optionally token-gated) |
