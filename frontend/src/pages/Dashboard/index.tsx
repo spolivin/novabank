@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { PAGE_TITLES, ROUTES } from "@/constants";
 import { useAuth } from "@/context/useAuth";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import { deleteAccount } from "@/lib/api";
+import { type Transaction, deleteAccount, fetchTransactions } from "@/lib/api";
 
 import { seedFromUserId } from "./Dashboard.data";
 import SummaryCard from "./components/SummaryCard";
@@ -33,6 +33,25 @@ export default function Dashboard() {
   const [confirming, setConfirming] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const [showBanner, setShowBanner] = useState(true);
+  const [transactions, setTransactions] = useState<Transaction[] | null>(null);
+  const [transactionsError, setTransactionsError] = useState(false);
+  const userId = user?.id;
+
+  useEffect(() => {
+    if (!userId) return;
+    // Ignore a stale response if the user changes while a fetch is in flight.
+    let cancelled = false;
+    fetchTransactions()
+      .then((rows) => {
+        if (!cancelled) setTransactions(rows);
+      })
+      .catch(() => {
+        if (!cancelled) setTransactionsError(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
   async function handleSignOut() {
     await signOut();
@@ -52,7 +71,7 @@ export default function Dashboard() {
 
   if (!user) return <Navigate to={ROUTES.LOGIN} replace />;
 
-  const { summary, transactions } = seedFromUserId(user.id);
+  const { summary } = seedFromUserId(user.id);
   const displayName = user?.user_metadata?.full_name ?? user?.email ?? "there";
   const savingsPct = Math.round((summary.savingsProgress / summary.savingsGoal) * 100);
 
@@ -168,7 +187,7 @@ export default function Dashboard() {
           <motion.h2 {...scrollAnimation} className="text-lg font-semibold text-brand-fg">
             Recent Transactions
           </motion.h2>
-          <TransactionTable transactions={transactions} />
+          <TransactionTable transactions={transactions} error={transactionsError} />
         </div>
         {/* Danger zone */}
         <motion.div

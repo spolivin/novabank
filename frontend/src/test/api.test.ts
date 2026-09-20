@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { deleteAccount, fetchChatHistory, sendChatMessage } from "@/lib/api";
+import { deleteAccount, fetchChatHistory, fetchTransactions, sendChatMessage } from "@/lib/api";
 
 vi.mock("@/lib/supabase", () => ({
   supabase: {
@@ -36,6 +36,34 @@ describe("fetchChatHistory", () => {
   it("throws on non-ok response", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 }));
     await expect(fetchChatHistory()).rejects.toThrow("Failed to fetch history");
+  });
+});
+
+describe("fetchTransactions", () => {
+  it("returns parsed transactions on success", async () => {
+    const transactions = [
+      {
+        id: "tx-1",
+        date: "2026-09-12",
+        description: "Salary deposit",
+        category: "Income",
+        amount: 5200,
+      },
+    ];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(transactions) })
+    );
+    const result = await fetchTransactions();
+    expect(result).toEqual(transactions);
+    expect(fetch).toHaveBeenCalledWith(`${API}/transactions`, {
+      headers: { Authorization: "Bearer test-token" },
+    });
+  });
+
+  it("throws on non-ok response", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 }));
+    await expect(fetchTransactions()).rejects.toThrow("Failed to fetch transactions");
   });
 });
 
