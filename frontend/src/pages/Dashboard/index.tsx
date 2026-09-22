@@ -11,9 +11,15 @@ import { Button } from "@/components/ui/Button";
 import { PAGE_TITLES, ROUTES } from "@/constants";
 import { useAuth } from "@/context/useAuth";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import { type Transaction, deleteAccount, fetchTransactions } from "@/lib/api";
+import {
+  type DashboardSummary,
+  type Transaction,
+  deleteAccount,
+  fetchDashboardSummary,
+  fetchTransactions,
+} from "@/lib/api";
 
-import { seedFromUserId } from "./Dashboard.data";
+import SavingsProgress from "./components/SavingsProgress";
 import SummaryCard from "./components/SummaryCard";
 import TransactionTable from "./components/TransactionTable";
 
@@ -35,6 +41,8 @@ export default function Dashboard() {
   const [showBanner, setShowBanner] = useState(true);
   const [transactions, setTransactions] = useState<Transaction[] | null>(null);
   const [transactionsError, setTransactionsError] = useState(false);
+  const [summary, setSummary] = useState<DashboardSummary | null>(null);
+  const [summaryError, setSummaryError] = useState(false);
   const userId = user?.id;
 
   useEffect(() => {
@@ -47,6 +55,13 @@ export default function Dashboard() {
       })
       .catch(() => {
         if (!cancelled) setTransactionsError(true);
+      });
+    fetchDashboardSummary()
+      .then((data) => {
+        if (!cancelled) setSummary(data);
+      })
+      .catch(() => {
+        if (!cancelled) setSummaryError(true);
       });
     return () => {
       cancelled = true;
@@ -71,9 +86,19 @@ export default function Dashboard() {
 
   if (!user) return <Navigate to={ROUTES.LOGIN} replace />;
 
-  const { summary } = seedFromUserId(user.id);
   const displayName = user?.user_metadata?.full_name ?? user?.email ?? "there";
-  const savingsPct = Math.round((summary.savingsProgress / summary.savingsGoal) * 100);
+  // "—" while the summary is loading, or if it failed to load.
+  let balance = "—";
+  let monthlySpending = "—";
+  let savings = "—";
+  if (summary) {
+    balance = formatCurrency(summary.balance);
+    monthlySpending = formatCurrency(summary.monthly_spending);
+    savings =
+      summary.savings_goal > 0
+        ? `${formatCurrency(summary.savings_saved)} / ${formatCurrency(summary.savings_goal)}`
+        : "No goal set";
+  }
 
   return (
     <div className="min-h-screen bg-brand-bg text-brand-fg">
@@ -123,6 +148,9 @@ export default function Dashboard() {
         </motion.div>
 
         {/* Summary cards */}
+        {summaryError && (
+          <p className="text-sm text-brand-error">Couldn't load your account summary.</p>
+        )}
         <motion.div
           initial="hidden"
           animate="visible"
@@ -136,17 +164,17 @@ export default function Dashboard() {
             {
               icon: Wallet,
               label: "Account Balance",
-              value: formatCurrency(summary.accountBalance),
+              value: balance,
             },
             {
               icon: TrendingDown,
               label: "Monthly Spending",
-              value: formatCurrency(summary.monthlySpending),
+              value: monthlySpending,
             },
             {
               icon: PiggyBank,
               label: "Savings Goal",
-              value: `${formatCurrency(summary.savingsProgress)} / ${formatCurrency(summary.savingsGoal)}`,
+              value: savings,
             },
           ].map((card) => (
             <motion.div
@@ -166,21 +194,7 @@ export default function Dashboard() {
         </motion.div>
 
         {/* Savings progress bar */}
-        <motion.div {...scrollAnimation} className="rounded-2xl bg-brand-surface px-6 py-5">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-medium text-brand-fg">Savings progress</p>
-            <p className="text-sm font-semibold text-brand-accent">{savingsPct}%</p>
-          </div>
-          <div className="h-2 rounded-full bg-brand-bg overflow-hidden">
-            <motion.div
-              className="h-full rounded-full bg-brand-accent"
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: savingsPct / 100 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              style={{ transformOrigin: "left" }}
-            />
-          </div>
-        </motion.div>
+        <SavingsProgress summary={summary} onGoalSaved={setSummary} />
 
         {/* Recent transactions */}
         <div className="space-y-4">

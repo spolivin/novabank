@@ -1,6 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { deleteAccount, fetchChatHistory, fetchTransactions, sendChatMessage } from "@/lib/api";
+import {
+  deleteAccount,
+  fetchChatHistory,
+  fetchDashboardSummary,
+  fetchTransactions,
+  sendChatMessage,
+  updateSavingsGoal,
+} from "@/lib/api";
 
 vi.mock("@/lib/supabase", () => ({
   supabase: {
@@ -64,6 +71,56 @@ describe("fetchTransactions", () => {
   it("throws on non-ok response", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 }));
     await expect(fetchTransactions()).rejects.toThrow("Failed to fetch transactions");
+  });
+});
+
+const summary = {
+  balance: 8412.55,
+  monthly_spending: 1734.2,
+  savings_goal: 10000,
+  savings_saved: 1200,
+};
+
+describe("fetchDashboardSummary", () => {
+  it("returns the parsed summary on success", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(summary) })
+    );
+    const result = await fetchDashboardSummary();
+    expect(result).toEqual(summary);
+    expect(fetch).toHaveBeenCalledWith(`${API}/dashboard/summary`, {
+      headers: { Authorization: "Bearer test-token" },
+    });
+  });
+
+  it("throws on non-ok response", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 }));
+    await expect(fetchDashboardSummary()).rejects.toThrow("Failed to fetch dashboard summary");
+  });
+});
+
+describe("updateSavingsGoal", () => {
+  it("PUTs the goal and returns the refreshed summary", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(summary) })
+    );
+    const result = await updateSavingsGoal(10000);
+    expect(result).toEqual(summary);
+    expect(fetch).toHaveBeenCalledWith(`${API}/dashboard/savings-goal`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer test-token",
+      },
+      body: JSON.stringify({ savings_goal: 10000 }),
+    });
+  });
+
+  it("throws on non-ok response", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 }));
+    await expect(updateSavingsGoal(500)).rejects.toThrow("Failed to update savings goal");
   });
 });
 
