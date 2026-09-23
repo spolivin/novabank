@@ -74,8 +74,9 @@ conversation history, structured request logging, and a full CI + pre-commit pip
 **Authenticated app**
 - Sign up, log in, and self-service account deletion via Supabase Auth
 - Protected routes gated on a valid session
-- Personal dashboard with per-user seeded summary cards and a transaction table backed by a
-  per-user Supabase `transactions` table (with an empty state when there are none)
+- Personal dashboard backed by per-user Supabase data: summary cards (balance, monthly
+  spending, savings) computed in Postgres from the `transactions` table, a user-set savings
+  goal with a live progress bar, and a transaction table with an empty state
 
 **Nova — the AI assistant**
 - Chat grounded in NovaBank's product catalogue and company data via a system prompt
@@ -104,7 +105,7 @@ flowchart LR
 
     subgraph external["External"]
         auth["Supabase Auth (GoTrue)"]
-        db[("Supabase Postgres<br/>conversations, transactions")]
+        db[("Supabase Postgres<br/>conversations, transactions,<br/>accounts")]
         anthropic["Anthropic"]
     end
 
@@ -150,7 +151,7 @@ flowchart LR
 
 ## API surface
 
-All `/ai`, `/transactions` and `/users` routes require a valid Supabase JWT. Per-route rate limits are
+All `/ai`, `/dashboard`, `/transactions` and `/users` routes require a valid Supabase JWT. Per-route rate limits are
 enforced by SlowAPI.
 
 | Method   | Endpoint        | Rate limit       | Description                                  |
@@ -158,6 +159,8 @@ enforced by SlowAPI.
 | `POST`   | `/ai/chat`      | 8 / min; 60 / day | Send a message to Nova and get a reply       |
 | `GET`    | `/ai/history`   | 10 / min         | Fetch recent conversation history (optional `?limit=` 1–200) |
 | `DELETE` | `/ai/history`   | 5 / min          | Clear the caller's conversation history (`204`) |
+| `GET`    | `/dashboard/summary` | 30 / min | Fetch the caller's balance, monthly spending, savings goal and amount saved |
+| `PUT`    | `/dashboard/savings-goal` | 10 / min | Set the caller's savings goal; returns the refreshed summary |
 | `GET`    | `/transactions` | 30 / min         | Fetch the caller's recent transactions, newest first (optional `?limit=` 1–50) |
 | `DELETE` | `/users/me`     | 3 / hour         | Permanently delete the caller's account (`204`) |
 | `GET`    | `/health/api`   | unlimited        | Liveness probe                               |

@@ -74,6 +74,40 @@ export const fetchTransactions = async (): Promise<Transaction[]> => {
   return response.json();
 };
 
+export interface DashboardSummary {
+  balance: number;
+  monthly_spending: number;
+  savings_goal: number;
+  savings_saved: number;
+}
+
+export const fetchDashboardSummary = async (): Promise<DashboardSummary> => {
+  const token = await getAccessToken();
+
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/summary`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!response.ok) throw new Error("Failed to fetch dashboard summary");
+  return response.json();
+};
+
+export const updateSavingsGoal = async (savingsGoal: number): Promise<DashboardSummary> => {
+  const token = await getAccessToken();
+
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/savings-goal`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ savings_goal: savingsGoal }),
+  });
+
+  if (!response.ok) throw new Error("Failed to update savings goal");
+  return response.json();
+};
+
 export const deleteAccount = async () => {
   const token = await getAccessToken();
 

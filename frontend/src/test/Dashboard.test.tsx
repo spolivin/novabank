@@ -7,7 +7,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useAuth } from "@/context/useAuth";
-import { deleteAccount, fetchTransactions } from "@/lib/api";
+import { deleteAccount, fetchDashboardSummary, fetchTransactions } from "@/lib/api";
 import Dashboard from "@/pages/Dashboard";
 
 const MOTION_PROPS = new Set([
@@ -83,9 +83,17 @@ async function renderDashboard(user: typeof mockUser | null = mockUser) {
   return { signOut };
 }
 
+const summary = {
+  balance: 8412.55,
+  monthly_spending: 1734.2,
+  savings_goal: 10000,
+  savings_saved: 2500,
+};
+
 describe("Dashboard", () => {
   beforeEach(() => {
     vi.mocked(fetchTransactions).mockReset().mockResolvedValue([]);
+    vi.mocked(fetchDashboardSummary).mockReset().mockResolvedValue(summary);
   });
 
   it("redirects to login when user is null", async () => {
@@ -103,6 +111,29 @@ describe("Dashboard", () => {
     expect(screen.getByText(/account balance/i)).toBeInTheDocument();
     expect(screen.getByText(/monthly spending/i)).toBeInTheDocument();
     expect(screen.getByText(/savings goal/i)).toBeInTheDocument();
+  });
+
+  it("renders summary figures fetched from the API", async () => {
+    await renderDashboard();
+    expect(screen.getByText("$8,413")).toBeInTheDocument();
+    expect(screen.getByText("$1,734")).toBeInTheDocument();
+    expect(screen.getByText("$2,500 / $10,000")).toBeInTheDocument();
+    expect(screen.getByText("25%")).toBeInTheDocument();
+    expect(fetchDashboardSummary).toHaveBeenCalledOnce();
+  });
+
+  it("shows 'No goal set' when the user has no savings goal", async () => {
+    vi.mocked(fetchDashboardSummary).mockResolvedValue({ ...summary, savings_goal: 0 });
+    await renderDashboard();
+    expect(screen.getByText("No goal set")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /set goal/i })).toBeInTheDocument();
+  });
+
+  it("shows placeholders and an error when the summary fails to load", async () => {
+    vi.mocked(fetchDashboardSummary).mockRejectedValue(new Error("server error"));
+    await renderDashboard();
+    expect(screen.getByText(/couldn't load your account summary/i)).toBeInTheDocument();
+    expect(screen.getAllByText("—")).toHaveLength(3);
   });
 
   it("renders the recent transactions section", async () => {
@@ -136,9 +167,10 @@ describe("Dashboard", () => {
     expect(await screen.findByText(/couldn't load transactions/i)).toBeInTheDocument();
   });
 
-  it("does not fetch transactions when there is no user", async () => {
+  it("does not fetch dashboard data when there is no user", async () => {
     await renderDashboard(null);
     expect(fetchTransactions).not.toHaveBeenCalled();
+    expect(fetchDashboardSummary).not.toHaveBeenCalled();
   });
 
   it("shows the initial delete button, not the confirm dialog", async () => {
