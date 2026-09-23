@@ -76,7 +76,8 @@ conversation history, structured request logging, and a full CI + pre-commit pip
 - Protected routes gated on a valid session
 - Personal dashboard backed by per-user Supabase data: summary cards (balance, monthly
   spending, savings) computed in Postgres from the `transactions` table, a user-set savings
-  goal with a live progress bar, and a transaction table with an empty state
+  goal with a live progress bar, moving money to and from savings (checked against available
+  funds and recorded in the transaction history), and a transaction table with an empty state
 
 **Nova — the AI assistant**
 - Chat grounded in NovaBank's product catalogue and company data via a system prompt
@@ -161,6 +162,7 @@ enforced by SlowAPI.
 | `DELETE` | `/ai/history`   | 5 / min          | Clear the caller's conversation history (`204`) |
 | `GET`    | `/dashboard/summary` | 30 / min | Fetch the caller's balance, monthly spending, savings goal and amount saved |
 | `PUT`    | `/dashboard/savings-goal` | 10 / min | Set the caller's savings goal; returns the refreshed summary |
+| `POST`   | `/dashboard/savings-transfer` | 10 / min | Move money to or from savings; `409` if funds are insufficient |
 | `GET`    | `/transactions` | 30 / min         | Fetch the caller's recent transactions, newest first (optional `?limit=` 1–50) |
 | `DELETE` | `/users/me`     | 3 / hour         | Permanently delete the caller's account (`204`) |
 | `GET`    | `/health/api`   | unlimited        | Liveness probe                               |
@@ -183,6 +185,7 @@ Security is treated as a first-class concern rather than an afterthought:
 - **Rate limiting** — per-user limits on every mutating and AI endpoint (see [API surface](#api-surface))
 - **Spoof-resistant client IP** — the rate-limit key reads the real client IP only from trusted proxy hops (`TRUSTED_PROXY_COUNT`); a forged `X-Forwarded-For` cannot mint a fresh bucket or shift another user's
 - **Gated DB health probe** — `/health/db` can require an `X-Health-Token` secret (`HEALTH_CHECK_TOKEN`), returning `404` to anonymous callers before any database query runs
+- **Transfers applied once** — a savings transfer carries a per-request id, unique per user in the database, so a connection retry that already reached Postgres returns the current figures instead of moving the money twice
 - **No-store on reads** — `Cache-Control: no-store` on the health and history endpoints keeps responses out of intermediary caches
 - **HTTP body cap** — requests over 32 KB are rejected with `413` before reaching any handler. The body is *measured*, not taken on trust: a declared `Content-Length` is rejected on the fast path, and chunked requests (which omit it) are caught by the measured backstop
 - **Payload limits** — messages capped at 500 characters (Pydantic); 10 rows (5 turns) of history are replayed to Claude per request, and 200 rows loaded for display
