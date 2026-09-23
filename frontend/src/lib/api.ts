@@ -108,6 +108,28 @@ export const updateSavingsGoal = async (savingsGoal: number): Promise<DashboardS
   return response.json();
 };
 
+export type TransferDirection = "to_savings" | "from_savings";
+
+export const transferSavings = async (
+  direction: TransferDirection,
+  amount: number
+): Promise<DashboardSummary> => {
+  const token = await getAccessToken();
+
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/savings-transfer`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ direction, amount }),
+  });
+
+  if (response.status === 409) throw new Error("insufficient_funds");
+  if (!response.ok) throw new Error("Failed to transfer funds");
+  return response.json();
+};
+
 export const deleteAccount = async () => {
   const token = await getAccessToken();
 

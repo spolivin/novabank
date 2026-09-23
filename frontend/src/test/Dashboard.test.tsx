@@ -7,7 +7,12 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useAuth } from "@/context/useAuth";
-import { deleteAccount, fetchDashboardSummary, fetchTransactions } from "@/lib/api";
+import {
+  deleteAccount,
+  fetchDashboardSummary,
+  fetchTransactions,
+  transferSavings,
+} from "@/lib/api";
 import Dashboard from "@/pages/Dashboard";
 
 const MOTION_PROPS = new Set([
@@ -134,6 +139,34 @@ describe("Dashboard", () => {
     await renderDashboard();
     expect(screen.getByText(/couldn't load your account summary/i)).toBeInTheDocument();
     expect(screen.getAllByText("—")).toHaveLength(3);
+  });
+
+  it("refreshes the cards and reloads transactions after moving money", async () => {
+    vi.mocked(transferSavings).mockResolvedValue({
+      ...summary,
+      balance: 7412.55,
+      savings_saved: 3500,
+    });
+    await renderDashboard();
+    vi.mocked(fetchTransactions).mockResolvedValue([
+      {
+        id: "tx-transfer",
+        date: "2026-09-22",
+        description: "Transfer to savings",
+        category: "Savings",
+        amount: -1000,
+      },
+    ]);
+
+    await userEvent.click(screen.getByRole("button", { name: /move money/i }));
+    await userEvent.type(screen.getByLabelText(/amount to move/i), "1000");
+    await userEvent.click(screen.getByRole("button", { name: /^move$/i }));
+
+    expect(await screen.findByText("Transfer to savings")).toBeInTheDocument();
+    expect(screen.getByText("$7,413")).toBeInTheDocument();
+    expect(screen.getByText("$3,500 / $10,000")).toBeInTheDocument();
+    expect(screen.getByText("35%")).toBeInTheDocument();
+    expect(fetchTransactions).toHaveBeenCalledTimes(2);
   });
 
   it("renders the recent transactions section", async () => {

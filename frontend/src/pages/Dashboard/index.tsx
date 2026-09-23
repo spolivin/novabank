@@ -22,14 +22,7 @@ import {
 import SavingsProgress from "./components/SavingsProgress";
 import SummaryCard from "./components/SummaryCard";
 import TransactionTable from "./components/TransactionTable";
-
-function formatCurrency(value: number) {
-  return value.toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  });
-}
+import { formatCurrency } from "./format";
 
 export default function Dashboard() {
   usePageTitle(PAGE_TITLES.DASHBOARD);
@@ -67,6 +60,17 @@ export default function Dashboard() {
       cancelled = true;
     };
   }, [userId]);
+
+  // A transfer adds a transaction, so reload the list to show it at the top.
+  function handleTransferred(updated: DashboardSummary) {
+    setSummary(updated);
+    fetchTransactions()
+      .then((rows) => {
+        setTransactions(rows);
+        setTransactionsError(false);
+      })
+      .catch(() => setTransactionsError(true));
+  }
 
   async function handleSignOut() {
     await signOut();
@@ -194,7 +198,11 @@ export default function Dashboard() {
         </motion.div>
 
         {/* Savings progress bar */}
-        <SavingsProgress summary={summary} onGoalSaved={setSummary} />
+        <SavingsProgress
+          summary={summary}
+          onGoalSaved={setSummary}
+          onTransferred={handleTransferred}
+        />
 
         {/* Recent transactions */}
         <div className="space-y-4">
