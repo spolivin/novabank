@@ -6,6 +6,7 @@ import {
   fetchDashboardSummary,
   fetchTransactions,
   sendChatMessage,
+  transferSavings,
   updateSavingsGoal,
 } from "@/lib/api";
 
@@ -121,6 +122,35 @@ describe("updateSavingsGoal", () => {
   it("throws on non-ok response", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 }));
     await expect(updateSavingsGoal(500)).rejects.toThrow("Failed to update savings goal");
+  });
+});
+
+describe("transferSavings", () => {
+  it("POSTs the direction and amount and returns the refreshed summary", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: true, status: 200, json: () => Promise.resolve(summary) })
+    );
+    const result = await transferSavings("to_savings", 250.5);
+    expect(result).toEqual(summary);
+    expect(fetch).toHaveBeenCalledWith(`${API}/dashboard/savings-transfer`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer test-token",
+      },
+      body: JSON.stringify({ direction: "to_savings", amount: 250.5 }),
+    });
+  });
+
+  it("throws insufficient_funds on 409", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 409 }));
+    await expect(transferSavings("from_savings", 10)).rejects.toThrow("insufficient_funds");
+  });
+
+  it("throws on other non-ok responses", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 }));
+    await expect(transferSavings("to_savings", 10)).rejects.toThrow("Failed to transfer funds");
   });
 });
 

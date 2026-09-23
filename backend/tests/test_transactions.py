@@ -98,9 +98,8 @@ async def test_transactions_missing_auth(unauthed_client):
 async def test_get_transactions_queries_user_rows_newest_first():
     supabase = MagicMock()
     chain = supabase.table.return_value.select.return_value.eq.return_value
-    chain.order.return_value.limit.return_value.execute = AsyncMock(
-        return_value=MagicMock(data=_ROWS)
-    )
+    ordered = chain.order.return_value.order.return_value
+    ordered.limit.return_value.execute = AsyncMock(return_value=MagicMock(data=_ROWS))
 
     rows = await get_transactions(supabase, "user-123", limit=7)
 
@@ -110,4 +109,6 @@ async def test_get_transactions_queries_user_rows_newest_first():
         "user_id", "user-123"
     )
     chain.order.assert_called_with("date", desc=True)
-    chain.order.return_value.limit.assert_called_with(7)
+    # created_at breaks ties between transactions posted on the same date.
+    chain.order.return_value.order.assert_called_with("created_at", desc=True)
+    ordered.limit.assert_called_with(7)

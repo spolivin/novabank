@@ -24,6 +24,9 @@ async def get_transactions(
             .select("id, date, description, category, amount")
             .eq("user_id", user_id)
             .order("date", desc=True)
+            # ``date`` has no time of day, so same-day rows would otherwise come
+            # back in an arbitrary order: newest insert first among them.
+            .order("created_at", desc=True)
             .limit(limit)
         )
     )

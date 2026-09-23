@@ -46,6 +46,9 @@ db-reset:
 db-migration:
 	cd frontend && npx supabase migration new $(name)
 
+db-migrate:
+	cd frontend && npx supabase migration up
+
 # Backend
 api-start:
 	cd backend && uv run uvicorn main:app

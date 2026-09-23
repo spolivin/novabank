@@ -1,4 +1,5 @@
-from typing import Annotated
+from decimal import Decimal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
 
@@ -27,3 +28,19 @@ class SavingsGoalUpdate(BaseModel):
     """
 
     savings_goal: Annotated[float, Field(gt=0, le=10_000_000)]
+
+
+TransferDirection = Literal["to_savings", "from_savings"]
+
+
+class SavingsTransfer(BaseModel):
+    """Body of a ``POST /dashboard/savings-transfer`` request.
+
+    Attributes:
+        direction: ``to_savings`` moves money out of the account into savings;
+            ``from_savings`` moves it back.
+        amount: Dollars to move; above 0, at most 1,000,000, whole cents only.
+    """
+
+    direction: TransferDirection
+    amount: Annotated[Decimal, Field(gt=0, le=1_000_000, decimal_places=2)]
