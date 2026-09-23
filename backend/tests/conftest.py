@@ -45,6 +45,10 @@ def make_supabase_mock() -> MagicMock:
     select.eq.return_value.order.return_value.limit.return_value.execute = AsyncMock(
         return_value=MagicMock(data=[])
     )
+    # Transactions add a second .order() to break same-date ties.
+    select.eq.return_value.order.return_value.order.return_value.limit.return_value.execute = AsyncMock(
+        return_value=MagicMock(data=[])
+    )
     select.limit.return_value.execute = AsyncMock(return_value=MagicMock(data=[]))
     table.insert.return_value.execute = AsyncMock(
         return_value=MagicMock(data=[{"id": "row-id"}])
