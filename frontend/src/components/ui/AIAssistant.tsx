@@ -18,7 +18,7 @@ function initialMessage(): Message {
   return {
     id: "0",
     role: "assistant",
-    text: "Hi! I'm your NovaBank AI assistant. How can I help you today?",
+    text: "Hi! I'm your NovaBank AI assistant. Ask me about our products, or about your own transactions — like what you spent on groceries last month.",
     timestamp: new Date(),
   };
 }
