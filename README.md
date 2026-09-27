@@ -157,7 +157,7 @@ enforced by SlowAPI.
 
 | Method   | Endpoint        | Rate limit       | Description                                  |
 | -------- | --------------- | ---------------- | -------------------------------------------- |
-| `POST`   | `/ai/chat`      | 8 / min; 60 / day | Send a message to Nova and get a reply       |
+| `POST`   | `/ai/chat`      | 8 / min; 60 / day | Send a message to Nova and get a reply; Nova can search the caller's transactions (read-only) |
 | `GET`    | `/ai/history`   | 10 / min         | Fetch recent conversation history (optional `?limit=` 1–200) |
 | `DELETE` | `/ai/history`   | 5 / min          | Clear the caller's conversation history (`204`) |
 | `GET`    | `/dashboard/summary` | 30 / min | Fetch the caller's balance, monthly spending, savings goal and amount saved |
@@ -211,7 +211,7 @@ novabank/
 │       └── test/             # Vitest suites
 ├── backend/                  # FastAPI service
 │   ├── routers/              # ai, user, health
-│   ├── services/             # ai.py — Claude + persistence
+│   ├── services/             # ai.py — Claude + persistence; ai_tools.py — Nova's read-only data tools
 │   ├── schemas/              # Pydantic request/response models
 │   ├── dependencies/         # auth (JWKS), limiter, async Supabase + Anthropic clients
 │   ├── data/                 # products.json, company.json (grounding)
