@@ -7,6 +7,7 @@ os.environ.setdefault("ANTHROPIC_API_KEY", "test-anthropic-key")
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from anthropic.types import TextBlock
 from httpx import ASGITransport, AsyncClient
 
 from config import settings
@@ -69,7 +70,10 @@ def fake_supabase():
 def fake_anthropic():
     mock = MagicMock()
     mock.messages.create = AsyncMock(
-        return_value=MagicMock(content=[MagicMock(text="Hello from Nova")])
+        return_value=MagicMock(
+            stop_reason="end_turn",
+            content=[TextBlock(type="text", text="Hello from Nova")],
+        )
     )
     return mock
 
