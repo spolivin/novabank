@@ -237,20 +237,20 @@ export default function AIAssistant() {
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2 md:gap-1 -my-1.5 -mr-2 md:my-0 md:mr-0">
                   <button
                     onClick={() => setConfirmClear(true)}
-                    className="p-1 text-brand-fg-muted hover:text-brand-fg transition-colors cursor-pointer"
+                    className="flex items-center justify-center size-10 md:size-auto md:p-1 rounded-lg text-brand-fg-muted hover:text-brand-fg hover:bg-white/5 md:hover:bg-transparent transition-colors cursor-pointer"
                     aria-label="Clear chat history"
                   >
-                    <Trash2 size={15} />
+                    <Trash2 size={15} className="size-[18px] md:size-[15px]" />
                   </button>
                   <button
                     onClick={() => setOpen(false)}
-                    className="p-1 text-brand-fg-muted hover:text-brand-fg transition-colors cursor-pointer"
+                    className="flex items-center justify-center size-10 md:size-auto md:p-1 rounded-lg text-brand-fg-muted hover:text-brand-fg hover:bg-white/5 md:hover:bg-transparent transition-colors cursor-pointer"
                     aria-label="Close chat"
                   >
-                    <X size={16} />
+                    <X size={16} className="size-5 md:size-4" />
                   </button>
                 </div>
               </div>
