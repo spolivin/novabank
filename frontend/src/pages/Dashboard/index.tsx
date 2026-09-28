@@ -128,24 +128,24 @@ export default function Dashboard() {
       </AnimatePresence>
       <div className="max-w-5xl mx-auto px-6 py-12 space-y-10">
         {/* Welcome */}
-        <motion.div {...scrollAnimation} className="flex items-start justify-between">
-          <div>
+        <motion.div {...scrollAnimation} className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
             <p className="text-brand-fg-muted text-sm mb-1">Good to see you back</p>
-            <h1 className="text-3xl font-bold text-brand-fg">{displayName}</h1>
+            <h1 className="text-3xl font-bold text-brand-fg wrap-anywhere">{displayName}</h1>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0 -mr-2 -mt-2 sm:mr-0 sm:mt-0">
             <Link
               to={ROUTES.HOME}
-              className="flex items-center gap-2 text-sm text-brand-fg-muted hover:text-brand-fg transition-colors"
+              className="flex items-center justify-center gap-2 size-10 sm:size-auto rounded-lg text-sm text-brand-fg-muted hover:text-brand-fg hover:bg-white/5 sm:hover:bg-transparent transition-colors"
             >
-              <Home size={16} />
+              <Home size={16} className="size-5 sm:size-4" />
               <span className="hidden sm:inline">Home</span>
             </Link>
             <button
               onClick={handleSignOut}
-              className="flex items-center gap-2 text-sm text-brand-fg-muted hover:text-brand-fg transition-colors"
+              className="flex items-center justify-center gap-2 size-10 sm:size-auto rounded-lg text-sm text-brand-fg-muted hover:text-brand-fg hover:bg-white/5 sm:hover:bg-transparent transition-colors"
             >
-              <LogOut size={16} />
+              <LogOut size={16} className="size-5 sm:size-4" />
               <span className="hidden sm:inline">Log out</span>
             </button>
           </div>
