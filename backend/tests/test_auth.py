@@ -1,25 +1,62 @@
-from unittest.mock import MagicMock, patch
+import json
+import time
+from unittest.mock import patch
 
 import jwt
+import pytest
+from cryptography.hazmat.primitives.asymmetric import ec
+from jwt import PyJWK
+from jwt.algorithms import ECAlgorithm
 
-from dependencies.auth import verify_token
+from dependencies.auth import _ISSUER, verify_token
+
+_KEY = ec.generate_private_key(ec.SECP256R1())
+_SIGNING_KEY = PyJWK.from_dict(
+    json.loads(ECAlgorithm.to_jwk(_KEY.public_key())), algorithm="ES256"
+)
+
+
+def _token(**overrides) -> str:
+    claims = {
+        "sub": "user-123",
+        "aud": "authenticated",
+        "iss": _ISSUER,
+        "exp": int(time.time()) + 300,
+        **overrides,
+    }
+    claims = {k: v for k, v in claims.items() if v is not None}
+    return jwt.encode(claims, _KEY, algorithm="ES256")
+
+
+def _verify(token: str) -> dict:
+    with patch("dependencies.auth._jwks_client") as mock_jwks:
+        mock_jwks.get_signing_key_from_jwt.return_value = _SIGNING_KEY
+        return verify_token(token)
 
 
 def test_verify_token_success():
-    mock_signing_key = MagicMock()
-    with (
-        patch("dependencies.auth._jwks_client") as mock_jwks,
-        patch(
-            "dependencies.auth.jwt.decode", return_value={"sub": "user-123"}
-        ) as mock_decode,
-    ):
-        mock_jwks.get_signing_key_from_jwt.return_value = mock_signing_key
-        result = verify_token("some.token")
+    assert _verify(_token())["sub"] == "user-123"
 
-    assert result == {"sub": "user-123"}
-    mock_decode.assert_called_once_with(
-        "some.token", mock_signing_key, algorithms=["ES256"], audience="authenticated"
-    )
+
+def test_verify_token_rejects_wrong_issuer():
+    with pytest.raises(jwt.InvalidIssuerError):
+        _verify(_token(iss="https://evil.example.com/auth/v1"))
+
+
+def test_verify_token_rejects_missing_issuer():
+    with pytest.raises(jwt.MissingRequiredClaimError):
+        _verify(_token(iss=None))
+
+
+@pytest.mark.parametrize("claim", ["exp", "sub"])
+def test_verify_token_requires_claim(claim):
+    with pytest.raises(jwt.MissingRequiredClaimError):
+        _verify(_token(**{claim: None}))
+
+
+def test_verify_token_rejects_wrong_audience():
+    with pytest.raises(jwt.InvalidAudienceError):
+        _verify(_token(aud="anon"))
 
 
 async def test_verify_jwt_invalid_token_returns_401(unauthed_client):

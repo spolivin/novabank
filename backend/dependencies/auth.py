@@ -8,8 +8,13 @@ from jwt import PyJWKClient
 from config import settings
 from log_context import add_log_fields
 
+_AUTH_URL = str(settings.supabase_url).rstrip("/") + "/auth/v1"
+# The issuer is what Supabase puts in tokens; it can differ from the URL this
+# backend uses to reach Supabase, so it is configurable on its own.
+_ISSUER = settings.jwt_issuer or _AUTH_URL
+
 _jwks_client = PyJWKClient(
-    str(settings.supabase_url).rstrip("/") + "/auth/v1/.well-known/jwks.json",
+    _AUTH_URL + "/.well-known/jwks.json",
     cache_keys=True,
     lifespan=3600,
 )
@@ -27,11 +32,17 @@ def verify_token(token: str) -> dict:
         The decoded token claims.
 
     Raises:
-        jwt.PyJWTError: If the signature, audience, or algorithm is invalid.
+        jwt.PyJWTError: If the signature, audience, issuer, or algorithm is
+            invalid, or the ``exp`` or ``sub`` claim is missing.
     """
     signing_key = _jwks_client.get_signing_key_from_jwt(token)
     return jwt.decode(
-        token, signing_key, algorithms=["ES256"], audience="authenticated"
+        token,
+        signing_key,
+        algorithms=["ES256"],
+        audience="authenticated",
+        issuer=_ISSUER,
+        options={"require": ["exp", "sub"]},
     )
 
 

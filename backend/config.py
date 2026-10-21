@@ -9,9 +9,14 @@ class Settings(BaseSettings):
         supabase_url: Base URL of the Supabase project.
         supabase_service_key: Service-role key used for admin operations.
         anthropic_api_key: API key for the Claude API.
+        anthropic_model: Claude model ID Nova uses for chat replies.
         log_level: Root log level for application loggers.
         log_format: ``"json"`` for structured logs, anything else for text.
         third_party_log_level: Log level applied to noisy third-party loggers.
+        jwt_issuer: Expected ``iss`` claim of Supabase JWTs. Empty (the default)
+            derives it as ``<supabase_url>/auth/v1``. Set it when the URL the
+            backend reaches Supabase on differs from the one Supabase signs
+            tokens with (e.g. a Docker host alias locally, or a custom domain).
         allowed_origins: Comma-separated list of CORS-allowed origins.
         trusted_proxy_count: Number of trusted reverse proxies in front of the
             app. ``0`` (the default) ignores ``X-Forwarded-For`` entirely and
@@ -29,9 +34,11 @@ class Settings(BaseSettings):
     supabase_url: AnyHttpUrl
     supabase_service_key: str
     anthropic_api_key: str
+    anthropic_model: str = "claude-sonnet-4-6"
     log_level: str = "INFO"
     log_format: str = ""
     third_party_log_level: str = "WARNING"
+    jwt_issuer: str = ""
     allowed_origins: str = "http://127.0.0.1:5173"
     trusted_proxy_count: int = 0
     health_check_token: str = ""
