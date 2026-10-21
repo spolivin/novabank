@@ -1,3 +1,4 @@
+import hmac
 import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
@@ -50,8 +51,11 @@ async def health_db(
             query fails.
     """
     response.headers["Cache-Control"] = "no-store"
-    if settings.health_check_token and (
-        request.headers.get("X-Health-Token") != settings.health_check_token
+    # Compare as bytes: compare_digest raises TypeError on non-ASCII str, which
+    # a client could send in the header to turn a 404 into a 500.
+    if settings.health_check_token and not hmac.compare_digest(
+        request.headers.get("X-Health-Token", "").encode(),
+        settings.health_check_token.encode(),
     ):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     try:
