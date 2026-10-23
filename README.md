@@ -181,7 +181,8 @@ liveness probe is deliberately unlimited, since a `429` there would read as
 
 Security is treated as a first-class concern rather than an afterthought:
 
-- **JWT verified via JWKS** — the signature is checked against Supabase's public key, not merely decoded
+- **JWT verified via JWKS** — the signature is checked against Supabase's public key, not merely decoded; the audience and issuer must match this project, and `exp` and `sub` are required
+- **Backend-only writes** — browsers hold the public anon key, so write privileges on `conversations`, `transactions` and `accounts` are revoked from `anon` and `authenticated`. Only the backend (service role) writes them, which keeps the message-length cap and rate limits impossible to bypass through Supabase's REST API
 - **Rate limiting** — per-user limits on every mutating and AI endpoint (see [API surface](#api-surface))
 - **Spoof-resistant client IP** — the rate-limit key reads the real client IP only from trusted proxy hops (`TRUSTED_PROXY_COUNT`); a forged `X-Forwarded-For` cannot mint a fresh bucket or shift another user's
 - **Gated DB health probe** — `/health/db` can require an `X-Health-Token` secret (`HEALTH_CHECK_TOKEN`), returning `404` to anonymous callers before any database query runs
@@ -244,6 +245,17 @@ make api-start
 
 The only value requiring a real secret locally is `ANTHROPIC_API_KEY`. Local Supabase dev
 keys are printed by `make db-status` once the instance is running.
+
+Two optional backend settings:
+
+- `ANTHROPIC_MODEL` — Claude model ID Nova uses (defaults to `claude-sonnet-4-6`), so a model
+  change needs no code change.
+- `JWT_ISSUER` — the `iss` claim the backend expects in Supabase tokens. It defaults to
+  `<SUPABASE_URL>/auth/v1`, which is correct for `make api-start` and for a standard hosted
+  project. Set it only when the URL the backend reaches Supabase on differs from the one
+  Supabase signs tokens with: `make api-docker` does this for you (the container uses
+  `host.docker.internal`, tokens say `127.0.0.1`), and a Supabase custom domain needs it too.
+  A mismatch shows up as `401 Invalid token` on every request.
 
 ## Testing & quality
 

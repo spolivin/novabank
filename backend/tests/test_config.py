@@ -76,3 +76,17 @@ def test_loads_from_env_vars(monkeypatch):
     assert str(s.supabase_url).rstrip("/") == "https://env.supabase.co"
     assert s.supabase_service_key == "env-service-key"
     assert s.anthropic_api_key == "env-api-key"
+
+
+def test_anthropic_model_defaults_and_overrides(monkeypatch):
+    monkeypatch.delenv("ANTHROPIC_MODEL", raising=False)
+    assert _make().anthropic_model == "claude-sonnet-4-6"
+    monkeypatch.setenv("ANTHROPIC_MODEL", "claude-test-model")
+    assert _make().anthropic_model == "claude-test-model"
+
+
+def test_jwt_issuer_defaults_to_empty_and_overrides(monkeypatch):
+    monkeypatch.delenv("JWT_ISSUER", raising=False)
+    assert _make().jwt_issuer == ""
+    monkeypatch.setenv("JWT_ISSUER", "http://127.0.0.1:54321/auth/v1")
+    assert _make().jwt_issuer == "http://127.0.0.1:54321/auth/v1"

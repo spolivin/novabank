@@ -8,6 +8,7 @@ from pathlib import Path
 from anthropic import AsyncAnthropic
 from supabase import AsyncClient
 
+from config import settings
 from db import execute_with_retry
 from log_context import add_log_fields
 from services import ai_tools
@@ -113,7 +114,7 @@ async def _call_claude(
         # forbid calling them, forcing a text answer.
         last_round = round_ == _MAX_TOOL_ROUNDS
         response = await claude.messages.create(
-            model="claude-sonnet-4-6",
+            model=settings.anthropic_model,
             max_tokens=1024,
             system=system,
             tools=TOOLS,
