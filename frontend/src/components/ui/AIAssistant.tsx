@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { Bot, MessageCircle, Send, Trash2, User, X } from "lucide-react";
+import { Send, Trash2, User, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -18,7 +18,7 @@ function initialMessage(): Message {
   return {
     id: "0",
     role: "assistant",
-    text: "Hi! I'm your NovaBank AI assistant. Ask me about our products, or about your own transactions — like what you spent on groceries last month.",
+    text: "Hi! I'm Nova, your NovaBank AI assistant. Ask me about our products, or about your own transactions — like what you spent on groceries last month.",
     timestamp: new Date(),
   };
 }
@@ -62,6 +62,8 @@ function groupMessagesByDay(messages: Message[]): DayGroup[] {
   });
   return groups;
 }
+
+const NOVA_ICON = "/icons/Dashboard/Nova-Robot.svg";
 
 export default function AIAssistant() {
   const [open, setOpen] = useState(false);
@@ -224,12 +226,14 @@ export default function AIAssistant() {
             >
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-brand-accent flex items-center justify-center shrink-0">
-                    <Bot size={14} className="text-brand-bg" />
-                  </div>
+                  <img src={NOVA_ICON} alt="" className="w-8 h-8 rounded-full shrink-0" />
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-sm font-semibold text-brand-fg leading-tight">
-                      NovaBank Assistant
+                    <span className="flex items-center gap-1.5 text-sm font-semibold text-brand-fg leading-tight">
+                      Nova
+                      <span className="rounded-full bg-brand-accent/15 px-1.5 py-0.5 text-[10px] font-semibold text-brand-accent ring-1 ring-brand-accent/30">
+                        AI
+                      </span>
+                      <span className="font-normal text-brand-fg-muted">· NovaBank Assistant</span>
                     </span>
                     <span className="flex items-center gap-1 text-xs text-brand-fg-muted">
                       <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
@@ -313,9 +317,7 @@ export default function AIAssistant() {
                           className={`flex items-end gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                         >
                           {msg.role === "assistant" && (
-                            <div className="w-6 h-6 rounded-full bg-brand-accent flex items-center justify-center shrink-0">
-                              <Bot size={12} className="text-brand-bg" />
-                            </div>
+                            <img src={NOVA_ICON} alt="" className="w-6 h-6 rounded-full shrink-0" />
                           )}
                           <div
                             className={`flex flex-col max-w-[75%] ${msg.role === "user" ? "items-end" : "items-start"}`}
@@ -430,10 +432,10 @@ export default function AIAssistant() {
           onClick={() => setOpen((v) => !v)}
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.95 }}
-          className={`w-14 h-14 rounded-full bg-brand-accent text-brand-bg shadow-lg shadow-brand-accent/30 items-center justify-center ${open ? "hidden sm:flex" : "flex"}`}
+          className={`w-14 h-14 rounded-full shadow-lg shadow-brand-accent/30 items-center justify-center ${open ? "hidden sm:flex" : "flex"}`}
           aria-label="Open AI assistant"
         >
-          <MessageCircle size={24} />
+          <img src={NOVA_ICON} alt="" className="w-full h-full rounded-full" />
         </motion.button>
       </div>
     </>

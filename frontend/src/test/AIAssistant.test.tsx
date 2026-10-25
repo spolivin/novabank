@@ -58,8 +58,8 @@ describe("AIAssistant", () => {
   it("opens the chat panel on click", async () => {
     render(<AIAssistant />);
     await openAssistant();
-    expect(screen.getByText(/novabank assistant/i)).toBeInTheDocument();
-    expect(screen.getByText(/hi! i'm your novabank/i)).toBeInTheDocument();
+    expect(screen.getByText("Nova")).toBeInTheDocument();
+    expect(screen.getByText(/hi! i'm nova, your novabank/i)).toBeInTheDocument();
   });
 
   it("loads and displays history on open", async () => {
@@ -149,7 +149,7 @@ describe("AIAssistant", () => {
 
     await waitFor(() => expect(clearChatHistory).toHaveBeenCalledOnce());
     expect(screen.queryByText("hello")).not.toBeInTheDocument();
-    expect(screen.getByText(/hi! i'm your novabank/i)).toBeInTheDocument();
+    expect(screen.getByText(/hi! i'm nova, your novabank/i)).toBeInTheDocument();
   });
 
   it("cancelling the clear confirmation keeps messages", async () => {

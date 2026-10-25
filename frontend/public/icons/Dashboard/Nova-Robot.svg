@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img">
+  <title>Nova AI assistant robot</title>
+  <desc>Round badge with a friendly robot head, glowing eyes, ear panels, and a nova star on its antenna, in the NovaBank brand colors.</desc>
+  <defs>
+    <linearGradient id="accent" x1="28" y1="46" x2="100" y2="102" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00c9a7"/>
+      <stop offset="1" stop-color="#00b4d8"/>
+    </linearGradient>
+    <filter id="blur" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+  </defs>
+  <style>
+    @keyframes glow { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.7; } }
+    @keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
+    .glow { animation: glow 2.4s ease-in-out infinite; }
+    .eye { transform-box: fill-box; transform-origin: center; animation: blink 4s ease-in-out infinite; }
+  </style>
+  <circle cx="64" cy="64" r="58" fill="#111827" stroke="#1e293b" stroke-width="2"/>
+  <path class="glow" d="M64 17 C64.8 24 67 26.2 75 28 C67 29.8 64.8 32 64 39 C63.2 32 61 29.8 53 28 C61 26.2 63.2 24 64 17 Z" fill="#00c9a7" filter="url(#blur)"/>
+  <line x1="64" y1="50" x2="64" y2="36" stroke="#00c9a7" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M64 17 C64.8 24 67 26.2 75 28 C67 29.8 64.8 32 64 39 C63.2 32 61 29.8 53 28 C61 26.2 63.2 24 64 17 Z" fill="#f1f5f9"/>
+  <rect x="21" y="66" width="9" height="22" rx="4.5" fill="#00c9a7"/>
+  <rect x="98" y="66" width="9" height="22" rx="4.5" fill="#00b4d8"/>
+  <rect x="28" y="48" width="72" height="54" rx="24" fill="url(#accent)"/>
+  <rect x="36" y="56" width="56" height="38" rx="16" fill="#0a0f1a"/>
+  <rect class="glow" x="46" y="67" width="10" height="14" rx="5" fill="#00c9a7" filter="url(#blur)"/>
+  <rect class="glow" x="72" y="67" width="10" height="14" rx="5" fill="#00c9a7" filter="url(#blur)"/>
+  <rect class="eye" x="46" y="67" width="10" height="14" rx="5" fill="#00c9a7"/>
+  <rect class="eye" x="72" y="67" width="10" height="14" rx="5" fill="#00c9a7"/>
+  <path d="M54 87 Q64 92 74 87" fill="none" stroke="#00b4d8" stroke-width="3" stroke-linecap="round"/>
+</svg>
