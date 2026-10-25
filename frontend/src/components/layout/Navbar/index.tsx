@@ -21,12 +21,20 @@ export default function Navbar() {
       </a>
       <header
         className={[
-          "sticky top-0 z-50 border-b transition-[background-color,border-color,backdrop-filter] duration-300",
-          scrolled
-            ? "border-brand-border bg-brand-bg/70 backdrop-blur-xl"
-            : "border-transparent bg-transparent",
+          "sticky top-0 z-50 border-b transition-[border-color] duration-300",
+          scrolled ? "border-brand-border" : "border-transparent",
         ].join(" ")}
       >
+        {/* Backdrop lives on its own layer: backdrop-filter on the header itself would
+            become the containing block for the fixed mobile menu and collapse it to
+            the header's height. */}
+        <div
+          aria-hidden="true"
+          className={[
+            "absolute inset-0 -z-10 transition-[background-color,backdrop-filter] duration-300",
+            scrolled ? "bg-brand-bg/70 backdrop-blur-xl" : "bg-transparent",
+          ].join(" ")}
+        />
         <nav
           aria-label="Main"
           className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-8 px-6"
