@@ -72,6 +72,11 @@ export default function Login() {
           </Link>
         </p>
 
+        <p className="mb-6 rounded-xl border border-brand-accent/30 bg-brand-accent/10 px-4 py-3 text-xs text-brand-fg-muted">
+          <strong className="font-semibold text-brand-accent">Demo project.</strong> NovaBank is not
+          a real bank. Don't use real credentials.
+        </p>
+
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
           <Field label="Email" error={errors.email?.message}>
             <input

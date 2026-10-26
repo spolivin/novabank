@@ -82,8 +82,13 @@ export default function Footer() {
           ))}
         </div>
       </div>
-      <div className="flex items-center justify-center text-brand-fg-muted py-10">
-        &copy;{new Date().getFullYear()} NovaBank. All rights reserved.
+      <div className="flex flex-col items-center gap-3 text-center text-brand-fg-muted py-10">
+        <p className="max-w-2xl text-xs">
+          NovaBank is a fictional demo project. It is not a real bank, provides no real banking
+          services, and is not FDIC insured. Any rates, features, and security claims shown are for
+          demonstration only.
+        </p>
+        <span>&copy;{new Date().getFullYear()} NovaBank. All rights reserved.</span>
       </div>
     </footer>
   );
