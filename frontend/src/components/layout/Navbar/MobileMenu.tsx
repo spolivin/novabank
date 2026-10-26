@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Link, NavLink, useNavigate } from "react-router-dom";
 
@@ -28,6 +28,10 @@ export function MobileMenu() {
   const { open, setOpen, ref } = useMenu<HTMLDivElement>();
   const { user, isAuthenticated, loading, signOut } = useAuth();
   const navigate = useNavigate();
+
+  // The panel starts where the header ends, which isn't a fixed 72px when the
+  // demo banner is still scrolled into view above it.
+  const [panelTop, setPanelTop] = useState(72);
 
   const panelRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -89,7 +93,13 @@ export function MobileMenu() {
       <button
         ref={toggleRef}
         type="button"
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={() => {
+          if (!open) {
+            const header = toggleRef.current?.closest("header");
+            if (header) setPanelTop(header.getBoundingClientRect().bottom);
+          }
+          setOpen((prev) => !prev);
+        }}
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
         aria-controls="mobile-menu"
@@ -118,7 +128,8 @@ export function MobileMenu() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed inset-x-0 bottom-0 top-[72px] z-40 overflow-y-auto border-t border-brand-border bg-brand-bg px-4 py-6"
+            style={{ top: panelTop }}
+            className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto border-t border-brand-border bg-brand-bg px-4 py-6"
           >
             {NAV_GROUPS.map((group) => (
               <div key={group.label} className="mb-6">

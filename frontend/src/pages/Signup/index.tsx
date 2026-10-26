@@ -84,6 +84,12 @@ export default function Signup() {
           </Link>
         </p>
 
+        <p className="mb-6 rounded-xl border border-brand-accent/30 bg-brand-accent/10 px-4 py-3 text-xs text-brand-fg-muted">
+          <strong className="font-semibold text-brand-accent">Demo project.</strong> NovaBank is not
+          a real bank. Use a throwaway email and password, and don't enter real personal
+          information.
+        </p>
+
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
           <Field label="Full name" error={errors.fullName?.message}>
             <input
@@ -151,10 +157,6 @@ export default function Signup() {
           {errors.root?.message && (
             <p className="text-brand-error text-sm">{errors.root.message}</p>
           )}
-
-          <div className="text-sm text-brand-fg-muted text-center">
-            This is a demo project. Do not use real personal information.
-          </div>
 
           <button
             type="submit"
