@@ -1,5 +1,6 @@
 import logging
 
+import anthropic
 from anthropic import AsyncAnthropic
 from fastapi import (
     APIRouter,
@@ -125,7 +126,9 @@ async def chat(
         The assistant's reply.
 
     Raises:
-        HTTPException: 500 if generating the reply fails.
+        HTTPException: 503 if the Claude API itself rejected the request (this
+            is also how a configured spend limit surfaces); 500 if generating
+            the reply fails for any other reason.
     """
     user_id = user["sub"]
     add_log_fields(user_id=user_id)
@@ -133,6 +136,20 @@ async def chat(
         reply = await ai_service.get_reply(supabase, claude, user_id, body.message)
         add_log_fields(reply_chars=len(reply))
         return ChatResponse(reply=reply)
+    except anthropic.APIStatusError as e:
+        # Covers Claude API-side rejections, including a configured spend limit or credit exhaustion
+        add_log_fields(error=type(e).__name__, anthropic_status=e.status_code)
+        # No traceback: services.ai already logged the cause and the access log
+        # carries the error and anthropic_status fields.
+        logger.error(
+            "Claude API rejected the request for user %s (status %s)",
+            user_id,
+            e.status_code,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Nova is temporarily unavailable. Please try again later.",
+        ) from e
     except Exception as e:
         add_log_fields(error=type(e).__name__)
         logger.exception("Chat failed for user %s", user_id)

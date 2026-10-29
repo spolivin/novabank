@@ -173,6 +173,11 @@ describe("sendChatMessage", () => {
     await expect(sendChatMessage("hi")).rejects.toThrow("rate_limit_exceeded");
   });
 
+  it("throws service_unavailable on 503", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 503 }));
+    await expect(sendChatMessage("hi")).rejects.toThrow("service_unavailable");
+  });
+
   it("throws on other non-ok response", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 }));
     await expect(sendChatMessage("hi")).rejects.toThrow("Failed to get reply");
