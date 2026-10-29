@@ -27,6 +27,9 @@ class Settings(BaseSettings):
         health_check_token: Shared secret required in the ``X-Health-Token``
             header to reach ``GET /health/db``. Empty (the default) leaves the
             endpoint open; set it to gate the unauthenticated DB probe.
+        demo_user_id: Supabase user ID of the public demo account. When set,
+            ``DELETE /users/me`` refuses to delete that user. Empty (the
+            default) disables the check.
     """
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
@@ -42,6 +45,7 @@ class Settings(BaseSettings):
     allowed_origins: str = "http://127.0.0.1:5173"
     trusted_proxy_count: int = 0
     health_check_token: str = ""
+    demo_user_id: str = ""
 
 
 settings = Settings()

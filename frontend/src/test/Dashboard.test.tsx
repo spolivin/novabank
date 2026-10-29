@@ -246,7 +246,7 @@ describe("Dashboard", () => {
     await renderDashboard();
     await userEvent.click(screen.getByRole("button", { name: /delete account/i }));
     await userEvent.click(screen.getByRole("button", { name: /yes, delete permanently/i }));
-    expect(await screen.findByText(/failed to delete account/i)).toBeInTheDocument();
+    expect(await screen.findByText(/server error/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /delete account/i })).toBeInTheDocument();
   });
 

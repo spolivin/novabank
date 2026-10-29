@@ -206,4 +206,16 @@ describe("deleteAccount", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 }));
     await expect(deleteAccount()).rejects.toThrow("Failed to delete account");
   });
+
+  it("throws the server's detail message when provided", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 403,
+        json: () => Promise.resolve({ detail: "The demo account cannot be deleted" }),
+      })
+    );
+    await expect(deleteAccount()).rejects.toThrow("The demo account cannot be deleted");
+  });
 });

@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock
 import pytest
 from supabase_auth.errors import AuthApiError
 
+from config import settings
 from dependencies.limiter import limiter
 
 
@@ -60,3 +61,20 @@ async def test_delete_user_rate_limit_blocks_after_limit(client):
         await client.delete("/users/me")
     response = await client.delete("/users/me")
     assert response.status_code == 429
+
+
+async def test_delete_user_blocked_for_demo_account(client, fake_supabase, monkeypatch):
+    monkeypatch.setattr(settings, "demo_user_id", "user-123")
+    response = await client.delete("/users/me")
+    assert response.status_code == 403
+    assert response.json()["detail"] == "The demo account cannot be deleted"
+    fake_supabase.auth.admin.delete_user.assert_not_awaited()
+
+
+async def test_delete_user_allowed_when_demo_id_differs(
+    client, fake_supabase, monkeypatch
+):
+    monkeypatch.setattr(settings, "demo_user_id", "someone-else")
+    response = await client.delete("/users/me")
+    assert response.status_code == 204
+    fake_supabase.auth.admin.delete_user.assert_awaited_once_with("user-123")
