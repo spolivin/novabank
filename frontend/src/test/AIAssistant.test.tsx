@@ -115,6 +115,16 @@ describe("AIAssistant", () => {
     expect(await screen.findByText(/too many messages/i)).toBeInTheDocument();
   });
 
+  it("shows unavailable message on 503", async () => {
+    vi.mocked(sendChatMessage).mockRejectedValue(new Error("service_unavailable"));
+    render(<AIAssistant />);
+    await openAssistant();
+    await waitFor(() => expect(fetchChatHistory).toHaveBeenCalled());
+    await userEvent.type(screen.getByPlaceholderText(/ask something/i), "hi");
+    await userEvent.click(screen.getByRole("button", { name: /send message/i }));
+    expect(await screen.findByText(/temporarily unavailable/i)).toBeInTheDocument();
+  });
+
   it("shows generic error on other failures", async () => {
     vi.mocked(sendChatMessage).mockRejectedValue(new Error("network error"));
     render(<AIAssistant />);

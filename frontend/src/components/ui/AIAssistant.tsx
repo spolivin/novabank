@@ -149,19 +149,14 @@ export default function AIAssistant() {
         )
       );
     } catch (err) {
-      const isRateLimit = err instanceof Error && err.message === "rate_limit_exceeded";
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === thinkingId
-            ? {
-                ...m,
-                text: isRateLimit
-                  ? "You've sent too many messages. Please wait a moment and try again."
-                  : "Sorry, I couldn't reach the server. Please try again.",
-              }
-            : m
-        )
-      );
+      const reason = err instanceof Error ? err.message : undefined;
+      const text =
+        reason === "rate_limit_exceeded"
+          ? "You've sent too many messages. Please wait a moment and try again."
+          : reason === "service_unavailable"
+            ? "Nova is temporarily unavailable. Please try again later."
+            : "Sorry, I couldn't reach the server. Please try again.";
+      setMessages((prev) => prev.map((m) => (m.id === thinkingId ? { ...m, text } : m)));
     } finally {
       setLoading(false);
     }
