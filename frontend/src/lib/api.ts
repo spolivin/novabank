@@ -140,5 +140,13 @@ export const deleteAccount = async () => {
     },
   });
 
-  if (!response.ok) throw new Error("Failed to delete account");
+  if (!response.ok) {
+    let detail: unknown;
+    try {
+      detail = (await response.json()).detail;
+    } catch {
+      // Non-JSON body: fall back to the generic message.
+    }
+    throw new Error(typeof detail === "string" ? detail : "Failed to delete account");
+  }
 };

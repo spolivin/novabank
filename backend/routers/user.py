@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Security, status
 from supabase import AsyncClient
 from supabase_auth.errors import AuthApiError
 
+from config import settings
 from dependencies.auth import verify_jwt
 from dependencies.limiter import limiter
 from dependencies.supabase import get_supabase
@@ -29,11 +30,18 @@ async def delete_account(
         supabase: The shared async Supabase client.
 
     Raises:
-        HTTPException: 404 if the user no longer exists, 500 on any other
-            failure.
+        HTTPException: 403 if the user is the demo account, 404 if the user no
+            longer exists, 500 on any other failure.
     """
     user_id = user["sub"]
     add_log_fields(user_id=user_id)
+    if settings.demo_user_id and user_id == settings.demo_user_id:
+        add_log_fields(error="demo_user_protected")
+        logger.warning("Blocked deletion of demo account %s", user_id)
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The demo account cannot be deleted",
+        )
     try:
         await supabase.auth.admin.delete_user(user_id)
         add_log_fields(action="account_deleted")

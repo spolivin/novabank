@@ -82,8 +82,10 @@ export default function Dashboard() {
       await deleteAccount();
       await signOut();
       navigate(ROUTES.HOME);
-    } catch {
-      setDeleteError("Failed to delete account. Please try again.");
+    } catch (err) {
+      setDeleteError(
+        err instanceof Error ? err.message : "Failed to delete account. Please try again."
+      );
       setConfirming(false);
     }
   }

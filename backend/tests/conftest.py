@@ -29,6 +29,7 @@ def _neutral_security_config(monkeypatch):
     """
     monkeypatch.setattr(settings, "health_check_token", "")
     monkeypatch.setattr(settings, "trusted_proxy_count", 0)
+    monkeypatch.setattr(settings, "demo_user_id", "")
 
 
 def make_supabase_mock() -> MagicMock:
