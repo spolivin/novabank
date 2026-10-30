@@ -13,6 +13,7 @@ from fastapi import FastAPI
 
 import main
 from dependencies.anthropic_client import (
+    _TIMEOUT,
     close_anthropic,
     create_anthropic,
     get_anthropic,
@@ -60,7 +61,7 @@ async def test_anthropic_connect_timeout_tolerates_slow_dns():
     client = create_anthropic()
     try:
         assert client.timeout.connect > 5.0
-        assert client.timeout.read == 600.0
+        assert client.timeout.read == _TIMEOUT.read
     finally:
         await client.close()
 

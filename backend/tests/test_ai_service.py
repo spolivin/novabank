@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -130,6 +131,22 @@ async def test_get_reply_cleanup_on_claude_error():
     mock_supa.table.return_value.delete.assert_called_once()
     first_eq = mock_supa.table.return_value.delete.return_value.eq.call_args_list[0]
     assert first_eq == (("id", _FAKE_ROW_ID),)
+
+
+async def test_get_reply_times_out_on_slow_claude_call(monkeypatch):
+    """A chat turn that overruns its overall budget raises TimeoutError and
+    rolls back the same way any other Claude-call failure does."""
+    monkeypatch.setattr("services.ai._CHAT_TIMEOUT_SECONDS", 0.01)
+    mock_supa = _make_supa_mock()
+
+    async def slow_call(*args, **kwargs):
+        await asyncio.sleep(0.05)
+        return "too slow"  # pragma: no cover - never reached
+
+    with patch("services.ai._call_claude", slow_call):
+        with pytest.raises(TimeoutError):
+            await get_reply(mock_supa, _unused_claude_client(), "user-123", "hi")
+    mock_supa.table.return_value.delete.assert_called_once()
 
 
 async def test_get_reply_uses_injected_anthropic_client():

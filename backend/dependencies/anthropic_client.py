@@ -12,9 +12,12 @@ logger = logging.getLogger(__name__)
 # The async transport counts DNS resolution against the connect timeout (the
 # sync one did not). glibc can stall a lookup for its 5s retry timeout when
 # parallel A/AAAA replies are dropped, which exhausts the SDK's default 5s
-# connect budget on every retry. 15s absorbs one such stall; the other limits
-# keep the SDK defaults.
-_TIMEOUT = Timeout(600.0, connect=15.0)
+# connect budget on every retry. 15s absorbs one such stall.
+#
+# Read timeout cut from the SDK's 600s default, and kept below the 45s
+# overall chat-turn budget in services/ai.py so a stalled call fails on its
+# own instead of silently eating that whole budget.
+_TIMEOUT = Timeout(20.0, connect=15.0)
 
 
 def create_anthropic() -> AsyncAnthropic:

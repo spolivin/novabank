@@ -186,13 +186,20 @@ async def request_middleware(request: Request, call_next):
                 Response(status_code=status.HTTP_400_BAD_REQUEST)
             )
 
-    # Backstop: a chunked request omits Content-Length, so the header check
-    # above can't see it. Measure the actual body. Starlette caches it, so the
-    # downstream handler still reads the same bytes.
-    if len(await request.body()) > _MAX_BODY:
-        return _with_security_headers(
-            Response(status_code=status.HTTP_413_CONTENT_TOO_LARGE)
-        )
+    # Backstop: a chunked request omits Content-Length. Read incrementally
+    # and bail out once the running total crosses the cap, rather than
+    # buffering the whole body first. Caching on request._body (as
+    # Request.body() does internally) keeps the bytes available downstream.
+    total = 0
+    chunks = []
+    async for chunk in request.stream():
+        total += len(chunk)
+        if total > _MAX_BODY:
+            return _with_security_headers(
+                Response(status_code=status.HTTP_413_CONTENT_TOO_LARGE)
+            )
+        chunks.append(chunk)
+    request._body = b"".join(chunks)
 
     start = time.perf_counter()
     response = await call_next(request)

@@ -39,6 +39,7 @@ export const sendChatMessage = async (message: string): Promise<string> => {
 
   if (response.status === 429) throw new Error("rate_limit_exceeded");
   if (response.status === 503) throw new Error("service_unavailable");
+  if (response.status === 504) throw new Error("timed_out");
   if (!response.ok) throw new Error("Failed to get reply");
 
   const data = await response.json();
