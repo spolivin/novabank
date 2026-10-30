@@ -67,3 +67,19 @@ async def test_chat_anthropic_api_error_returns_503(client):
         response.json()["detail"]
         == "Nova is temporarily unavailable. Please try again later."
     )
+
+
+async def test_chat_timeout_returns_504(client):
+    """The chat turn's overall budget running out is a distinct 504, not the
+    generic 500 — it's specifically that Claude was too slow, not that
+    something broke."""
+    with patch(
+        "routers.ai.ai_service.get_reply",
+        new=AsyncMock(side_effect=TimeoutError()),
+    ):
+        response = await client.post("/ai/chat", json={"message": "hi"})
+    assert response.status_code == 504
+    assert (
+        response.json()["detail"]
+        == "Nova is taking too long to respond. Please try again."
+    )

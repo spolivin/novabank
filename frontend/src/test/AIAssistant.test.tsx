@@ -125,6 +125,16 @@ describe("AIAssistant", () => {
     expect(await screen.findByText(/temporarily unavailable/i)).toBeInTheDocument();
   });
 
+  it("shows timeout message on 504", async () => {
+    vi.mocked(sendChatMessage).mockRejectedValue(new Error("timed_out"));
+    render(<AIAssistant />);
+    await openAssistant();
+    await waitFor(() => expect(fetchChatHistory).toHaveBeenCalled());
+    await userEvent.type(screen.getByPlaceholderText(/ask something/i), "hi");
+    await userEvent.click(screen.getByRole("button", { name: /send message/i }));
+    expect(await screen.findByText(/taking too long/i)).toBeInTheDocument();
+  });
+
   it("shows generic error on other failures", async () => {
     vi.mocked(sendChatMessage).mockRejectedValue(new Error("network error"));
     render(<AIAssistant />);

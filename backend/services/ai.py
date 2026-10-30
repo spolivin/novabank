@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import functools
 import json
@@ -65,6 +66,8 @@ UI_HISTORY_LIMIT = 200
 _CONTEXT_LIMIT = 10
 # Tool-use rounds per chat turn before Nova is forced to answer in text.
 _MAX_TOOL_ROUNDS = 3
+# Overall ceiling on one chat turn's Claude calls (up to _MAX_TOOL_ROUNDS + 1).
+_CHAT_TIMEOUT_SECONDS = 45
 
 
 # The per-request tool runner ``get_reply`` passes in: the user is already
@@ -209,8 +212,11 @@ async def get_reply(
         The assistant's reply.
 
     Raises:
-        Exception: Propagates any error from the Claude API call (after
-            rolling back the stored user message).
+        TimeoutError: If the Claude calls for this turn exceed
+            :data:`_CHAT_TIMEOUT_SECONDS` (after rolling back the stored user
+            message).
+        Exception: Propagates any other error from the Claude API call (after
+            the same rollback).
     """
     insert_result = await execute_with_retry(
         lambda: supabase.table("conversations").insert(
@@ -226,7 +232,8 @@ async def get_reply(
     run_tool = functools.partial(ai_tools.run_tool, supabase, user_id)
     logger.debug("Sending request to Claude (turns=%d)", len(claude_messages))
     try:
-        reply = await _call_claude(claude, claude_messages, run_tool)
+        async with asyncio.timeout(_CHAT_TIMEOUT_SECONDS):
+            reply = await _call_claude(claude, claude_messages, run_tool)
     except Exception as e:
         logger.error("Claude API error: %s", e)
         try:

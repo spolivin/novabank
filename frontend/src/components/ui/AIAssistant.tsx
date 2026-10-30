@@ -28,6 +28,14 @@ function validDate(value: unknown): Date | undefined {
   return isNaN(d.getTime()) ? undefined : d;
 }
 
+// Keyed by the Error message sendChatMessage throws for each known failure;
+// anything else falls back to a generic message (see the catch block below).
+const CHAT_ERROR_MESSAGES = {
+  rate_limit_exceeded: "You've sent too many messages. Please wait a moment and try again.",
+  service_unavailable: "Nova is temporarily unavailable. Please try again later.",
+  timed_out: "Nova is taking too long to respond. Please try again.",
+};
+
 function formatDayLabel(date: Date): string {
   const today = new Date();
   const yesterday = new Date(today);
@@ -151,11 +159,8 @@ export default function AIAssistant() {
     } catch (err) {
       const reason = err instanceof Error ? err.message : undefined;
       const text =
-        reason === "rate_limit_exceeded"
-          ? "You've sent too many messages. Please wait a moment and try again."
-          : reason === "service_unavailable"
-            ? "Nova is temporarily unavailable. Please try again later."
-            : "Sorry, I couldn't reach the server. Please try again.";
+        CHAT_ERROR_MESSAGES[reason as keyof typeof CHAT_ERROR_MESSAGES] ??
+        "Sorry, I couldn't reach the server. Please try again.";
       setMessages((prev) => prev.map((m) => (m.id === thinkingId ? { ...m, text } : m)));
     } finally {
       setLoading(false);

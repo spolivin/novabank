@@ -178,6 +178,11 @@ describe("sendChatMessage", () => {
     await expect(sendChatMessage("hi")).rejects.toThrow("service_unavailable");
   });
 
+  it("throws timed_out on 504", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 504 }));
+    await expect(sendChatMessage("hi")).rejects.toThrow("timed_out");
+  });
+
   it("throws on other non-ok response", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 }));
     await expect(sendChatMessage("hi")).rejects.toThrow("Failed to get reply");
