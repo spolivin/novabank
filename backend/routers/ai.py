@@ -127,9 +127,9 @@ async def chat(
 
     Raises:
         HTTPException: 503 if the Claude API itself rejected the request (this
-            is also how a configured spend limit surfaces); 504 if the Claude
-            calls for this turn ran past their overall budget; 500 if
-            generating the reply fails for any other reason.
+            is also how a configured spend limit surfaces); 504 if a Claude
+            call timed out, individually or for the turn's overall budget;
+            500 if generating the reply fails for any other reason.
     """
     user_id = user["sub"]
     add_log_fields(user_id=user_id)
@@ -151,8 +151,11 @@ async def chat(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Nova is temporarily unavailable. Please try again later.",
         ) from e
-    except TimeoutError as e:
-        # The chat turn's overall budget ran out (services.ai._CHAT_TIMEOUT_SECONDS).
+    except (TimeoutError, anthropic.APITimeoutError) as e:
+        # Builtin TimeoutError: the turn's overall budget ran out
+        # (services.ai._CHAT_TIMEOUT_SECONDS). anthropic.APITimeoutError: one
+        # call exceeded its own read timeout — not an APIStatusError, so it
+        # needs its own branch here.
         add_log_fields(error=type(e).__name__)
         logger.error("Claude call timed out for user %s", user_id)
         raise HTTPException(

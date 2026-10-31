@@ -83,3 +83,16 @@ async def test_chat_timeout_returns_504(client):
         response.json()["detail"]
         == "Nova is taking too long to respond. Please try again."
     )
+
+
+async def test_chat_single_call_timeout_returns_504(client):
+    """A single call's own read timeout is a different exception type than
+    the turn's overall budget, but the same user-facing situation — same 504."""
+    error = anthropic.APITimeoutError(request=httpx.Request("POST", "https://x"))
+    with patch("routers.ai.ai_service.get_reply", new=AsyncMock(side_effect=error)):
+        response = await client.post("/ai/chat", json={"message": "hi"})
+    assert response.status_code == 504
+    assert (
+        response.json()["detail"]
+        == "Nova is taking too long to respond. Please try again."
+    )
